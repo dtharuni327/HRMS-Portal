@@ -1,4 +1,4 @@
- 
+---Create Employee table: - id, name, email, phone, role---
 CREATE TABLE Employee (Id INT PRIMARY KEY, Emp_id VARCHAR(10) UNIQUE NOT NULL,Name VARCHAR(100) NOT NULL,
 Email VARCHAR(100) UNIQUE,Phone VARCHAR(15),Role VARCHAR(50));
 
