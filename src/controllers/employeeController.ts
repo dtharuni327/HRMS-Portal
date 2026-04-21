@@ -1,99 +1,106 @@
-import { Request, Response } from 'express';
-import pool from '../config/db';
+import { Request, Response } from "express";
+import { db } from "../config/db";
 
-// GET all employees
-export const getEmployees = async (req: Request, res: Response) => {
+// 🔹 GET ALL EMPLOYEES (returns array only)
+export const getAllEmployees = async (req: Request, res: Response) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM employees');
-    res.json(rows);
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching employees' });
+    const [rows] = await db.query("SELECT * FROM Employee");
+
+    // ✅ returning only data (no wrapper)
+    res.status(200).json(rows);
+
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching employees" });
   }
 };
 
-// GET employee by ID
+// 🔹 GET EMPLOYEE BY ID (returns single object)
 export const getEmployeeById = async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
+  const id = parseInt(req.params.id as string);
 
   if (isNaN(id)) {
-    return res.status(400).json({ message: 'Invalid ID' });
+    return res.status(400).json({ message: "Invalid employee ID" });
   }
 
   try {
-    const [rows]: any = await pool.query(
-      'SELECT * FROM employees WHERE id = ?',
+    const [rows]: any = await db.query(
+      "SELECT * FROM Employee WHERE Id = ?",
       [id]
     );
 
     if (rows.length === 0) {
-      return res.status(404).json({ message: 'Employee not found' });
+      return res.status(404).json({ message: "Employee not found" });
     }
 
-    res.json(rows[0]);
-  } catch (err) {
-    res.status(500).json({ message: 'Error fetching employee' });
+    // ✅ returning single object
+    res.status(200).json(rows[0]);
+
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching employee" });
   }
 };
 
-// POST
+// 🔹 CREATE EMPLOYEE (auto Emp_id)
 export const createEmployee = async (req: Request, res: Response) => {
-  const { name, role, salary } = req.body;
+  const { Name, Email, Phone, Role } = req.body;
 
-  if (!name || !role || !salary) {
-    return res.status(400).json({ message: 'All fields are required' });
+  if (!Name) {
+    return res.status(400).json({ message: "Name is required" });
   }
 
   try {
-    const [result]: any = await pool.query(
-      'INSERT INTO employees (name, role, salary) VALUES (?, ?, ?)',
-      [name, role, salary]
+    // get last Emp_id
+    const [rows]: any = await db.query(
+      "SELECT Emp_id FROM Employee ORDER BY Id DESC LIMIT 1"
+    );
+
+    let newEmpId = "E101";
+
+    if (rows.length > 0) {
+      const lastEmpId = rows[0].Emp_id;
+      const num = parseInt(lastEmpId.substring(1)) + 1;
+      newEmpId = "E" + num;
+    }
+
+    await db.query(
+      "INSERT INTO Employee (Emp_id, Name, Email, Phone, Role) VALUES (?, ?, ?, ?, ?)",
+      [newEmpId, Name, Email, Phone, Role]
     );
 
     res.status(201).json({
-      id: result.insertId,
-      name,
-      role,
-      salary
+      message: "Employee created successfully",
+      Emp_id: newEmpId
     });
-  } catch (err) {
-    res.status(500).json({ message: 'Error creating employee' });
+
+  } catch (error) {
+    res.status(500).json({ message: "Error creating employee" });
   }
 };
 
-// PUT
+// 🔹 UPDATE EMPLOYEE
 export const updateEmployee = async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const { name, role, salary } = req.body;
+  const id = parseInt(req.params.id as string);
+  const { Name, Email, Phone, Role } = req.body;
 
   if (isNaN(id)) {
-    return res.status(400).json({ message: 'Invalid ID' });
+    return res.status(400).json({ message: "Invalid employee ID" });
   }
 
   try {
-    // get existing employee first
-    const [rows]: any = await pool.query(
-      'SELECT * FROM employees WHERE id = ?',
-      [id]
+    const [result]: any = await db.query(
+      "UPDATE Employee SET Name = ?, Email = ?, Phone = ?, Role = ? WHERE Id = ?",
+      [Name, Email, Phone, Role, id]
     );
 
-    if (rows.length === 0) {
-      return res.status(404).json({ message: 'Employee not found' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Employee not found" });
     }
 
-    const existing = rows[0];
+    res.status(200).json({
+      message: "Employee updated successfully"
+    });
 
-    const updatedName = name ?? existing.name;
-    const updatedRole = role ?? existing.role;
-    const updatedSalary = salary ?? existing.salary;
-
-    await pool.query(
-      'UPDATE employees SET name = ?, role = ?, salary = ? WHERE id = ?',
-      [updatedName, updatedRole, updatedSalary, id]
-    );
-
-    res.json({ message: 'Employee updated' });
-  } catch (err) {
-    console.error(err);   // 👈 keep this for debugging
-    res.status(500).json({ message: 'Error updating employee' });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating employee" });
   }
 };
