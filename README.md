@@ -121,5 +121,10 @@ Role
 
 ---
 
-## Testing 
-APIs tested using Postman and validated.
+## Testing from developer side
+
+APIs tested using **Postman** and validated successfully.
+
+## Testing from tester side 
+
+APIs tested using **Postman** and validated successfully.
