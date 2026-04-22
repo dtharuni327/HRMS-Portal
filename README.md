@@ -28,6 +28,7 @@ As part of **Sprint 1**, the following functionalities are implemented:
 
 ## Project Structure
 
+```txt id="fix2"
 HRMS-PROJECT
 ├── src
 │   ├── config        # Database configuration (db.ts, cron.ts)
