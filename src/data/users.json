@@ -1,0 +1,60 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin@gmail.com",
+      "password": "12345",
+      "role": "admin",
+      "name": "System Admin",
+      "dashboard": "/admin"
+    },
+    {
+      "id": 2,
+      "username": "superadmin@gmail.com",
+      "password": "12345",
+      "role": "superadmin",
+      "name": "Super Admin",
+      "dashboard": "/superadmin"
+    },
+    {
+      "id": 3,
+      "username": "hr@gmail.com",
+      "password": "12345",
+      "role": "hr",
+      "name": "HR Manager",
+      "dashboard": "/hr"
+    },
+    {
+      "id": 4,
+      "username": "manager@gmail.com",
+      "password": "12345",
+      "role": "manager",
+      "name": "Project Manager",
+      "dashboard": "/manager"
+    },
+    {
+      "id": 5,
+      "username": "client@gmail.com",
+      "password": "12345",
+      "role": "client",
+      "name": "Client User",
+      "dashboard": "/client"
+    },
+    {
+      "id": 6,
+      "username": "emp01@gmail.com",
+      "password": "12345",
+      "role": "employee",
+      "name": "Employee One",
+      "dashboard": "/employee"
+    },
+    {
+      "id": 7,
+      "username": "emp02@gmail.com",
+      "password": "12345",
+      "role": "employee",
+      "name": "Employee Two",
+      "dashboard": "/employee"
+    }
+  ]
+}
