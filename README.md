@@ -88,27 +88,38 @@ Role
 
 ### POST
 
-`/employees` → Create a new employee
-
-### PUT
-
-`/employees/:id` → Update employee details
-
----
+`http://localhost:3000/api/employee` → Create a new employee
 
 ## Sample Request
 
-POST /employees
-
 {
-"Emp_id": "E101",
 "Name": "John",
 "Email": "[john@gmail.com](mailto:john@gmail.com)",
 "Phone": "98710",
 "Role": "Developer"
 }
 
+### PUT
+
+`http://localhost:3000/api/employee/id` → Update employee details
+
+## Sample Request
+
+http://localhost:3000/api/employee/2
+
+{
+  "Role": "Manager"
+}
+## NOTE
+1.You can update only:
+Name
+Email
+Phone
+Role
+
+2.Id and Emp_id cannot be updated
+
 ---
 
-## Testing
+## Testing 
 APIs tested using Postman and validated.

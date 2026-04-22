@@ -1,20 +1,17 @@
 import { Request, Response } from "express";
 import { db } from "../config/db";
 
-// 🔹 GET ALL EMPLOYEES (returns array only)
+// 🔹 GET ALL EMPLOYEES
 export const getAllEmployees = async (req: Request, res: Response) => {
   try {
     const [rows] = await db.query("SELECT * FROM Employee");
-
-    // ✅ returning only data (no wrapper)
     res.status(200).json(rows);
-
   } catch (error) {
     res.status(500).json({ message: "Error fetching employees" });
   }
 };
 
-// 🔹 GET EMPLOYEE BY ID (returns single object)
+// 🔹 GET EMPLOYEE BY ID
 export const getEmployeeById = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id as string);
 
@@ -32,24 +29,39 @@ export const getEmployeeById = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Employee not found" });
     }
 
-    // ✅ returning single object
     res.status(200).json(rows[0]);
-
   } catch (error) {
     res.status(500).json({ message: "Error fetching employee" });
   }
 };
 
-// 🔹 CREATE EMPLOYEE (auto Emp_id)
+// 🔹 CREATE EMPLOYEE (MULTI VALIDATION + AUTO Emp_id)
 export const createEmployee = async (req: Request, res: Response) => {
   const { Name, Email, Phone, Role } = req.body;
 
+  const errors: string[] = [];
+
+  // Name required
   if (!Name) {
-    return res.status(400).json({ message: "Name is required" });
+    errors.push("Name is required");
+  }
+
+  // Email validation
+  if (Email && !Email.includes("@")) {
+    errors.push("Invalid email format");
+  }
+
+  // Phone validation
+  if (Phone && !/^\d{10}$/.test(Phone)) {
+    errors.push("Phone number must be 10 digits");
+  }
+
+  // Return all errors together
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
   }
 
   try {
-    // get last Emp_id
     const [rows]: any = await db.query(
       "SELECT Emp_id FROM Employee ORDER BY Id DESC LIMIT 1"
     );
@@ -77,24 +89,66 @@ export const createEmployee = async (req: Request, res: Response) => {
   }
 };
 
-// 🔹 UPDATE EMPLOYEE
+// 🔹 UPDATE EMPLOYEE (PARTIAL + MULTI VALIDATION)
 export const updateEmployee = async (req: Request, res: Response) => {
   const id = parseInt(req.params.id as string);
-  const { Name, Email, Phone, Role } = req.body;
 
   if (isNaN(id)) {
     return res.status(400).json({ message: "Invalid employee ID" });
   }
 
+  // Block Id & Emp_id
+  if (req.body.Id || req.body.Emp_id) {
+    return res.status(400).json({
+      message: "Id and Emp_id cannot be updated"
+    });
+  }
+
+  const { Name, Email, Phone, Role } = req.body;
+
+  const errors: string[] = [];
+
+  // At least one field required
+  if (!Name && !Email && !Phone && !Role) {
+    errors.push("At least one field is required to update");
+  }
+
+  // Email validation
+  if (Email && !Email.includes("@")) {
+    errors.push("Invalid email format");
+  }
+
+  // Phone validation
+  if (Phone && !/^\d{10}$/.test(Phone)) {
+    errors.push("Phone number must be 10 digits");
+  }
+
+  // Return all errors together
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
+  }
+
   try {
-    const [result]: any = await db.query(
-      "UPDATE Employee SET Name = ?, Email = ?, Phone = ?, Role = ? WHERE Id = ?",
-      [Name, Email, Phone, Role, id]
+    const [rows]: any = await db.query(
+      "SELECT * FROM Employee WHERE Id = ?",
+      [id]
     );
 
-    if (result.affectedRows === 0) {
+    if (rows.length === 0) {
       return res.status(404).json({ message: "Employee not found" });
     }
+
+    const existing = rows[0];
+
+    const updatedName = Name || existing.Name;
+    const updatedEmail = Email || existing.Email;
+    const updatedPhone = Phone || existing.Phone;
+    const updatedRole = Role || existing.Role;
+
+    await db.query(
+      "UPDATE Employee SET Name = ?, Email = ?, Phone = ?, Role = ? WHERE Id = ?",
+      [updatedName, updatedEmail, updatedPhone, updatedRole, id]
+    );
 
     res.status(200).json({
       message: "Employee updated successfully"
