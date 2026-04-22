@@ -7,7 +7,7 @@ This project provides REST APIs to manage employee attendance using **Punch-In a
 As part of **Sprint 1**, the following functionalities are implemented:
 
   1.  Employee Punch-In
-  2.  Employee Punch-Ou
+  2.  Employee Punch-Out
   3.  Attendance status calculation (Present, Late, Half Day, Absent)
   4.  Auto Punch-Out using Cron Job (6:00 PM)
   5.  Total working hours calculation
@@ -18,11 +18,11 @@ As part of **Sprint 1**, the following functionalities are implemented:
 
 ## Tech Stack
 
-Node.js
-Express.js
-TypeScript
-MySQL
-node-cron
+- Node.js  
+- Express.js  
+- TypeScript  
+- MySQL  
+- node-cron  
 
 ---
 
@@ -102,11 +102,13 @@ HRMS-PROJECT
 ## Attendance Logic
 
 **Condition**             	**Status**
-Before 11:00	                Present
-After 11:00	                  Late
-After 12:30	                  Half Day
-After 3:00	                  Absent
-After 5:50	                  Punch-in blocked
+| Condition           |   Status |
+|----------           |--------|
+| Before 11:00 AM     | Present |
+| 11:00 AM – 12:30 PM | Late |
+| 12:30 PM – 3:00 PM  | Half Day |
+| After 3:00 PM       | Absent |
+| After 5:50 PM       | Punch-in Blocked |
 
 ---
 
