@@ -5,15 +5,20 @@ import { db } from "../config/db";
 // ------------------ PUNCH IN ------------------
 
 export const punchIn = (req: Request, res: Response) => {
-  const { employeeId, employeeName, Role } = req.body;
+
+  const { employeeId} = req.body;
+
   const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+
   const currentTime = now.getHours() * 60 + now.getMinutes();
+
     // Block after 5.50 PM
   if (currentTime >= 17 * 60 + 50) 
     {
         return res.send("Punch-in not allowed after 5:50 PM");
     }
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = new Date().toISOString().split("T")[0]
+
   const checkQuery = `
     SELECT * FROM attendance 
     WHERE employee_id = ? AND date = ?
@@ -33,10 +38,7 @@ export const punchIn = (req: Request, res: Response) => {
 
     let status = "Present";
 
-    if (currentTime > 15 * 60 ){    //3 clock
-        status = "Absent"
-    }
-    else if (currentTime > 12 * 60 + 30) { // 12.30 clock
+    if (currentTime > 12 * 60 + 30) { // 12.30 clock
       status = "Half Day";
     } 
     else if (currentTime > 11 * 60) { // 11 clock
@@ -45,13 +47,13 @@ export const punchIn = (req: Request, res: Response) => {
 
     const insertQuery = `
       INSERT INTO attendance 
-      (employee_id, employee_name, role, date, punch_in_time, status) 
-      VALUES (?, ?, ?, ?, NOW(), ?)
+      (employee_id, date, punch_in_time, status) 
+      VALUES (?, ?, NOW(), ?)
     `;
 
     db.query(
       insertQuery,
-      [employeeId, employeeName, Role, today, status],
+      [employeeId, today, status],
       (err2) => {
         if (err2) {
           console.log(err2);
@@ -69,7 +71,7 @@ export const punchIn = (req: Request, res: Response) => {
 export const punchOut = (req: Request, res: Response) => {
   const { employeeId } = req.body;
 
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = new Date().toISOString().split("T")[0]
   const checkQuery = `
     SELECT * FROM attendance
     WHERE employee_id = ? AND date = ?
@@ -86,12 +88,8 @@ export const punchOut = (req: Request, res: Response) => {
     SET 
       punch_out_time = NOW(),
       punch_out_type = 'MANUAL',
-      total_hours = TIMESTAMPDIFF(
-        MINUTE,
-        CONCAT(date, ' ', punch_in_time),
-        NOW()
-      ) / 60
-    WHERE employee_id = ? 
+      total_hours = TIMESTAMPDIFF(MINUTE, punch_in_time, NOW()) / 60
+      WHERE employee_id = ? 
       AND date = ?
       AND punch_out_time IS NULL
   `;
@@ -103,7 +101,7 @@ export const punchOut = (req: Request, res: Response) => {
     }
 
     if (result.affectedRows === 0) {
-      return res.send("Already punched out or no punch-in found");
+      return res.send("Already punched out");
     }
 
     res.send("Punch Out updated ");

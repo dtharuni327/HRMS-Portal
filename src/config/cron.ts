@@ -6,17 +6,18 @@ import { db } from "./db";
 cron.schedule("0 18 * * *", () => {
   console.log("Auto Punch-Out running at 6:00 PM");
 
-  const today = new Date().toLocaleDateString("en-CA");
+  const today = new Date().toLocaleDateString("en-CA", {
+    timeZone: "Asia/Kolkata"
+  });
   const query = `
     UPDATE attendance
     SET 
-      punch_out_time = '18:00:00',
+      punch_out_time = Now(),
       punch_out_type = 'AUTO',
-      total_hours = TIMESTAMPDIFF(MINUTE,CONCAT(date, ' ', punch_in_time),CONCAT(date, ' 18:00:00')) / 60
-    WHERE date = ?
+      total_hours = TIMESTAMPDIFF(MINUTE, punch_in_time, NOW()) / 60
+        WHERE date = ?
       AND punch_out_time IS NULL 
       AND punch_in_time IS NOT NULL
-      AND punch_in_time <= '18:00:00'
   `;
 
   db.query(query, [today], (err, result: any) => {
