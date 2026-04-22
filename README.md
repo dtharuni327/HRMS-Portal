@@ -61,32 +61,32 @@ HRMS-PROJECT
 
 **Columns:**
 
-  id (Primary Key)
-  employee_id
-  employee_name
-  role
-  date
-  punch_in_time
-  punch_out_time
-  punch_out_type
-  status
-  total_hours
+  - id (Primary Key)
+  - employee_id
+  - employee_name
+  - role
+  - date
+  - punch_in_time
+  - punch_out_time
+  - punch_out_type
+  - status
+  - total_hours
 
 ---
 
 ## API Endpoints
 
-**Punch In**
-      POST /punch-in
-  **Sample Request:**
+- **Punch In**
+     - POST /punch-in
+  - **Sample Request:**
       {
         "employeeId": "EMP001",
         "employeeName": "Kavi",
         "Role": "Developer"
       }
-**Punch Out**
-      POST /punch-out
-    **Sample Request:**
+- **Punch Out**
+     - POST /punch-out
+  - **Sample Request:**
       {
         "employeeId": "EMP001"
       }
@@ -94,14 +94,13 @@ HRMS-PROJECT
 ---
 
 ## Auto Punch-Out (Cron Job)
-  Runs daily at 6:00 PM
-  Automatically updates punch-out time for active employees
-  Prevents missing punch-out cases
+  - Runs daily at 6:00 PM
+  - Automatically updates punch-out time for active employees
+  - Prevents missing punch-out cases
 
 ---
 ## Attendance Logic
 
-**Condition**             	**Status**
 | Condition           |   Status |
 |----------           |--------|
 | Before 11:00 AM     | Present |
