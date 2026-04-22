@@ -106,7 +106,6 @@ HRMS-PROJECT
 | Before 11:00 AM     | Present |
 | 11:00 AM – 12:30 PM | Late |
 | 12:30 PM – 3:00 PM  | Half Day |
-| After 3:00 PM       | Absent |
 | After 5:50 PM       | Punch-in Blocked |
 
 ---
