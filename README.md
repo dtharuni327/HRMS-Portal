@@ -135,12 +135,13 @@ Test Scenarios
 * Environment variables for sensitive data
 
 
-## Testing from tester side 
-
-APIs tested using **Postman** and validated successfully.
-
 ## Notes
 
 * JWT token required for protected APIs
+
+
+## Testing from tester side 
+
+APIs tested using **Postman** and validated successfully.
 * Use Authorization header:
   Authorization: Bearer <token>
