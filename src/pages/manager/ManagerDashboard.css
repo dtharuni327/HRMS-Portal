@@ -1,0 +1,179 @@
+/* MANAGER DASHBOARD - PURPLE THEME */
+.app-container.manager-theme {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+}
+
+/* HEADER */
+.manager-theme .header {
+  height: 60px;
+  background-color: #4b3f72; /* Your Requested Purple */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.manager-theme .logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.manager-theme .header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.manager-theme .profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.manager-theme .avatar {
+  width: 36px;
+  height: 36px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+/* BODY & SIDEBAR */
+.manager-theme .body-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.manager-theme .sidebar {
+  width: 70px;
+  background-color: #352d52; /* Darker variant of your purple */
+  color: #e2e8f0;
+  padding-top: 20px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  flex-shrink: 0;
+}
+
+.manager-theme .sidebar:hover {
+  width: 240px;
+}
+
+.manager-theme .menu-item {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  cursor: pointer;
+  color: #cbd5e1;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.manager-theme .icon-wrapper {
+  width: 70px;
+  min-width: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.manager-theme .menu-text {
+  opacity: 0;
+  font-size: 14px;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.manager-theme .sidebar:hover .menu-text {
+  opacity: 1;
+}
+
+.manager-theme .menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #a78bfa; /* Light purple highlight */
+}
+
+/* MAIN CONTENT */
+.manager-theme .main {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+}
+
+.manager-theme .welcome-card {
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  border-left: 6px solid #4b3f72;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.manager-theme .welcome-card h2 {
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.manager-theme .welcome-card p {
+  color: #64748b;
+}
+
+/* STATS BOXES */
+.manager-theme .manager-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.manager-theme .stat-box {
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.manager-theme .stat-box h4 {
+  color: #64748b;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-bottom: 12px;
+}
+
+.manager-theme .count {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.manager-theme .view-btn {
+  background: none;
+  border: none;
+  color: #4b3f72;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.manager-theme .view-btn:hover {
+  text-decoration: underline;
+}

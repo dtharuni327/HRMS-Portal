@@ -1,0 +1,58 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "superadmin",
+      "email": "superadmin@gmail.com",
+      "password": "super123",
+      "role": "superadmin",
+      "name": "Super Admin",
+      "dashboard": "/superadmin"
+    },
+    {
+      "id": 2,
+      "username": "hr01",
+      "email": "hr01@gmail.com",
+      "password": "hr123",
+      "role": "hr",
+      "name": "HR Manager",
+      "dashboard": "/hr"
+    },
+    {
+      "id": 3,
+      "username": "manager01",
+      "email": "manager01@gmail.com",
+      "password": "manager123",
+      "role": "manager",
+      "name": "Project Manager",
+      "dashboard": "/manager"
+    },
+    {
+      "id": 4,
+      "username": "emp01",
+      "email": "emp01@gmail.com",
+      "password": "emp123",
+      "role": "employee",
+      "name": "Employee One",
+      "dashboard": "/employee"
+    },
+    {
+      "id": 5,
+      "username": "finance01",
+      "email": "finance01@gmail.com",
+      "password": "finance123",
+      "role": "finance",
+      "name": "Finance Manager",
+      "dashboard": "/finance"
+    },
+    {
+      "id": 6,
+      "username": "client01",
+      "email": "client01@gmail.com",
+      "password": "client123",
+      "role": "client",
+      "name": "Client User",
+      "dashboard": "/client"
+    }
+  ]
+}

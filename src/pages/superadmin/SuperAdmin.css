@@ -1,0 +1,114 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.header {
+  height: 60px;
+  background: #2f455c;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  flex-shrink: 0;
+}
+
+.body-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden; /* Prevents body from scrolling, only main will scroll */
+}
+
+/* SIDEBAR FIXES */
+.sidebar {
+  width: 70px; /* Collapsed width */
+  background: #2f455c;
+  color: white;
+  padding-top: 20px;
+  transition: width 0.3s ease;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0; /* Prevents sidebar from being squashed */
+}
+
+.sidebar:hover {
+  width: 240px; /* Expanded width */
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  cursor: pointer;
+  color: #a0aec0;
+  transition: 0.2s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Centering the icon in the 70px bar */
+.icon-wrapper {
+  width: 70px; 
+  min-width: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-text {
+  margin-left: 10px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 15px;
+}
+
+.sidebar:hover .menu-text {
+  opacity: 1;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #3b82f6;
+}
+
+/* MAIN CONTENT */
+.main {
+  flex: 1;
+  background: #e5e7eb;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.welcome-card {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar {
+    width: 35px;
+    height: 35px;
+    background: #6b7280;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
