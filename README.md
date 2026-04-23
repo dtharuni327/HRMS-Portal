@@ -138,10 +138,9 @@ Test Scenarios
 ## Notes
 
 * JWT token required for protected APIs
-
+* Use Authorization header:
+  Authorization: Bearer <token>
 
 ## Testing from tester side 
 
 APIs tested using **Postman** and validated successfully.
-* Use Authorization header:
-  Authorization: Bearer <token>
