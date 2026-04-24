@@ -3,18 +3,18 @@
 **Description**
 
 This project provides a REST API for User Registration using:
-  *Node.js
-  *Express.js
-  *TypeScript
-  *MySQL
+  Node.js-
+  Express.js-
+  TypeScript-
+  MySQL
 Users can register with name, email, and password, and the data is securely stored in the database.
 
 **Features**
-  *User Registration API
-  *Password hashing using bcrypt
-  *MySQL database integration
-  *Clean project structure (MVC pattern)
-  *Environment variable support using dotenv
+  User Registration API-
+  Password hashing using bcrypt-
+  MySQL database integration-
+  Clean project structure (MVC pattern)-
+  Environment variable support using dotenv
 
 **Project Structure**
 
@@ -52,12 +52,12 @@ Table : user_auth_db
 
 Columns:
 
- *Name
- *Email
- *Password
- *Employee_id
- *Role
- *Phone
+ Name-
+ Email-
+ Password-
+ Employee_id-
+ Role-
+ Phone
 
  *Password should be in eccrypted way*
 
