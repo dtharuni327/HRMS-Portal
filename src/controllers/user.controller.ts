@@ -2,13 +2,10 @@ import { Request, Response } from "express";
 import db from "../services/config/db";
 import bcrypt from "bcrypt";
 
-
-// ================= REGISTER =================
-export const register = async (req: Request, res: Response) => {
+export const register = (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
 
-    // 1. Validate input
     if (!name || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -16,50 +13,59 @@ export const register = async (req: Request, res: Response) => {
       });
     }
 
-    // 2. Check if user already exists
     const checkQuery = "SELECT * FROM users WHERE email = ?";
 
-    db.query(checkQuery, [email], async (err: any, results: any) => {
+    db.query(checkQuery, [email], async (err: any, results: any[]) => {
       if (err) {
+        console.error("DB ERROR (REGISTER - CHECK):", err); // 🔥 shows exact error
         return res.status(500).json({
           success: false,
           message: "Database error",
         });
       }
 
-      if (results.length > 0) {
+      if (results && results.length > 0) {
         return res.status(400).json({
           success: false,
-          message: "User already exists",
+          message: "Email already exists",
         });
       }
 
-      // 3. Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
+      try {
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-      // 4. Insert user
-      const insertQuery =
-        "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+        const insertQuery =
+          "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
 
-      db.query(
-        insertQuery,
-        [name, email, hashedPassword],
-        (err: any, result: any) => {
-          if (err) {
-            return res.status(500).json({
-              success: false,
-              message: "Error creating user",
+        db.query(
+          insertQuery,
+          [name, email, hashedPassword],
+          (err: any, result: any) => {
+            if (err) {
+              console.error("❌ DB ERROR (REGISTER - INSERT):", err);
+              return res.status(500).json({
+                success: false,
+                message: "Error creating user",
+              });
+            }
+
+            return res.status(201).json({
+              success: true,
+              message: "User registered successfully ✅",
             });
           }
-
-          return res.status(201).json({
-            success: true,
-            message: "User registered successfully ✅",
-          });
-        }
-      );
+        );
+      } catch (hashError) {
+        console.error("❌ HASH ERROR:", hashError);
+        return res.status(500).json({
+          success: false,
+          message: "Password hashing failed",
+        });
+      }
     });
+
   } catch (error) {
+    console.error("❌ SERVER ERROR (REGISTER):", error);
     return res.status(500).json({
       success: false,
       message: "Server error",
@@ -68,12 +74,12 @@ export const register = async (req: Request, res: Response) => {
 };
 
 
+
 // ================= LOGIN =================
 export const login = (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Validate input
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -81,44 +87,52 @@ export const login = (req: Request, res: Response) => {
       });
     }
 
-    // 2. Check user
     const query = "SELECT * FROM users WHERE email = ?";
 
-    db.query(query, [email], async (err: any, results: any) => {
+    db.query(query, [email], async (err: any, results: any[]) => {
       if (err) {
+        console.error("❌ DB ERROR (LOGIN):", err); // 🔥 exact error
         return res.status(500).json({
           success: false,
           message: "Database error",
         });
       }
 
-      if (results.length === 0) {
+      if (!results || results.length === 0) {
         return res.status(401).json({
           success: false,
           message: "Invalid credentials",
         });
       }
 
-      const user = results[0];
+      try {
+        const user = results[0];
 
-      // 3. Compare password
-      const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, user.password);
 
-      if (!isMatch) {
-        return res.status(401).json({
+        if (!isMatch) {
+          return res.status(401).json({
+            success: false,
+            message: "Invalid credentials",
+          });
+        }
+
+        return res.status(200).json({
+          success: true,
+          message: "Login successful ✅",
+        });
+
+      } catch (compareError) {
+        console.error("❌ BCRYPT ERROR:", compareError);
+        return res.status(500).json({
           success: false,
-          message: "Invalid credentials",
+          message: "Password comparison failed",
         });
       }
-
-      // 4. Success
-      return res.status(200).json({
-        success: true,
-        message: "Login successful ✅",
-      });
     });
 
   } catch (error) {
+    console.error("❌ SERVER ERROR (LOGIN):", error);
     return res.status(500).json({
       success: false,
       message: "Server error",
