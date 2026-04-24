@@ -52,9 +52,14 @@ Table : user_auth_db
 
 Columns:
 
-Name
-Email
-Password
+ *Name
+ *Email
+ *Password
+ *Employee_id
+ *Role
+ *Phone
+
+ *Password should be in eccrypted way*
 
 **API Endpoints**
 
