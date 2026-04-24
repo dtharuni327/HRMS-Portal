@@ -66,3 +66,8 @@ Sample Request :{"name" : "Kiruthika", "email" : "kiri@gmail.com", "password" : 
 Login:
 Post/login
 Sample request - {"email" : "kiri@gmail.com", "password" : "123456"}
+
+
+## Testing from developer side
+
+APIs tested using **Postman** and validated successfully.**
