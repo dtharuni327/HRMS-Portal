@@ -1,11 +1,11 @@
 import express from "express";
 import { punchIn, punchOut } from "../controllers/attendanceController";
+import { verifyToken } from "../middleware/authMiddleware";
+
+
 const router = express.Router();
 
-// ---------------- PUNCH IN ----------------
-router.post("/punch-in", punchIn);
+router.post("/punch-in", verifyToken, punchIn);
+router.post("/punch-out", verifyToken, punchOut);
 
-
-// ---------------- PUNCH OUT ----------------
-router.post("/punch-out", punchOut);
 export default router;

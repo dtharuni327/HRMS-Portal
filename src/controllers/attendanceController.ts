@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { db } from "../config/db";
-
+import { RowDataPacket, ResultSetHeader } from "mysql2";
 
 // ------------------ PUNCH IN ------------------
 
-export const punchIn = (req: Request, res: Response) => {
-
+export const punchIn = async(req: Request, res: Response) => {
+  try{
   const { employeeId} = req.body;
 
   const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
@@ -13,26 +13,25 @@ export const punchIn = (req: Request, res: Response) => {
   const currentTime = now.getHours() * 60 + now.getMinutes();
 
     // Block after 5.50 PM
-  if (currentTime >= 17 * 60 + 50) 
+    if (currentTime >= 17 * 60 + 50) 
     {
-        return res.send("Punch-in not allowed after 5:50 PM");
+        return res.status(400).json({
+            message: "Punch-in not allowed after 5:50 PM",
+        });
     }
   const today = new Date().toISOString().split("T")[0]
 
-  const checkQuery = `
-    SELECT * FROM attendance 
-    WHERE employee_id = ? AND date = ?
-  `;
+  //check existing
+  const [existing] = await db.query<RowDataPacket[]>(
+      `SELECT * FROM attendance WHERE employee_id = ? AND date = ?`,
+      [employeeId, today]
+    );
 
-  db.query(checkQuery, [employeeId, today], (err, result: any) => {
-    if (err) {
-      console.log(err);
-      return res.send("DB Error");
-    }
-
-    if (result.length > 0) {
-      return res.send("Already punched in today");
-    }
+    if (existing.length > 0) {
+        return res.status(400).json({
+          message: "Already punched in today",
+        });
+      }
 
     // STATUS LOGIC
 
@@ -45,66 +44,75 @@ export const punchIn = (req: Request, res: Response) => {
       status = "Late";
     }
 
-    const insertQuery = `
-      INSERT INTO attendance 
-      (employee_id, date, punch_in_time, status) 
-      VALUES (?, ?, NOW(), ?)
-    `;
+    //--------insert------------------------
 
-    db.query(
-      insertQuery,
-      [employeeId, today, status],
-      (err2) => {
-        if (err2) {
-          console.log(err2);
-          return res.send("Insert Error");
-        }
-
-        res.send(`Punch-in marked as ${status}`);
-      }
+    await db.query<ResultSetHeader>(
+      `INSERT INTO attendance (employee_id, date, punch_in_time, status)
+       VALUES (?, ?, NOW(), ?)`,
+      [employeeId, today, status]
     );
-  });
+
+    return res.status(200).json({
+      message: `Punch-in marked as ${status}`,
+    });
+
+  } 
+  catch (error) 
+  {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
 };
 
 // ------------------ PUNCH OUT ------------------
 
-export const punchOut = (req: Request, res: Response) => {
+export const punchOut = async(req: Request, res: Response) => {
+  try{
   const { employeeId } = req.body;
 
   const today = new Date().toISOString().split("T")[0]
-  const checkQuery = `
-    SELECT * FROM attendance
-    WHERE employee_id = ? AND date = ?
-  `;
 
-  db.query(checkQuery, [employeeId, today], (err, result: any) => {
-    if (err) return res.status(500).send("Error");
+  //check existing
+  const [rows] = await db.query<RowDataPacket[]>(
+      `SELECT * FROM attendance WHERE employee_id = ? AND date = ?`,
+      [employeeId, today]
+    );
 
-    if (result.length === 0) {
-      return res.send("No punch in found!");
+    if (rows.length === 0) {
+      return res.status(400).json({
+        message: "No punch in found",
+      });
     }
-    const query = `
-    UPDATE attendance
-    SET 
-      punch_out_time = NOW(),
-      punch_out_type = 'MANUAL',
-      total_hours = TIMESTAMPDIFF(MINUTE, punch_in_time, NOW()) / 60
-      WHERE employee_id = ? 
-      AND date = ?
-      AND punch_out_time IS NULL
-  `;
 
-  db.query(query, [employeeId, today], (err, result: any) => {
-    if (err) {
-      console.log(err);
-      return res.status(500).send("Error");
-    }
+    //-------------update-------------
+    const [result] = await db.query<ResultSetHeader>(
+      `UPDATE attendance
+       SET 
+         punch_out_time = NOW(),
+         punch_out_type = 'MANUAL',
+         total_hours = TIMESTAMPDIFF(MINUTE, punch_in_time, NOW()) / 60
+         WHERE employee_id = ?
+         AND date = ?
+         AND punch_out_time IS NULL`,
+      [employeeId, today]
+    );
 
     if (result.affectedRows === 0) {
-      return res.send("Already punched out");
+      return res.status(400).json({
+        message: "Already punched out",
+      });
     }
 
-    res.send("Punch Out updated ");
+    return res.status(200).json({
+      message: "Punch-out successful",
     });
-  });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
 };
