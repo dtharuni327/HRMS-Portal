@@ -1,5 +1,6 @@
 import cron from "node-cron";
-import { db } from "./db";
+import { db } from "../config/db";
+import { RowDataPacket, ResultSetHeader } from "mysql2/promise";
 
 // ---------------- AUTO PUNCH OUT ----------------
 
@@ -19,7 +20,7 @@ try{
       AND punch_out_time IS NULL 
       AND punch_in_time IS NOT NULL
   `;
-    const [result]: any =await db.query(query, [today]);
+    const [result] = await db.query<ResultSetHeader>(query, [today]);
 
     console.log("Auto punch-out done: ",result.affectedRows);
 }
