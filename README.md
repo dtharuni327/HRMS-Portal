@@ -2,135 +2,171 @@
 
 ## Description
 
-This project provides REST APIs to perform CRUD (Create, Read, Update) operations on Employee data.
+This project provides REST APIs to perform CRUD operations on Employee data.
 
-As part of **Sprint 1**, the following functionalities are implemented:
-
-Get all employees
-Get employee by ID
-Add new employee
-Update employee details
+### Features
+- Get all employees
+- Get employee by ID
+- Filter employees (department, role, status)
+- Create new employee
+- Update employee (partial update)
 
 ---
 
 ## Tech Stack
 
-Node.js
-Express.js
-TypeScript
-MySQL
-
----
-
-## Project Structure
-
-HRMS-PORTAL
-├── src
-│   ├── config        # Database configuration (db.ts)
-│   ├── controllers   # API logic (employeeController.ts)
-│   ├── models        # Present (not used in current sprint)
-│   ├── routes        # API routes (employeeRoutes.ts)
-│   ├── app.ts        # Express app setup
-│   └── server.ts     # Server entry point
-├── package.json
-├── tsconfig.json
-├── README.md
-└── .gitignore
+- Node.js  
+- Express.js  
+- TypeScript  
+- MySQL  
 
 ---
 
 ## Setup Instructions
 
-1. Clone the repository
-
+1. Clone the repository  
 2. Install dependencies:
    npm install
 
-3. Configure database in:
+3. Configure DB in:
    src/config/db.ts
 
-4. Run the application:
+4. Run the app:
    npm run dev
 
 ---
 
-## Database Details
+## Base URL
 
-**Database:** MySQL
-
-**Table:** Employee
-
-**Columns:**
-
-Id (Primary Key)
-Emp_id (Unique)
-Name
-Email
-Phone
-Role
+http://localhost:3000/api/employees
 
 ---
 
-## API Endpoints (Sprint 1)
+## API Endpoints (Postman Ready)
 
-### GET
+### GET APIs
 
-`http://localhost:3000/api/employees` - Fetch all employees
+Get all employees  
+http://localhost:3000/api/employees
 
-`http://localhost:3000/api/employee/id` - Fetch employee by ID
+Get employee by ID  
+http://localhost:3000/api/employees/1
 
+Filter by Department  
 http://localhost:3000/api/employees?department=Engineering
 
+Filter by Role  
 http://localhost:3000/api/employees?role=Manager
 
+Filter by Status  
 http://localhost:3000/api/employees?status=active
 
----
-
-## Sample Request 
-`http://localhost:3000/api/employee/4`
+Combined Filters  
+http://localhost:3000/api/employees?department=Engineering&role=Developer&status=active
 
 ---
 
-### POST
+### POST API
 
-`http://localhost:3000/api/employee` → Create a new employee
+Create employee  
+http://localhost:3000/api/employees
 
-## Sample Request
+Method: POST  
 
+Body (JSON):
 {
-"Name": "John",
-"Email": "[john@gmail.com](mailto:john@gmail.com)",
-"Phone": "98710",
-"Role": "Developer"
+  "Name": "John",
+  "Email": "john@gmail.com",
+  "Phone": "9876543210",
+  "Role": "Developer",
+  "Department": "Engineering",
+  "IsActive": 1
 }
 
-### PUT
+---
 
-`http://localhost:3000/api/employee/id` → Update employee details
+### PUT API
 
-## Sample Request
+Update employee  
+http://localhost:3000/api/employees/2
 
-http://localhost:3000/api/employee/2
+Method: PUT  
 
+Body (JSON):
 {
   "Role": "Manager"
 }
-## NOTE
-1.You can update only:
-Name
-Email
-Phone
-Role
-
-2.Id and Emp_id cannot be updated
 
 ---
 
-## Testing from developer side
+## Update Rules
 
-APIs tested using **Postman** and validated successfully.
+Allowed Fields:
+- Name  
+- Email  
+- Phone  
+- Role  
+- Department  
+- IsActive  
 
-## Testing from tester side 
+Restricted Fields:
+- Id cannot be updated  
+- Emp_id cannot be updated  
 
-APIs tested using **Postman** and validated successfully.
+---
+
+## Database Setup (MySQL)
+
+Run the below SQL script:
+
+-- 1. Create Database
+CREATE DATABASE hrms_portal;
+USE hrms_portal;
+
+-- 2. Drop table if exists
+DROP TABLE IF EXISTS Employee;
+
+-- 3. Create Table 
+CREATE TABLE Employee (
+  Id INT AUTO_INCREMENT PRIMARY KEY,
+  Emp_id VARCHAR(10) UNIQUE,
+  Name VARCHAR(100) NOT NULL,
+  Email VARCHAR(100) UNIQUE,
+  Phone VARCHAR(10) UNIQUE,
+  Role VARCHAR(50),
+  Department VARCHAR(100),
+  IsActive TINYINT(1) DEFAULT 1
+);
+
+-- 4. Insert Sample Data
+INSERT INTO Employee (Name, Email, Phone, Role, Department, IsActive) VALUES
+('John', 'john@gmail.com', '9876543210', 'Developer', 'Engineering', 1),
+('Sara', 'sara@gmail.com', '9876543211', 'Tester', 'QA', 1),
+('David', 'david@gmail.com', '9876543212', 'Manager', 'Engineering', 0),
+('Priya', 'priya@gmail.com', '9876543213', 'HR', 'HR', 1);
+
+-- 5. Generate Emp_id
+UPDATE Employee
+SET Emp_id = CONCAT('E', LPAD(Id, 3, '0'))
+WHERE Emp_id IS NULL;
+
+-- 6. Verify
+SELECT * FROM Employee;
+
+---
+
+## Notes
+
+- Emp_id is auto-generated (E001, E002…)
+- IsActive: 1 = Active, 0 = Inactive
+- Email and Phone must be unique
+
+---
+
+## Testing
+
+APIs tested using Postman and validated successfully.
+
+---
+
+

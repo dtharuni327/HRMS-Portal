@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
 import { db } from "../config/db";
 
-/* =====================================================
-   🔹 HELPER: SAFE ID PARSER (FIXED TS ERROR)
-===================================================== */
+
 const getId = (req: Request, res: Response): number | null => {
   const idParam = req.params.id;
 
@@ -23,7 +21,7 @@ const getId = (req: Request, res: Response): number | null => {
 };
 
 /* =====================================================
-   🔹 GET ALL EMPLOYEES (WITH FILTERS)
+    GET ALL EMPLOYEES (WITH FILTERS)
 ===================================================== */
 export const getAllEmployees = async (req: Request, res: Response) => {
   try {
@@ -86,73 +84,91 @@ export const getEmployeeById = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching employee" });
   }
 };
-
 /* =====================================================
-   🔹 CREATE EMPLOYEE (TRANSACTION SAFE)
+   CREATE EMPLOYEE
+===================================================== */
+/* =====================================================
+   CREATE EMPLOYEE
 ===================================================== */
 export const createEmployee = async (req: Request, res: Response) => {
   const { Name, Email, Phone, Role, Department } = req.body;
 
-  if (!Name || !Email || !Phone) {
+  // Required fields
+  if (!Name || !Email || !Phone || !Department) {
     return res.status(400).json({
-      message: "Name, Email, and Phone are required",
+      message: "Name, Email, Phone, and Department are required",
     });
   }
 
-  const connection = await db.getConnection();
+  const errors: string[] = [];
+
+  // Email validation
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(Email)) {
+    errors.push("Invalid email format");
+  }
+
+  // Phone validation
+  if (!/^\d{10}$/.test(Phone)) {
+    errors.push("Phone number must be 10 digits");
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).json({ message: errors.join(" and ") });
+  }
 
   try {
-    await connection.beginTransaction();
-
-    // Check duplicates
-    const [existing]: any = await connection.query(
+    // Check duplicate Email / Phone
+    const [existing]: any = await db.query(
       "SELECT Email, Phone FROM Employee WHERE Email = ? OR Phone = ?",
       [Email, Phone]
     );
 
     if (existing.length > 0) {
-      await connection.rollback();
-
       const isEmail = existing.some((e: any) => e.Email === Email);
       const isPhone = existing.some((e: any) => e.Phone === Phone);
 
-      return res.status(409).json({
-        message: isEmail
-          ? "Email already exists"
-          : "Phone already exists",
-      });
+      if (isEmail && isPhone) {
+        return res.status(409).json({
+          message: "Email and Phone already exist",
+        });
+      } else if (isEmail) {
+        return res.status(409).json({ message: "Email already exists" });
+      } else {
+        return res.status(409).json({ message: "Phone already exists" });
+      }
     }
 
-    // Insert employee
-    const [result]: any = await connection.query(
-      "INSERT INTO Employee (Name, Email, Phone, Role, Department) VALUES (?, ?, ?, ?, ?)",
+    // Insert employee (with Department)
+    const [result]: any = await db.query(
+      `INSERT INTO Employee 
+       (Name, Email, Phone, Role, Department) 
+       VALUES (?, ?, ?, ?, ?)`,
       [Name, Email, Phone, Role, Department]
     );
 
-    // Generate Emp_id
-    const empId = "E" + result.insertId.toString().padStart(3, "0");
+    // Generate Emp_id (E001, E002...)
+    const empId = "E" + String(result.insertId).padStart(3, "0");
 
-    await connection.query(
+    // Update Emp_id
+    await db.query(
       "UPDATE Employee SET Emp_id = ? WHERE Id = ?",
       [empId, result.insertId]
     );
 
-    await connection.commit();
-
+    // Response
     res.status(201).json({
       message: "Employee created successfully",
+      Id: result.insertId,
       Emp_id: empId,
     });
 
   } catch (error) {
-    await connection.rollback();
-    console.error("CREATE ERROR:", error);
-    res.status(500).json({ message: "Error creating employee" });
-  } finally {
-    connection.release();
+    console.error("DB ERROR:", error);
+    res.status(500).json({
+      message: "Error creating employee",
+    });
   }
 };
-
 /* =====================================================
    🔹 UPDATE EMPLOYEE
 ===================================================== */
@@ -205,28 +221,3 @@ export const updateEmployee = async (req: Request, res: Response) => {
   }
 };
 
-/* =====================================================
-   🔹 DELETE EMPLOYEE
-===================================================== */
-export const deleteEmployee = async (req: Request, res: Response) => {
-  const id = getId(req, res);
-  if (!id) return;
-
-  try {
-    const [result]: any = await db.query(
-      "DELETE FROM Employee WHERE Id = ?",
-      [id]
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Employee not found" });
-    }
-
-    res.status(200).json({
-      message: "Employee deleted successfully",
-    });
-  } catch (error) {
-    console.error("DELETE ERROR:", error);
-    res.status(500).json({ message: "Error deleting employee" });
-  }
-};
