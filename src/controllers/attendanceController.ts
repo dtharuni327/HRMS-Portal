@@ -38,7 +38,7 @@ export const punchIn = async(req: Request, res: Response) => {
     {
         return res.status(400).json({
           success: false,
-            message: "Punch-in not allowed after 5:50 PM",
+          message: "Punch-in not allowed after 5:50 PM",
         });
     }
   const today = new Date(
