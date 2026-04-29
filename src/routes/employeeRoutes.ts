@@ -14,7 +14,7 @@ const router = express.Router();
 
 // Base: /api/employees
 
-//Only Admin / Manager / Super Admin
+// Only Admin / Manager / Super Admin
 router.get(
   "/",
   authenticate,
@@ -22,8 +22,13 @@ router.get(
   getAllEmployees
 );
 
-// Any logged-in user
-router.get("/:id", authenticate, getEmployeeById);
+// Only Admin / Super Admin (UPDATED)
+router.get(
+  "/:id",
+  authenticate,
+  authorize("ADMIN", "SUPER_ADMIN"),
+  getEmployeeById
+);
 
 // Only Admin / Super Admin
 router.post(
@@ -33,7 +38,7 @@ router.post(
   createEmployee
 );
 
-//Only Admin / Super Admin
+// Only Admin / Super Admin
 router.put(
   "/:id",
   authenticate,

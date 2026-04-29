@@ -1,223 +1,170 @@
 import { Request, Response } from "express";
 import { db } from "../config/db";
 
+/* ================= VALIDATION HELPERS ================= */
 
-const getId = (req: Request, res: Response): number | null => {
-  const idParam = req.params.id;
+const isValidEmail = (email: string) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  if (!idParam || Array.isArray(idParam)) {
-    res.status(400).json({ message: "Invalid employee ID" });
-    return null;
+const isValidPhone = (phone: string) =>
+  /^[0-9]{10}$/.test(phone);
+
+/* =====================================================
+   CREATE EMPLOYEE 
+===================================================== */
+export const createEmployee = async (req: Request, res: Response) => {
+  try {
+    let { name, email, phone, department, role } = req.body;
+
+    if (!name || !email || !phone || !department || !role) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    name = name.trim();
+    email = email.trim().toLowerCase();
+    phone = phone.trim();
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    if (!isValidPhone(phone)) {
+      return res.status(400).json({ message: "Phone number must be 10 digits" });
+    }
+
+    const [existingEmail]: any = await db.query(
+      "SELECT Id FROM Employee WHERE Email = ?",
+      [email]
+    );
+    if (existingEmail.length > 0) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    const [existingPhone]: any = await db.query(
+      "SELECT Id FROM Employee WHERE Phone = ?",
+      [phone]
+    );
+    if (existingPhone.length > 0) {
+      return res.status(400).json({ message: "Phone number already exists" });
+    }
+
+    const [result]: any = await db.query(
+      "INSERT INTO Employee (Name, Email, Phone, Department, Role, IsActive) VALUES (?, ?, ?, ?, ?, ?)",
+      [name, email, phone, department, role, 1]
+    );
+
+    const insertId = result.insertId;
+    const empId = "E" + String(insertId).padStart(3, "0");
+
+    await db.query(
+      "UPDATE Employee SET Emp_id = ? WHERE Id = ?",
+      [empId, insertId]
+    );
+
+    return res.status(201).json({
+      message: "Employee created successfully",
+      id: insertId,
+      emp_id: empId,
+    });
+  } catch (err: any) {
+    console.error(err);
+    return res.status(500).json({ message: "Server Error" });
   }
-
-  const id = parseInt(idParam);
-
-  if (isNaN(id)) {
-    res.status(400).json({ message: "Invalid employee ID" });
-    return null;
-  }
-
-  return id;
 };
 
 /* =====================================================
-    GET ALL EMPLOYEES (WITH FILTERS)
+   UPDATE EMPLOYEE 
+===================================================== */
+export const updateEmployee = async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  let { name, email, phone, department, role, status } = req.body;
+
+  try {
+    const [rows]: any = await db.query("SELECT * FROM Employee WHERE Id = ?", [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Employee not found" });
+    }
+    const currentEmployee = rows[0];
+
+    const updates: string[] = [];
+    const params: any[] = [];
+
+    if (email !== undefined) {
+      email = email.trim().toLowerCase();
+      if (email !== currentEmployee.Email) {
+        if (!isValidEmail(email)) return res.status(400).json({ message: "Invalid email format" });
+        const [emailConflict]: any = await db.query("SELECT Id FROM Employee WHERE Email = ? AND Id != ?", [email, id]);
+        if (emailConflict.length > 0) return res.status(400).json({ message: "Email already taken" });
+      }
+      updates.push("Email = ?"); params.push(email);
+    }
+
+    if (phone !== undefined) {
+      phone = phone.trim();
+      if (phone !== currentEmployee.Phone) {
+        if (!isValidPhone(phone)) return res.status(400).json({ message: "Phone must be 10 digits" });
+        const [phoneConflict]: any = await db.query("SELECT Id FROM Employee WHERE Phone = ? AND Id != ?", [phone, id]);
+        if (phoneConflict.length > 0) return res.status(400).json({ message: "Phone number already taken" });
+      }
+      updates.push("Phone = ?"); params.push(phone);
+    }
+
+    if (name !== undefined) { updates.push("Name = ?"); params.push(name.trim()); }
+    if (department !== undefined) { updates.push("Department = ?"); params.push(department); }
+    if (role !== undefined) { updates.push("Role = ?"); params.push(role); }
+    if (status !== undefined) { updates.push("IsActive = ?"); params.push(status); }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ message: "No fields provided for update" });
+    }
+
+    params.push(id);
+    const query = `UPDATE Employee SET ${updates.join(", ")} WHERE Id = ?`;
+    await db.query(query, params);
+
+    return res.status(200).json({ message: "Employee updated successfully" });
+  } catch (err: any) {
+    console.error(err);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+/* =====================================================
+   GET ALL EMPLOYEES 
 ===================================================== */
 export const getAllEmployees = async (req: Request, res: Response) => {
   try {
     const { department, role, status, search } = req.query;
-
     let query = "SELECT * FROM Employee WHERE 1=1";
-    let params: any[] = [];
+    const params: any[] = [];
 
-    if (department) {
-      query += " AND Department = ?";
-      params.push(department);
-    }
-
-    if (role) {
-      query += " AND Role = ?";
-      params.push(role);
-    }
-
-    if (status) {
-      query += " AND IsActive = ?";
-      params.push(status === "active" ? 1 : 0);
-    }
-
+    if (department) { query += " AND Department = ?"; params.push(department); }
+    if (role) { query += " AND Role = ?"; params.push(role); }
+    if (status) { query += " AND IsActive = ?"; params.push(status); }
     if (search) {
-      query += " AND (LOWER(Name) LIKE ? OR LOWER(Email) LIKE ?)";
-      const value = `%${search.toString().toLowerCase()}%`;
-      params.push(value, value);
+      query += " AND (Name LIKE ? OR Email LIKE ?)";
+      params.push(`%${search}%`, `%${search}%`);
     }
 
-    query += " ORDER BY Id DESC";
-
-    const [rows] = await db.query(query, params);
-    res.status(200).json(rows);
-  } catch (error) {
-    console.error("GET ERROR:", error);
-    res.status(500).json({ message: "Error fetching employees" });
+    const [rows]: any = await db.query(query, params);
+    return res.status(200).json(rows);
+  } catch (err: any) {
+    console.error(err);
+    return res.status(500).json({ message: "Server Error" });
   }
 };
 
 /* =====================================================
-   🔹 GET EMPLOYEE BY ID
+   GET EMPLOYEE BY ID 
 ===================================================== */
 export const getEmployeeById = async (req: Request, res: Response) => {
-  const id = getId(req, res);
-  if (!id) return;
-
+  const id = Number(req.params.id);
   try {
-    const [rows]: any = await db.query(
-      "SELECT * FROM Employee WHERE Id = ?",
-      [id]
-    );
-
-    if (rows.length === 0) {
-      return res.status(404).json({ message: "Employee not found" });
-    }
-
-    res.status(200).json(rows[0]);
-  } catch (error) {
-    console.error("GET BY ID ERROR:", error);
-    res.status(500).json({ message: "Error fetching employee" });
+    const [rows]: any = await db.query("SELECT * FROM Employee WHERE Id = ?", [id]);
+    if (rows.length === 0) return res.status(404).json({ message: "Employee not found" });
+    return res.status(200).json(rows[0]);
+  } catch (err: any) {
+    console.error(err);
+    return res.status(500).json({ message: "Server Error" });
   }
 };
-/* =====================================================
-   CREATE EMPLOYEE
-===================================================== */
-/* =====================================================
-   CREATE EMPLOYEE
-===================================================== */
-export const createEmployee = async (req: Request, res: Response) => {
-  const { Name, Email, Phone, Role, Department } = req.body;
-
-  // Required fields
-  if (!Name || !Email || !Phone || !Department) {
-    return res.status(400).json({
-      message: "Name, Email, Phone, and Department are required",
-    });
-  }
-
-  const errors: string[] = [];
-
-  // Email validation
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(Email)) {
-    errors.push("Invalid email format");
-  }
-
-  // Phone validation
-  if (!/^\d{10}$/.test(Phone)) {
-    errors.push("Phone number must be 10 digits");
-  }
-
-  if (errors.length > 0) {
-    return res.status(400).json({ message: errors.join(" and ") });
-  }
-
-  try {
-    // Check duplicate Email / Phone
-    const [existing]: any = await db.query(
-      "SELECT Email, Phone FROM Employee WHERE Email = ? OR Phone = ?",
-      [Email, Phone]
-    );
-
-    if (existing.length > 0) {
-      const isEmail = existing.some((e: any) => e.Email === Email);
-      const isPhone = existing.some((e: any) => e.Phone === Phone);
-
-      if (isEmail && isPhone) {
-        return res.status(409).json({
-          message: "Email and Phone already exist",
-        });
-      } else if (isEmail) {
-        return res.status(409).json({ message: "Email already exists" });
-      } else {
-        return res.status(409).json({ message: "Phone already exists" });
-      }
-    }
-
-    // Insert employee (with Department)
-    const [result]: any = await db.query(
-      `INSERT INTO Employee 
-       (Name, Email, Phone, Role, Department) 
-       VALUES (?, ?, ?, ?, ?)`,
-      [Name, Email, Phone, Role, Department]
-    );
-
-    // Generate Emp_id (E001, E002...)
-    const empId = "E" + String(result.insertId).padStart(3, "0");
-
-    // Update Emp_id
-    await db.query(
-      "UPDATE Employee SET Emp_id = ? WHERE Id = ?",
-      [empId, result.insertId]
-    );
-
-    // Response
-    res.status(201).json({
-      message: "Employee created successfully",
-      Id: result.insertId,
-      Emp_id: empId,
-    });
-
-  } catch (error) {
-    console.error("DB ERROR:", error);
-    res.status(500).json({
-      message: "Error creating employee",
-    });
-  }
-};
-/* =====================================================
-   🔹 UPDATE EMPLOYEE
-===================================================== */
-export const updateEmployee = async (req: Request, res: Response) => {
-  const id = getId(req, res);
-  if (!id) return;
-
-  const { Name, Email, Phone, Role, Department, IsActive } = req.body;
-
-  try {
-    const [rows]: any = await db.query(
-      "SELECT * FROM Employee WHERE Id = ?",
-      [id]
-    );
-
-    if (rows.length === 0) {
-      return res.status(404).json({ message: "Employee not found" });
-    }
-
-    const existing = rows[0];
-
-    const updatedName = Name ?? existing.Name;
-    const updatedEmail = Email ?? existing.Email;
-    const updatedPhone = Phone ?? existing.Phone;
-    const updatedRole = Role ?? existing.Role;
-    const updatedDept = Department ?? existing.Department;
-    const updatedStatus = IsActive ?? existing.IsActive;
-
-    await db.query(
-      `UPDATE Employee 
-       SET Name=?, Email=?, Phone=?, Role=?, Department=?, IsActive=? 
-       WHERE Id=?`,
-      [
-        updatedName,
-        updatedEmail,
-        updatedPhone,
-        updatedRole,
-        updatedDept,
-        updatedStatus,
-        id,
-      ]
-    );
-
-    res.status(200).json({
-      message: "Employee updated successfully",
-    });
-  } catch (error) {
-    console.error("UPDATE ERROR:", error);
-    res.status(500).json({ message: "Error updating employee" });
-  }
-};
-
