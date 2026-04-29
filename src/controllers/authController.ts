@@ -55,10 +55,10 @@ export const login = (req: Request, res: Response) => {
       if (err) return res.status(500).json(err);
 
       if (result.length === 0) {
-        return res.json({ message: "User not found" });
+        return res.status(404).json({ message: "User not found" });
       }
 
-      const user = result[0];
+      const user = result[0];   // ✅ VERY IMPORTANT
 
       const match = await bcrypt.compare(password, user.password);
 
@@ -66,7 +66,7 @@ export const login = (req: Request, res: Response) => {
         return res.json({ message: "Wrong password" });
       }
 
-      // ✅ JWT using .env
+      // ✅ JWT
       const token = jwt.sign(
         { id: user.id, Emp_id: user.Emp_id },
         process.env.JWT_SECRET as string,
