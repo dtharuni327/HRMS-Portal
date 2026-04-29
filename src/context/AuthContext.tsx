@@ -3,14 +3,16 @@ import React, {
   useContext,
   useState,
   useEffect,
-  ReactNode,
+  type ReactNode,
 } from "react";
 
 interface User {
   id: string;
+  username?: string;
   email: string;
   role: string;
   name: string;
+  dashboard?: string;
 }
 
 interface AuthContextType {

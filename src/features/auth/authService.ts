@@ -11,13 +11,13 @@ const API_BASE_URL =
    🔐 FAKE LOGIN (JSON MODE)
 ========================= */
 export const login = async (credentials: {
-  username: string;
+  email: string;
   password: string;
 }) => {
   try {
     const user = usersData.users.find(
       (u) =>
-        u.username === credentials.username &&
+        u.username.toLowerCase() === credentials.email.toLowerCase() &&
         u.password === credentials.password
     );
 
@@ -28,7 +28,7 @@ export const login = async (credentials: {
     return {
       success: true,
       user: {
-        id: user.id,
+        id: String(user.id),
         username: user.username,
         email: user.username,
         role: user.role,
