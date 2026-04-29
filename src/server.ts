@@ -1,7 +1,10 @@
-import app from "./app";
+import express from "express";
+import employeeRoutes from "./routes/employeeRoutes";
 
-const PORT = 3000;
+const app = express();
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+app.use(express.json());
+
+app.use("/api/employees", employeeRoutes);
+
+export default app;
