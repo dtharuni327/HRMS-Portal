@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import db from "../services/config/db";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export const register = (req: Request, res: Response) => {
   try {

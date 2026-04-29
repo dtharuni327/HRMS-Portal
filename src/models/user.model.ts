@@ -1,4 +1,4 @@
-import { db } from "../services/config/db";
+import  db from "../services/config/db";
 import { UserInput } from "../types/user.types";
 
 export const createUser = async (user: UserInput) => {
