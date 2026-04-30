@@ -136,6 +136,8 @@ Get My Leaves
 
 GET /api/leave
 
+Post Holidays
+
 ---
 
 **Testing from developer side**
