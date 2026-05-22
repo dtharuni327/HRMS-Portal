@@ -14,10 +14,27 @@
       "password": "12345",
       "role": "HR_ADMIN",
       "name": "HR Manager",
+<<<<<<< HEAD
       "dashboard": "/hr"
     },
     {
       "id": 3,
+=======
+      "dashboard": "/hr",
+      "gender":"Female"
+    },
+     {
+      "id": 3,
+      "email": "hr1@gmail.com",
+      "password": "12345",
+      "role": "HR_ADMIN",
+      "name": "HR Manager",
+      "dashboard": "/hr",
+      "gender":"Male"
+    },
+    {
+      "id": 4,
+>>>>>>> fa98641 (hr-done-manager-started)
       "email": "manager@gmail.com",
       "password": "12345",
       "role": "MANAGER",
@@ -25,7 +42,11 @@
       "dashboard": "/manager"
     },
     {
+<<<<<<< HEAD
       "id": 4,
+=======
+      "id": 5,
+>>>>>>> fa98641 (hr-done-manager-started)
       "email": "client@gmail.com",
       "password": "12345",
       "role": "CLIENT",
@@ -33,7 +54,11 @@
       "dashboard": "/client"
     },
     {
+<<<<<<< HEAD
       "id": 5,
+=======
+      "id": 6,
+>>>>>>> fa98641 (hr-done-manager-started)
       "email": "emp01@gmail.com",
       "password": "12345",
       "role": "EMPLOYEE",
@@ -41,7 +66,11 @@
       "dashboard": "/employee"
     },
     {
+<<<<<<< HEAD
       "id": 6,
+=======
+      "id": 7,
+>>>>>>> fa98641 (hr-done-manager-started)
       "email": "emp02@gmail.com",
       "password": "12345",
       "role": "EMPLOYEE",

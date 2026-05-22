@@ -13,33 +13,13 @@ import HRDashboard from "../pages/hr/HRDashboard";
 import ManagerDashboard from "../pages/manager/ManagerDashboard";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import ClientDashboard from "../pages/client/ClientDashboard";
-
-// Super Admin pages
-import SuperAdminDashboard from "../pages/super-admin/SuperAdminDashboard";
-import SystemConfig from "../pages/super-admin/SystemConfig";
-import UserRoleManagement from "../pages/super-admin/UserRoleManagement";
-import NewUser from "../pages/super-admin/NewUser";
-import HolidayConfig from "../pages/super-admin/HolidayConfig";
-import AuditLogs from "../pages/super-admin/AuditLogs";
-import DepartmentManagement from "../pages/super-admin/DepartmentManagement";
-import LeaveTypeManagement from "../pages/super-admin/LeaveTypeManagement";
-import SystemHealth from "../pages/super-admin/SystemHealth";
-import SuperAdminLayout from "../components/super-admin/SuperAdminLayout";
+import SuperAdminDashboard from "../pages/superadmin/SuperAdminDashboard";
 
 // Other pages
 import EmployeeManagement from "../pages/hr/EmployeeManagement";
 import TeamOverview from "../pages/manager/TeamOverview";
 import MyAttendance from "../pages/employee/MyAttendance";
 import ProjectTracking from "../pages/client/ProjectTracking";
-import TasksPage from "../pages/employee/modules/TasksPage";
-
-const SuperAdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <ProtectedRoute>
-      <RoleRoute allowedRoles={["SUPER_ADMIN"]}>{children}</RoleRoute>
-    </ProtectedRoute>
-  );
-};
 
 const AppRoutes: React.FC = () => {
   return (
@@ -154,27 +134,17 @@ const AppRoutes: React.FC = () => {
         }
       />
 
-      <Route path="/tasks" element={<TasksPage />} />
-
       {/* Super Admin Routes */}
       <Route
         path="/superadmin"
         element={
-          <SuperAdminProtectedRoute>
-            <SuperAdminLayout />
-          </SuperAdminProtectedRoute>
+          <ProtectedRoute>
+            <RoleRoute allowedRoles={["SUPER_ADMIN"]}>
+              <SuperAdminDashboard />
+            </RoleRoute>
+          </ProtectedRoute>
         }
-      >
-        <Route index element={<SuperAdminDashboard />} />
-        <Route path="system-config" element={<SystemConfig />} />
-        <Route path="users" element={<UserRoleManagement />} />
-        <Route path="users/new" element={<NewUser />} />
-        <Route path="departments" element={<DepartmentManagement />} />
-        <Route path="holidays" element={<HolidayConfig />} />
-        <Route path="leave-types" element={<LeaveTypeManagement />} />
-        <Route path="audit-logs" element={<AuditLogs />} />
-        <Route path="system-health" element={<SystemHealth />} />
-      </Route>
+      />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/login" replace />} />

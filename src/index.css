@@ -23,8 +23,37 @@ body {
 * {
   box-sizing: border-box;
 }
+<<<<<<< HEAD
 
 /* Remove white glow while scrolling */
 html {
   background-color: #120f22;
+=======
+html {
+  background-color: #120f22;
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+>>>>>>> fa98641 (hr-done-manager-started)
 }
