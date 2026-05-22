@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #120f22;
+}
+
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #120f22;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Remove white glow while scrolling */
+html {
+  background-color: #120f22;
+}
