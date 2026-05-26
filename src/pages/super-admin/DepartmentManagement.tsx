@@ -47,13 +47,13 @@ const initialDepartments: Department[] = [
     manager: "Priya Sharma",
     role: "HR Manager",
     parentDepartment: "Administration",
-    employeeCount: 6,
+    employeeCount: 8,
     location: "Hyderabad",
     status: "Active",
   },
   {
     id: 2,
-    name: "Engineering",
+    name: "Technology",
     code: "ENG",
     manager: "Rahul Verma",
     role: "Engineering Head",
@@ -74,6 +74,16 @@ const initialDepartments: Department[] = [
     status: "Active",
   },
 ];
+
+
+
+
+
+
+
+
+
+
 
 const initialDepartmentUsers: DepartmentUsers = {
   1: [
@@ -245,6 +255,26 @@ export default function Department() {
     );
   };
 
+  const handleDeleteDepartment = (id: number) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this department?"
+    );
+
+    if (!confirmDelete) return;
+
+    setDepartments((prev) => prev.filter((department) => department.id !== id));
+
+    setDepartmentUsers((prev) => {
+      const updatedUsers = { ...prev };
+      delete updatedUsers[id];
+      return updatedUsers;
+    });
+
+    if (selectedDepartmentId === id) {
+      setSelectedDepartmentId(null);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -413,7 +443,9 @@ export default function Department() {
                   <option value="Administration">Administration</option>
                   <option value="Technology">Technology</option>
                   <option value="Operations">Operations</option>
+                  <option value="Management">Human Resources</option>
                   <option value="Management">Management</option>
+                  <option value="Management">Finance</option>
                   <option value="Sales & Marketing">Sales & Marketing</option>
                 </select>
               </div>
@@ -561,7 +593,7 @@ export default function Department() {
                       {department.status === "Active" ? (
                         <button
                           onClick={() => handleArchive(department.id)}
-                          className="rounded-lg bg-red-50 p-2 text-red-600 transition hover:bg-red-100"
+                          className="rounded-lg bg-yellow-50 p-2 text-yellow-600 transition hover:bg-yellow-100"
                           title="Archive Department"
                         >
                           <Archive size={16} />
@@ -574,6 +606,14 @@ export default function Department() {
                           Activate
                         </button>
                       )}
+
+                      <button
+                        onClick={() => handleDeleteDepartment(department.id)}
+                        className="rounded-lg bg-red-50 p-2 text-red-600 transition hover:bg-red-100"
+                        title="Delete Department"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -652,6 +692,98 @@ function DepartmentDetailsModal({
     "Employee Relations Staff",
     "HR Intern",
   ];
+
+  const rolesByDepartment: Record<string, string[]> = {
+    Administration: [
+      "Office Admin",
+      "Receptionist",
+      "Office Coordinator",
+      "Executive Assistant",
+      "Front Desk Staff",
+      "Facilities/Admin Executive",
+      "Document & Records Staff",
+    ],
+    Technology: [
+      "Associate Software Engineer",
+      "Software Engineer",
+      "Frontend Developer",
+      "Backend Developer",
+      "Full Stack Developer",
+      "Mobile App Developer",
+      "UI/UX Designer",
+      "QA Engineer / Tester",
+      "DevOps Engineer",
+      "System Administrator",
+      "Network Engineer",
+      "Database Administrator (DBA)",
+      "Cybersecurity Analyst",
+      "Cloud Engineer",
+      "Technical Lead",
+      "Engineering Manager",
+      "IT Support Executive",
+      "Help Desk Technician",
+      "Data Engineer",
+      "AI/ML Engineer",
+      
+    ],
+    Operations: [
+      "Operations Executive",
+      "Operations Manager",
+      "Project Coordinator",
+      "Project Manager",
+      "Delivery Manager",
+      "Business Operations Associate",
+      "Process Coordinator",
+      "Client Success Executive",
+      "Resource Manager",
+      "Vendor Coordinator",
+      "Service Delivery Executive",
+      "Workflow Coordinator",
+    ],
+    "Human Resources": hrRoles,
+    Management: [
+      "Director",
+      "General Manager",
+      "Delivery Head",
+      "Project Manager",
+      "Operations Manager",
+      "Business Manager",
+    ],
+    Finance: [
+      "Accountant",
+      "Senior Accountant",
+      "Finance Executive",
+      "Finance Manager",
+      "Accounts Executive",
+      "Accounts Manager",
+      "Payroll Executive",
+      "Payroll Manager",
+      "Billing Executive",
+      "Tax Consultant",
+      "Auditor",
+      "Financial Analyst",
+      "Budget Analyst",
+    ],
+    "Sales & Marketing": [
+      "Sales Executive",
+      "Senior Sales Executive",
+      "Business Development Executive (BDE)",
+      "Business Development Manager (BDM)",
+      "Sales Manager",
+      "Account Manager",
+      "Client Relationship Manager",
+      "IT Sales Executive",
+      "Digital Marketing Executive",
+      "SEO Specialist",
+      "Social Media Manager",
+      "Content Writer",
+      "Content Marketing Executive",
+      "Graphic Designer",
+      "Marketing Analyst",
+    ],
+  };
+
+  const defaultRoles = hrRoles;
 
   const handleAddEmployee = () => {
     if (
@@ -779,7 +911,7 @@ function DepartmentDetailsModal({
                     setNewEmployee({ ...newEmployee, userId: e.target.value })
                   }
                   placeholder="e.g., CMP1, DPT1"
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                 />
               </div>
               <div>
@@ -793,7 +925,7 @@ function DepartmentDetailsModal({
                     setNewEmployee({ ...newEmployee, name: e.target.value })
                   }
                   placeholder="Full name"
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                 />
               </div>
               <div>
@@ -807,7 +939,7 @@ function DepartmentDetailsModal({
                     setNewEmployee({ ...newEmployee, email: e.target.value })
                   }
                   placeholder="email@example.com"
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                 />
               </div>
               <div>
@@ -819,10 +951,14 @@ function DepartmentDetailsModal({
                   onChange={(e) =>
                     setNewEmployee({ ...newEmployee, role: e.target.value })
                   }
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                 >
                   <option value="">Select role</option>
-                  {hrRoles.map((role) => (
+                  {(
+                    rolesByDepartment[department.name] ||
+                    rolesByDepartment[department.parentDepartment] ||
+                    defaultRoles
+                  ).map((role) => (
                     <option key={role} value={role}>
                       {role}
                     </option>

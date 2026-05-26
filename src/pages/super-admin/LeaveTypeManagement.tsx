@@ -224,13 +224,41 @@ export default function LeaveTypePage() {
 
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-              <FormInput
-                label="Leave Type Name"
-                name="name"
-                value={formData.name}
-                placeholder="Example: Casual Leave"
-                onChange={handleChange}
-              />
+              <div>
+  <label className="mb-2 block text-sm font-semibold text-slate-700">
+    Leave Type Name
+  </label>
+
+  <select
+    name="name"
+    value={formData.name}
+    onChange={(e) =>
+      setFormData((prev) => ({
+        ...prev,
+        name: e.target.value,
+      }))
+    }
+    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100/60"
+  >
+    <option value="">Select Leave Type</option>
+
+    <option value="Casual Leave">
+      Casual Leave
+    </option>
+
+    <option value="Sick Leave">
+      Sick Leave
+    </option>
+
+    <option value="Loss of Pay (LOP)">
+      Loss of Pay (LOP)
+    </option>
+
+    <option value="Earned Leave">
+      Earned Leave
+    </option>
+  </select>
+</div>
 
               <FormInput
                 label="Max Days"

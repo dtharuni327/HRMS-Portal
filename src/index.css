@@ -20,33 +20,30 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+select {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+select option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
 * {
   box-sizing: border-box;
 }
-<<<<<<< HEAD
 
 /* Remove white glow while scrolling */
 html {
   background-color: #120f22;
-=======
-html {
-  background-color: #120f22;
-html,
-body,
-#root {
-  width: 100%;
-  min-height: 100%;
-  margin: 0;
-  overflow-x: hidden;
+  scrollbar-width: none;
 }
 
 body::-webkit-scrollbar {
   display: none;
 }
 
-html {
-  scrollbar-width: none;
-}
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -54,6 +51,4 @@ html {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
-}
->>>>>>> fa98641 (hr-done-manager-started)
 }

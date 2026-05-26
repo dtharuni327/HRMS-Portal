@@ -8,18 +8,37 @@ import Login from "../pages/auth/Login";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 
 // Dashboard pages
-import AdminDashboard from "../pages/admin/AdminDashboard";
 import HRDashboard from "../pages/hr/HRDashboard";
 import ManagerDashboard from "../pages/manager/ManagerDashboard";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import ClientDashboard from "../pages/client/ClientDashboard";
-import SuperAdminDashboard from "../pages/superadmin/SuperAdminDashboard";
+import SuperAdminDashboard from "../pages/super-admin/SuperAdminDashboard";
 
-// Other pages
+// HR / Manager / Employee / Client pages
 import EmployeeManagement from "../pages/hr/EmployeeManagement";
 import TeamOverview from "../pages/manager/TeamOverview";
 import MyAttendance from "../pages/employee/MyAttendance";
 import ProjectTracking from "../pages/client/ProjectTracking";
+
+// Super Admin pages
+import NewUser from "../pages/super-admin/NewUser";
+import UserRoleManagement from "../pages/super-admin/UserRoleManagement";
+import LeaveTypeManagement from "../pages/super-admin/LeaveTypeManagement";
+import DepartmentManagement from "../pages/super-admin/DepartmentManagement";
+import HolidayManagement from "../pages/super-admin/HolidayConfig";
+import AuditLogs from "../pages/super-admin/AuditLogs";
+import SystemConfig from "../pages/super-admin/SystemConfig";
+import SystemHealth from "../pages/super-admin/SystemHealth";
+import AttendanceOverview from "../pages/super-admin/AttendanceOverview";
+import LeaveManagementOverview from "../pages/super-admin/LeaveManagementOverview";
+import PayrollOverview from "../pages/super-admin/PayrollOverview";
+import SuperAdminLayout from "../components/super-admin/SuperAdminLayout";
+
+const SuperAdminProtected = ({ children }: { children: React.ReactNode }) => (
+  <ProtectedRoute>
+    <RoleRoute allowedRoles={["SUPER_ADMIN"]}>{children}</RoleRoute>
+  </ProtectedRoute>
+);
 
 const AppRoutes: React.FC = () => {
   return (
@@ -29,18 +48,6 @@ const AppRoutes: React.FC = () => {
       {/* Auth Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
-
-      {/* Admin Routes */}
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute>
-            <RoleRoute allowedRoles={["HR_ADMIN", "SUPER_ADMIN"]}>
-              <AdminDashboard />
-            </RoleRoute>
-          </ProtectedRoute>
-        }
-      />
 
       {/* HR Routes */}
       <Route
@@ -138,13 +145,24 @@ const AppRoutes: React.FC = () => {
       <Route
         path="/superadmin"
         element={
-          <ProtectedRoute>
-            <RoleRoute allowedRoles={["SUPER_ADMIN"]}>
-              <SuperAdminDashboard />
-            </RoleRoute>
-          </ProtectedRoute>
+          <SuperAdminProtected>
+            <SuperAdminLayout />
+          </SuperAdminProtected>
         }
-      />
+      >
+        <Route index element={<SuperAdminDashboard />} />
+        <Route path="attendance-overview" element={<AttendanceOverview />} />
+        <Route path="leave-management-overview" element={<LeaveManagementOverview />} />
+        <Route path="payroll-overview" element={<PayrollOverview />} />
+        <Route path="new-user" element={<NewUser />} />
+        <Route path="user-roles" element={<UserRoleManagement />} />
+        <Route path="leave-types" element={<LeaveTypeManagement />} />
+        <Route path="departments" element={<DepartmentManagement />} />
+        <Route path="holidays" element={<HolidayManagement />} />
+        <Route path="audit-logs" element={<AuditLogs />} />
+        <Route path="system-config" element={<SystemConfig />} />
+        <Route path="system-health" element={<SystemHealth />} />
+      </Route>
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/login" replace />} />

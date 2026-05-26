@@ -11,15 +11,22 @@ import {
   MapPin,
   Lock,
   Globe2,
+  Building2,
 } from "lucide-react";
 
-type HolidayType = "Public" | "Restricted";
+type HolidayType =
+  | "Public"
+  | "Restricted"
+  | "Regional"
+  | "Company";
+
 type HolidayStatus = "Active" | "Inactive";
 
 type Holiday = {
   id: number;
   name: string;
-  date: string;
+  startDate: string;
+  endDate: string;
   type: HolidayType;
   region: string;
   status: HolidayStatus;
@@ -29,7 +36,8 @@ const initialHolidays: Holiday[] = [
   {
     id: 1,
     name: "Republic Day",
-    date: "2025-01-26",
+    startDate: "2025-01-26",
+    endDate: "2025-01-26",
     type: "Public",
     region: "India",
     status: "Active",
@@ -37,31 +45,35 @@ const initialHolidays: Holiday[] = [
   {
     id: 2,
     name: "Ugadi",
-    date: "2025-03-30",
-    type: "Restricted",
+    startDate: "2025-03-30",
+    endDate: "2025-03-30",
+    type: "Regional",
     region: "Telangana",
     status: "Active",
   },
   {
     id: 3,
-    name: "Independence Day",
-    date: "2025-08-15",
-    type: "Public",
-    region: "India",
+    name: "Company Annual Retreat",
+    startDate: "2025-12-20",
+    endDate: "2025-12-22",
+    type: "Company",
+    region: "Hyderabad",
     status: "Active",
   },
 ];
 
 type HolidayForm = {
   name: string;
-  date: string;
+  startDate: string;
+  endDate: string;
   type: HolidayType;
   region: string;
 };
 
 const emptyForm: HolidayForm = {
   name: "",
-  date: "",
+  startDate: "",
+  endDate: "",
   type: "Public",
   region: "",
 };
@@ -93,7 +105,9 @@ export default function Holiday() {
     (holiday) => holiday.type === "Restricted"
   ).length;
 
-  const regionsCount = new Set(holidays.map((holiday) => holiday.region)).size;
+  const regionsCount = new Set(
+    holidays.map((holiday) => holiday.region)
+  ).size;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -115,7 +129,8 @@ export default function Holiday() {
   const handleEdit = (holiday: Holiday) => {
     setFormData({
       name: holiday.name,
-      date: holiday.date,
+      startDate: holiday.startDate,
+      endDate: holiday.endDate,
       type: holiday.type,
       region: holiday.region,
     });
@@ -139,8 +154,13 @@ export default function Holiday() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.date || !formData.region) {
-      alert("Holiday name, date and region are required");
+    if (
+      !formData.name ||
+      !formData.startDate ||
+      !formData.endDate ||
+      !formData.region
+    ) {
+      alert("All fields are required");
       return;
     }
 
@@ -179,8 +199,7 @@ export default function Holiday() {
           </h1>
 
           <p className="mt-2 text-sm text-slate-300">
-            Add public holidays, optional restricted holidays, region-wise rules
-            and bulk import holiday data.
+            Add and manage public, restricted, regional and company holidays.
           </p>
         </div>
 
@@ -188,6 +207,7 @@ export default function Holiday() {
           <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-indigo-400/40 bg-indigo-500/10 px-5 py-3 text-sm font-semibold text-indigo-100 transition hover:bg-indigo-500/20">
             <Upload size={18} />
             Import CSV
+
             <input
               type="file"
               accept=".csv"
@@ -220,7 +240,7 @@ export default function Holiday() {
         />
 
         <StatCard
-          title="Restricted"
+          title="Restricted Holidays"
           value={restrictedHolidays}
           icon={<Lock size={22} />}
         />
@@ -233,7 +253,7 @@ export default function Holiday() {
       </div>
 
       {isFormOpen && (
-        <div className="mb-6 rounded-2xl bg-white p-6 shadow-2xl shadow-black/20">
+        <div className="mb-6 rounded-3xl bg-white p-6 shadow-2xl shadow-black/20">
           <div className="mb-6 flex items-center justify-between border-b border-slate-200 pb-5">
             <div className="flex items-center gap-4">
               <div className="rounded-xl bg-indigo-100 p-3 text-indigo-600">
@@ -241,8 +261,10 @@ export default function Holiday() {
               </div>
 
               <div>
-                <h2 className="text-xl font-semibold text-slate-900">
-                  {editingHolidayId ? "Edit Holiday" : "Create Holiday"}
+                <h2 className="text-2xl font-bold text-slate-900">
+                  {editingHolidayId
+                    ? "Update Holiday"
+                    : "Create Holiday"}
                 </h2>
 
                 <p className="text-sm text-slate-500">
@@ -269,14 +291,6 @@ export default function Holiday() {
                 onChange={handleChange}
               />
 
-              <FormInput
-                label="Holiday Date"
-                name="date"
-                type="date"
-                value={formData.date}
-                onChange={handleChange}
-              />
-
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
                   Holiday Type
@@ -289,9 +303,33 @@ export default function Holiday() {
                   className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100/60"
                 >
                   <option value="Public">Public Holiday</option>
-                  <option value="Restricted">Restricted Holiday</option>
+                  <option value="Restricted">
+                    Restricted Holiday
+                  </option>
+                  <option value="Regional">
+                    Regional Holiday
+                  </option>
+                  <option value="Company">
+                    Company Holiday
+                  </option>
                 </select>
               </div>
+
+              <FormInput
+                label="Start Date"
+                name="startDate"
+                type="date"
+                value={formData.startDate}
+                onChange={handleChange}
+              />
+
+              <FormInput
+                label="End Date"
+                name="endDate"
+                type="date"
+                value={formData.endDate}
+                onChange={handleChange}
+              />
 
               <FormInput
                 label="Region"
@@ -316,18 +354,21 @@ export default function Holiday() {
                 className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:from-indigo-700 hover:to-violet-700"
               >
                 <Save size={17} />
-                {editingHolidayId ? "Update Holiday" : "Create Holiday"}
+
+                {editingHolidayId
+                  ? "Update Holiday"
+                  : "Create Holiday"}
               </button>
             </div>
           </form>
         </div>
       )}
 
-      <div className="rounded-2xl bg-white p-6 shadow-2xl shadow-black/20">
+      <div className="rounded-3xl bg-white p-6 shadow-2xl shadow-black/20">
         <div className="mb-6 flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
             <div className="rounded-xl bg-indigo-100 p-3 text-indigo-600">
-              <CalendarDays size={22} />
+              <Building2 size={22} />
             </div>
 
             <div>
@@ -336,7 +377,7 @@ export default function Holiday() {
               </h2>
 
               <p className="text-sm text-slate-500">
-                View, edit and manage public or restricted holidays.
+                View and manage all holiday records.
               </p>
             </div>
           </div>
@@ -358,16 +399,33 @@ export default function Holiday() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[850px] border-collapse">
+          <table className="w-full min-w-[1000px] border-collapse">
             <thead>
               <tr className="bg-slate-100 text-left text-sm text-slate-700">
                 <th className="rounded-l-xl px-4 py-3 font-semibold">
                   Holiday
                 </th>
-                <th className="px-4 py-3 font-semibold">Date</th>
-                <th className="px-4 py-3 font-semibold">Type</th>
-                <th className="px-4 py-3 font-semibold">Region</th>
-                <th className="px-4 py-3 font-semibold">Status</th>
+
+                <th className="px-4 py-3 font-semibold">
+                  Start Date
+                </th>
+
+                <th className="px-4 py-3 font-semibold">
+                  End Date
+                </th>
+
+                <th className="px-4 py-3 font-semibold">
+                  Type
+                </th>
+
+                <th className="px-4 py-3 font-semibold">
+                  Region
+                </th>
+
+                <th className="px-4 py-3 font-semibold">
+                  Status
+                </th>
+
                 <th className="rounded-r-xl px-4 py-3 text-right font-semibold">
                   Actions
                 </th>
@@ -390,6 +448,7 @@ export default function Holiday() {
                         <p className="font-semibold text-slate-900">
                           {holiday.name}
                         </p>
+
                         <p className="text-xs text-slate-500">
                           ID: #{holiday.id}
                         </p>
@@ -398,7 +457,11 @@ export default function Holiday() {
                   </td>
 
                   <td className="px-4 py-4 text-slate-700">
-                    {holiday.date}
+                    {holiday.startDate}
+                  </td>
+
+                  <td className="px-4 py-4 text-slate-700">
+                    {holiday.endDate}
                   </td>
 
                   <td className="px-4 py-4 text-slate-700">
@@ -418,7 +481,6 @@ export default function Holiday() {
                       <button
                         onClick={() => handleEdit(holiday)}
                         className="rounded-lg bg-indigo-50 p-2 text-indigo-600 transition hover:bg-indigo-100"
-                        title="Edit Holiday"
                       >
                         <Edit size={16} />
                       </button>
@@ -426,7 +488,6 @@ export default function Holiday() {
                       <button
                         onClick={() => handleDelete(holiday.id)}
                         className="rounded-lg bg-red-50 p-2 text-red-600 transition hover:bg-red-100"
-                        title="Delete Holiday"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -438,7 +499,7 @@ export default function Holiday() {
               {filteredHolidays.length === 0 && (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className="px-4 py-10 text-center text-sm text-slate-500"
                   >
                     No holidays found.
@@ -464,8 +525,13 @@ function StatCard({ title, value, icon }: StatCardProps) {
     <div className="rounded-2xl bg-white p-5 shadow-xl shadow-black/20">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <h3 className="mt-2 text-3xl font-bold text-slate-900">{value}</h3>
+          <p className="text-sm font-medium text-slate-500">
+            {title}
+          </p>
+
+          <h3 className="mt-2 text-3xl font-bold text-slate-900">
+            {value}
+          </h3>
         </div>
 
         <div className="rounded-xl bg-indigo-100 p-3 text-indigo-600">
@@ -482,7 +548,9 @@ type FormInputProps = {
   value: string;
   type?: string;
   placeholder?: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => void;
 };
 
 function FormInput({

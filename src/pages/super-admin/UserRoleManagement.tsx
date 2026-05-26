@@ -285,7 +285,7 @@ export default function UserRoleManagement() {
 
             <button
               type="button"
-              onClick={() => navigate("/superadmin/users/new")}
+              onClick={() => navigate("/superadmin/new-user")}
               className="mt-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-700 hover:to-violet-700"
             >
               New User

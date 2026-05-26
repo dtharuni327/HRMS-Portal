@@ -1,8 +1,8 @@
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const roles = ["Super Admin", "HR Manager", "Manager", "Employee"];
-const departments = ["Human Resources", "Finance", "Engineering", "Operations"];
+const departments = ["Human Resources","Administration", "Finance", "Management", "Technology","Sales & Marketing", "Operations"];
 const statuses = ["Active", "Inactive"];
 
 export default function NewUser() {
@@ -85,7 +85,7 @@ export default function NewUser() {
     const emailMessage = `Your account has been created.\n\nID: ${userId}\nName: ${name}\nEmail: ${email}\nRole: ${role}\nDepartment: ${department}\nStatus: ${status}\nJoining Date: ${joiningDate}\nContact Number: ${contactNumber}\nOffice: ${office}\nLocation: ${location}`;
 
     alert(`New user created and email sent to ${email}:\n\n${emailMessage}`);
-    navigate("/superadmin/users");
+    navigate("/superadmin/user-roles");
   };
 
   return (
@@ -374,7 +374,7 @@ export default function NewUser() {
 
               <button
                 type="button"
-                onClick={() => navigate("/superadmin/users")}
+                onClick={() => navigate("/superadmin/user-roles")}
                 className="rounded-xl border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100"
               >
                 Back to Users
