@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
-import StatCard from "../../components/super-admin/StatCard";
-import adminImage from "../../images/image3.png";
+import StatCard from "../../../components/super-admin/StatCard";
+import QuickActionsSection from "../../../components/super-admin/QuickActionsSection";
+import adminImage from "../../../images/image.png";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -321,76 +322,12 @@ const [clientCount, setClientCount] = useState(0);
   />
 </div>
 
-        {/* QUICK ACTIONS */}
+        {/* PREMIUM QUICK ACTIONS */}
 
-        <div className="mt-10">
-          <h2 className="mb-5 text-2xl font-semibold">
-            Quick Actions
-          </h2>
+        <motion.div variants={itemVariants} className="mt-10">
+          <QuickActionsSection />
+        </motion.div>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-            <Link
-              to="/superadmin/new-user"
-              className="rounded-2xl border border-white/10 bg-white/5 p-6 transition hover:bg-cyan-500/10"
-            >
-              <h3 className="text-lg font-semibold text-cyan-400">
-                Create New User
-              </h3>
-
-              <p className="mt-2 text-sm text-slate-300">
-                Add HRs, managers, employees and clients.
-              </p>
-            </Link>
-
-            <Link
-              to="/superadmin/user-roles"
-              className="rounded-2xl border border-white/10 bg-white/5 p-6 transition hover:bg-cyan-500/10"
-            >
-              <h3 className="text-lg font-semibold text-cyan-400">
-                Manage Roles
-              </h3>
-
-              <p className="mt-2 text-sm text-slate-300">
-                Configure permissions and access levels.
-              </p>
-            </Link>
-
-            <Link
-              to="/superadmin/system-health"
-              className="rounded-2xl border border-white/10 bg-white/5 p-6 transition hover:bg-cyan-500/10"
-            >
-              <h3 className="text-lg font-semibold text-cyan-400">
-                Monitor System
-              </h3>
-
-              <p className="mt-2 text-sm text-slate-300">
-                View backend, database and API health.
-              </p>
-            </Link>
-          </div>
-        </div>
-
-        {/* RECENT ACTIVITY */}
-
-        <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-6">
-          <h2 className="mb-5 text-2xl font-semibold">
-            Recent Activity
-          </h2>
-
-          <div className="space-y-4 text-sm text-slate-300">
-            <div className="rounded-lg border border-white/10 bg-black/20 p-4">
-              New HR Manager account created.
-            </div>
-
-            <div className="rounded-lg border border-white/10 bg-black/20 p-4">
-              Payroll configuration updated.
-            </div>
-
-            <div className="rounded-lg border border-white/10 bg-black/20 p-4">
-              System backup completed successfully.
-            </div>
-          </div>
-        </div>
       </div>
     </motion.div>
   );

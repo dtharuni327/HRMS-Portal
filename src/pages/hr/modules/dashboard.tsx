@@ -1,6 +1,6 @@
 import { type Dispatch, type SetStateAction, type ChangeEvent, type FC } from 'react';
 import { Users, Check, CheckCircle2, Smile, Zap, Plus, X, XCircle, Megaphone, Star } from 'lucide-react';
-import hrImage from '../../../images/image3.png';
+import hrImage from '../../../images/image.png';
 import image14 from '../../../images/image14.png';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { SparkCard, StatCard, type Announcement, type Employee, type HRDetails, type Job, type LeaveData, type Policy, type RequestItem, type Training, type AttendanceStatus, type Payslip } from '../hrShared';

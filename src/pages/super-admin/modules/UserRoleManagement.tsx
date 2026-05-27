@@ -8,7 +8,7 @@ import {
   RotateCcw,
   Search,
 } from "lucide-react";
-import UserDetailsModal from "../../components/super-admin/UserDetailsModal";
+import UserDetailsModal from "../../../components/super-admin/UserDetailsModal";
 
 type UserStatus = "Active" | "Inactive";
 
@@ -177,16 +177,6 @@ export default function UserRoleManagement() {
       user.department.toLowerCase().includes(keyword)
     );
   });
-
-  const handleRoleChange = (id: string, role: string) => {
-    setUsers((prev) =>
-      prev.map((user) => (user.id === id ? { ...user, role } : user))
-    );
-
-    setSelectedUser((prev) =>
-      prev && prev.id === id ? { ...prev, role } : prev
-    );
-  };
 
   const toggleUserStatus = (id: string) => {
     setUsers((prev) =>
@@ -374,18 +364,8 @@ export default function UserRoleManagement() {
                     {user.department}
                   </td>
 
-                  <td className="px-4 py-4">
-                    <select
-                      value={user.role}
-                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                      className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-                    >
-                      {roles.map((role) => (
-                        <option key={role} value={role}>
-                          {role}
-                        </option>
-                      ))}
-                    </select>
+                  <td className="px-4 py-4 text-slate-700">
+                    {user.role}
                   </td>
 
                   <td className="px-4 py-4">

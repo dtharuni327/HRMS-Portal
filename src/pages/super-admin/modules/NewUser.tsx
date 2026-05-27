@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const roles = ["Super Admin", "HR Manager", "Manager", "Employee"];
 const departments = ["Human Resources","Administration", "Finance", "Management", "Technology","Sales & Marketing", "Operations"];
+const genders = ["Male", "Female", "Other"];
 const statuses = ["Active", "Inactive"];
 
 export default function NewUser() {
@@ -13,6 +14,7 @@ export default function NewUser() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState(roles[3]);
   const [department, setDepartment] = useState(departments[0]);
+  const [gender, setGender] = useState(genders[0]);
   const [salaryPackage, setSalaryPackage] = useState("");
   const [joiningDate, setJoiningDate] = useState("");
   const [contactNumber, setContactNumber] = useState("");
@@ -42,6 +44,7 @@ export default function NewUser() {
 
     if (!role) nextErrors.role = "Please choose a role.";
     if (!department) nextErrors.department = "Please choose a department.";
+    if (!gender) nextErrors.gender = "Please choose a gender.";
     if (!salaryPackage.trim()) nextErrors.salaryPackage = "Package is required.";
     if (!joiningDate.trim()) nextErrors.joiningDate = "Joining date is required.";
     if (!contactNumber.trim()) nextErrors.contactNumber = "Contact number is required.";
@@ -67,6 +70,7 @@ export default function NewUser() {
       status,
       salaryPackage,
       department,
+      gender,
       joiningDate,
       contactNumber,
       office,
@@ -82,7 +86,7 @@ export default function NewUser() {
       JSON.stringify([...existingUsers, newUser])
     );
 
-    const emailMessage = `Your account has been created.\n\nID: ${userId}\nName: ${name}\nEmail: ${email}\nRole: ${role}\nDepartment: ${department}\nStatus: ${status}\nJoining Date: ${joiningDate}\nContact Number: ${contactNumber}\nOffice: ${office}\nLocation: ${location}`;
+    const emailMessage = `Your account has been created.\n\nID: ${userId}\nName: ${name}\nEmail: ${email}\nPassword: ${password}\nRole: ${role}\nDepartment: ${department}\nGender: ${gender}\nStatus: ${status}\nJoining Date: ${joiningDate}\nContact Number: ${contactNumber}\nOffice: ${office}\nLocation: ${location}`;
 
     alert(`New user created and email sent to ${email}:\n\n${emailMessage}`);
     navigate("/superadmin/user-roles");
@@ -238,6 +242,30 @@ export default function NewUser() {
             <div className="grid gap-5 md:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  Gender *
+                </label>
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  className={`w-full rounded-xl border px-4 py-3 text-slate-700 outline-none transition ${
+                    errors.gender
+                      ? "border-red-400 bg-red-50"
+                      : "border-slate-300 bg-white"
+                  }`}
+                >
+                  {genders.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+                {errors.gender && (
+                  <p className="mt-2 text-xs text-red-600">{errors.gender}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-slate-700">
                   Package *
                 </label>
                 <input
@@ -255,7 +283,9 @@ export default function NewUser() {
                   <p className="mt-2 text-xs text-red-600">{errors.salaryPackage}</p>
                 )}
               </div>
+            </div>
 
+            <div className="grid gap-5 md:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-700">
                   Status *
@@ -409,6 +439,10 @@ export default function NewUser() {
             <div>
               <p className="text-slate-400">Department</p>
               <p className="mt-2 text-lg font-semibold text-white">{department}</p>
+            </div>
+            <div>
+              <p className="text-slate-400">Gender</p>
+              <p className="mt-2 text-lg font-semibold text-white">{gender}</p>
             </div>
             <div>
               <p className="text-slate-400">Package</p>

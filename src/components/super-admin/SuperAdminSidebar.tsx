@@ -31,6 +31,7 @@ const menuItems = [
   { label: "Departments", icon: Building, path: "/superadmin/departments" },
   { label: "Holidays", icon: CalendarDays, path: "/superadmin/holidays" },
   { label: "Leave Types", icon: CalendarDays, path: "/superadmin/leave-types" },
+  { label: "Projects", icon: FileText, path: "/superadmin/projects" },
   { label: "Audit Logs", icon: FileText, path: "/superadmin/audit-logs" },
   { label: "System Health", icon: Activity, path: "/superadmin/system-health" },
 ];

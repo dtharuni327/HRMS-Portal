@@ -13,7 +13,7 @@ import {
   Wifi,
   Activity,
 } from "lucide-react";
-import PageHeader from "../../components/super-admin/PageHeader";
+import PageHeader from "../../../components/super-admin/PageHeader";
 
 interface SystemMetric {
   id: string;

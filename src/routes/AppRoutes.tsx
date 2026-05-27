@@ -12,7 +12,7 @@ import HRDashboard from "../pages/hr/HRDashboard";
 import ManagerDashboard from "../pages/manager/ManagerDashboard";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import ClientDashboard from "../pages/client/ClientDashboard";
-import SuperAdminDashboard from "../pages/super-admin/SuperAdminDashboard";
+import SuperAdminDashboard from "../pages/super-admin/modules/SuperAdminDashboard";
 
 // HR / Manager / Employee / Client pages
 import EmployeeManagement from "../pages/hr/EmployeeManagement";
@@ -21,17 +21,18 @@ import MyAttendance from "../pages/employee/MyAttendance";
 import ProjectTracking from "../pages/client/ProjectTracking";
 
 // Super Admin pages
-import NewUser from "../pages/super-admin/NewUser";
-import UserRoleManagement from "../pages/super-admin/UserRoleManagement";
-import LeaveTypeManagement from "../pages/super-admin/LeaveTypeManagement";
-import DepartmentManagement from "../pages/super-admin/DepartmentManagement";
-import HolidayManagement from "../pages/super-admin/HolidayConfig";
-import AuditLogs from "../pages/super-admin/AuditLogs";
-import SystemConfig from "../pages/super-admin/SystemConfig";
-import SystemHealth from "../pages/super-admin/SystemHealth";
-import AttendanceOverview from "../pages/super-admin/AttendanceOverview";
-import LeaveManagementOverview from "../pages/super-admin/LeaveManagementOverview";
-import PayrollOverview from "../pages/super-admin/PayrollOverview";
+import NewUser from "../pages/super-admin/modules/NewUser";
+import UserRoleManagement from "../pages/super-admin/modules/UserRoleManagement";
+import LeaveTypeManagement from "../pages/super-admin/modules/LeaveTypeManagement";
+import DepartmentManagement from "../pages/super-admin/modules/DepartmentManagement";
+import HolidayManagement from "../pages/super-admin/modules/HolidayConfig";
+import AuditLogs from "../pages/super-admin/modules/AuditLogs";
+import SystemConfig from "../pages/super-admin/modules/SystemConfig";
+import SystemHealth from "../pages/super-admin/modules/SystemHealth";
+import AttendanceOverview from "../pages/super-admin/modules/AttendanceOverview";
+import LeaveManagementOverview from "../pages/super-admin/modules/LeaveManagementOverview";
+import PayrollOverview from "../pages/super-admin/modules/PayrollOverview";
+import ProjectOverview from "../pages/super-admin/modules/ProjectOverview";
 import SuperAdminLayout from "../components/super-admin/SuperAdminLayout";
 
 const SuperAdminProtected = ({ children }: { children: React.ReactNode }) => (
@@ -157,6 +158,7 @@ const AppRoutes: React.FC = () => {
         <Route path="new-user" element={<NewUser />} />
         <Route path="user-roles" element={<UserRoleManagement />} />
         <Route path="leave-types" element={<LeaveTypeManagement />} />
+        <Route path="projects" element={<ProjectOverview />} />
         <Route path="departments" element={<DepartmentManagement />} />
         <Route path="holidays" element={<HolidayManagement />} />
         <Route path="audit-logs" element={<AuditLogs />} />
