@@ -285,48 +285,60 @@ const [clientCount, setClientCount] = useState(0);
         {/* DYNAMIC STATS */}
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-  <StatCard
-    title="Employees"
-    value={employeeCount}
-    description="All user accounts"
-  />
+  <div className="rounded-3xl bg-[#DCD6F7] p-6 shadow-lg">
+    <StatCard
+      title="Employees"
+      value={employeeCount}
+      description="All user accounts"
+    />
+  </div>
 
-  <StatCard
-    title="Active Employees"
-    value={activeEmployeeCount}
-    description="Currently active employees"
-  />
+  <div className="rounded-3xl bg-[#D5EBDD] p-6 shadow-lg">
+    <StatCard
+      title="Active Employees"
+      value={activeEmployeeCount}
+      description="Currently active employees"
+    />
+  </div>
 
-  <StatCard
-    title="Departments"
-    value={departmentCount}
-    description="Active departments"
-  />
+  <div className="rounded-3xl bg-[#DCE7F7] p-6 shadow-lg">
+    <StatCard
+      title="Departments"
+      value={departmentCount}
+      description="Active departments"
+    />
+  </div>
 
-  <StatCard
-    title="Projects"
-    value={projectCount}
-    description="Total projects"
-  />
+  <div className="rounded-3xl bg-[#F2EBCB] p-6 shadow-lg">
+    <StatCard
+      title="Projects"
+      value={projectCount}
+      description="Total projects"
+    />
+  </div>
 
-  <StatCard
-    title="Clients"
-    value={clientCount}
-    description="Registered clients"
-  />
+  <div className="rounded-3xl bg-[#E8D7E3] p-6 shadow-lg">
+    <StatCard
+      title="Clients"
+      value={clientCount}
+      description="Registered clients"
+    />
+  </div>
 
-  <StatCard
-    title="Holidays"
-    value={holidayCount}
-    description="Configured holidays"
-  />
+  <div className="rounded-3xl bg-[#E7DDD2] p-6 shadow-lg">
+    <StatCard
+      title="Holidays"
+      value={holidayCount}
+      description="Configured holidays"
+    />
+  </div>
 </div>
 
-        {/* PREMIUM QUICK ACTIONS */}
+{/* PREMIUM QUICK ACTIONS */}
 
-        <motion.div variants={itemVariants} className="mt-10">
-          <QuickActionsSection />
-        </motion.div>
+<motion.div variants={itemVariants} className="mt-12">
+  <QuickActionsSection />
+</motion.div>
 
       </div>
     </motion.div>

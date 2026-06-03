@@ -108,7 +108,7 @@ const initialDepartments: Department[] = [
   },
   {
     id: 7,
-    name: "Sales & Marketing",
+    name: "Sales & Digital Marketing",
     code: "SM",
     manager: "Arjun Patel",
     role: "Sales Head",
@@ -547,7 +547,7 @@ export default function Department() {
                   <option value="Management">Human Resources</option>
                   <option value="Management">Management</option>
                   <option value="Management">Finance</option>
-                  <option value="Sales & Marketing">Sales & Marketing</option>
+                  <option value="Sales & Marketing">Sales & Digital Marketing</option>
                 </select>
               </div>
             </div>

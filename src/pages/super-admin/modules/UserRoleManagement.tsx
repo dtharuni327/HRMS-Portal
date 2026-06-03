@@ -224,14 +224,21 @@ export default function UserRoleManagement() {
     setSelectedUser(updatedUser);
   };
 
+  const cardColors = [
+    { bg: "#E8E3F8", icon: "#7C3AED" },     // Lavender
+    { bg: "#D8EFE0", icon: "#059669" },     // Mint
+    { bg: "#E8F0FF", icon: "#3B82F6" },     // Ice Blue
+    { bg: "#F5EDCF", icon: "#D97706" },     // Cream
+  ];
+
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">
+        <h1 className="text-[36px] font-black text-white">
           User & Role Management
         </h1>
 
-        <p className="mt-2 text-sm text-slate-300">
+        <p className="mt-2 text-sm text-slate-400">
           Manage users, assign roles, activate or deactivate accounts, reset
           passwords and invite new users.
         </p>
@@ -242,32 +249,41 @@ export default function UserRoleManagement() {
           title="Total Users"
           value={users.length}
           icon={<Users size={22} />}
+          bgColor={cardColors[0].bg}
+          iconColor={cardColors[0].icon}
         />
 
         <SummaryCard
           title="Active Users"
           value={users.filter((user) => user.status === "Active").length}
           icon={<Shield size={22} />}
+          bgColor={cardColors[1].bg}
+          iconColor={cardColors[1].icon}
         />
 
         <SummaryCard
           title="Roles"
           value={roles.length}
           icon={<Edit size={22} />}
+          bgColor={cardColors[2].bg}
+          iconColor={cardColors[2].icon}
         />
 
-        <div className="rounded-2xl bg-white p-5 shadow-xl shadow-black/20">
-          <div className="flex h-full flex-col justify-between gap-4">
+        <div
+          style={{ backgroundColor: "#EBE7FB" }}
+          className="rounded-[28px] border border-black/5 p-6 shadow-sm"
+        >
+          <div className="flex h-full flex-col justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-semibold text-slate-600">
                 Add New User
               </p>
 
-              <h3 className="mt-3 text-2xl font-bold text-slate-900">
+              <h3 className="mt-3 text-xl font-black text-slate-900">
                 Invite or create user
               </h3>
 
-              <p className="mt-4 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-slate-600">
                 Open the new user form to add a name, email, role and
                 department.
               </p>
@@ -276,7 +292,7 @@ export default function UserRoleManagement() {
             <button
               type="button"
               onClick={() => navigate("/superadmin/new-user")}
-              className="mt-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 hover:from-indigo-700 hover:to-violet-700"
+              className="mt-5 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
             >
               New User
             </button>
@@ -288,18 +304,21 @@ export default function UserRoleManagement() {
         open={Boolean(selectedUser)}
         user={selectedUser}
         onClose={() => setSelectedUser(null)}
-        onSave={handleUpdateUser}
+        onSave={(updatedUser) => handleUpdateUser(updatedUser as User)}
       />
 
-      <div className="mt-6 rounded-2xl bg-white p-6 shadow-2xl shadow-black/20">
-        <div className="mb-6 flex flex-col gap-4 border-b border-slate-200 pb-5 md:flex-row md:items-center md:justify-between">
+      <div className="mt-10 rounded-[30px] bg-[#FCFCFD] p-8 shadow-[0_4px_12px_rgba(15,23,42,0.05)]">
+        <div className="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
-            <div className="rounded-xl bg-indigo-100 p-3 text-indigo-600">
-              <Users size={22} />
+            <div
+              style={{ backgroundColor: "#E8F0FF" }}
+              className="rounded-2xl p-3"
+            >
+              <Users size={22} style={{ color: "#3B82F6" }} />
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-slate-900">
+              <h2 className="text-2xl font-black text-slate-900">
                 All User Accounts
               </h2>
 
@@ -320,7 +339,7 @@ export default function UserRoleManagement() {
               placeholder="Search users..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-slate-300 py-3 pl-11 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100/60"
+              className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-300"
             />
           </div>
         </div>
@@ -328,24 +347,28 @@ export default function UserRoleManagement() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[850px] border-collapse">
             <thead>
-              <tr className="bg-slate-100 text-left text-sm text-slate-700">
-                <th className="rounded-l-xl px-4 py-3 font-semibold">User</th>
-                <th className="px-4 py-3 font-semibold">Email</th>
-                <th className="px-4 py-3 font-semibold">Department</th>
-                <th className="px-4 py-3 font-semibold">Role</th>
-                <th className="px-4 py-3 font-semibold">Status</th>
-                <th className="rounded-r-xl px-4 py-3 text-right font-semibold">
-                  Actions
-                </th>
+              <tr className="border-b border-slate-200 text-left text-xs font-bold uppercase text-slate-500">
+                <th className="px-4 py-3">User</th>
+                <th className="px-4 py-3">Email</th>
+                <th className="px-4 py-3">Department</th>
+                <th className="px-4 py-3">Role</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
 
             <tbody>
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="border-b border-slate-100 text-sm">
+                <tr
+                  key={user.id}
+                  className="border-b border-slate-100 text-sm transition-colors hover:bg-slate-50/50"
+                >
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 font-semibold text-indigo-600">
+                      <div
+                        style={{ backgroundColor: "#E8E3F8", color: "#7C3AED" }}
+                        className="flex h-10 w-10 items-center justify-center rounded-full font-semibold"
+                      >
                         {user.name.charAt(0)}
                       </div>
 
@@ -372,8 +395,8 @@ export default function UserRoleManagement() {
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-semibold ${
                         user.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
+                          ? "bg-[#D8EFE0] text-[#059669]"
+                          : "bg-[#F3E3ED] text-[#BE185D]"
                       }`}
                     >
                       {user.status}
@@ -385,7 +408,7 @@ export default function UserRoleManagement() {
                       <button
                         type="button"
                         onClick={() => setSelectedUser(user)}
-                        className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
+                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                       >
                         Details
                       </button>
@@ -393,7 +416,7 @@ export default function UserRoleManagement() {
                       <button
                         type="button"
                         onClick={() => toggleUserStatus(user.id)}
-                        className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
+                        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
                       >
                         {user.status === "Active" ? "Deactivate" : "Activate"}
                       </button>
@@ -401,7 +424,8 @@ export default function UserRoleManagement() {
                       <button
                         type="button"
                         onClick={() => handleResetPassword(user.email)}
-                        className="rounded-lg bg-indigo-50 p-2 text-indigo-600 hover:bg-indigo-100"
+                        style={{ backgroundColor: "#E8F0FF", color: "#3B82F6" }}
+                        className="rounded-lg p-2 transition hover:opacity-80"
                         title="Reset Password"
                       >
                         <RotateCcw size={16} />
@@ -410,7 +434,8 @@ export default function UserRoleManagement() {
                       <button
                         type="button"
                         onClick={() => handleDeleteUser(user.id)}
-                        className="rounded-lg bg-red-50 p-2 text-red-600 hover:bg-red-100"
+                        style={{ backgroundColor: "#F3E3ED", color: "#BE185D" }}
+                        className="rounded-lg p-2 transition hover:opacity-80"
                         title="Delete User"
                       >
                         <Trash2 size={16} />
@@ -442,18 +467,34 @@ type SummaryCardProps = {
   title: string;
   value: number;
   icon: ReactNode;
+  bgColor: string;
+  iconColor: string;
 };
 
-function SummaryCard({ title, value, icon }: SummaryCardProps) {
+function SummaryCard({
+  title,
+  value,
+  icon,
+  bgColor,
+  iconColor,
+}: SummaryCardProps) {
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-xl shadow-black/20">
+    <div
+      style={{ backgroundColor: bgColor }}
+      className="rounded-[28px] border border-black/5 p-6 shadow-sm"
+    >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <h3 className="mt-2 text-3xl font-bold text-slate-900">{value}</h3>
+          <p className="text-sm font-semibold text-slate-600">{title}</p>
+          <h3 className="mt-3 text-4xl font-black text-slate-900">
+            {value}
+          </h3>
         </div>
 
-        <div className="rounded-xl bg-indigo-100 p-3 text-indigo-600">
+        <div
+          style={{ backgroundColor: bgColor, color: iconColor }}
+          className="rounded-2xl p-3"
+        >
           {icon}
         </div>
       </div>

@@ -8,6 +8,7 @@ import {
   Building2,
   BarChart3,
 } from "lucide-react";
+import { cardPalette, getPaletteFor } from "../../../utils/colorPalette";
 
 interface PayrollRecord {
   id: number;
@@ -221,34 +222,39 @@ const PayrollOverview: React.FC = () => {
     return matchesSearch && matchesStatus;
   });
 
+
+
   const StatCard = ({
     icon: Icon,
     label,
     value,
     subtext,
-    bgColor,
+    paletteIndex = 0,
   }: {
     icon: React.ElementType;
     label: string;
     value: string | number;
     subtext?: string;
-    bgColor: string;
-  }) => (
-    <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white/70">{label}</h3>
-        <div className={`rounded-lg p-2.5 ${bgColor}`}>
-          <Icon className="h-5 w-5" />
+    paletteIndex?: number;
+  }) => {
+    const pal = cardPalette[paletteIndex % cardPalette.length];
+    return (
+      <div className="rounded-[20px] border border-white/10 p-6" style={{ backgroundColor: pal.bg }}>
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-sm font-semibold" style={{ color: pal.text }}>{label}</h3>
+          <div className="rounded-lg p-2.5" style={{ backgroundColor: pal.text, color: pal.bg }}>
+            <Icon className="h-5 w-5" />
+          </div>
+        </div>
+        <div>
+          <p className="text-3xl font-bold" style={{ color: pal.text }}>
+            {typeof value === "number" ? `₹${(value / 100000).toFixed(1)}L` : value}
+          </p>
+          {subtext && <p className="mt-1 text-xs" style={{ color: pal.text, opacity: 0.75 }}>{subtext}</p>}
         </div>
       </div>
-      <div>
-        <p className="text-3xl font-bold text-white">
-          {typeof value === "number" ? `₹${(value / 100000).toFixed(1)}L` : value}
-        </p>
-        {subtext && <p className="mt-1 text-xs text-white/60">{subtext}</p>}
-      </div>
-    </div>
-  );
+    );
+  };
 
   const totalAllowances = deductionsAndAllowances
     .filter((d) => d.type === "allowance")
@@ -275,33 +281,33 @@ const PayrollOverview: React.FC = () => {
           label="Total Monthly Payroll"
           value={monthlyPayrollSummary.totalPayroll}
           subtext={`${monthlyPayrollSummary.totalEmployees} employees`}
-          bgColor="bg-green-500/20 text-green-300"
+          paletteIndex={0}
         />
         <StatCard
           icon={CheckCircle}
           label="Salary Processed"
           value={monthlyPayrollSummary.salaryProcessed}
           subtext={`${monthlyPayrollSummary.processedCount} employees`}
-          bgColor="bg-blue-500/20 text-blue-300"
+          paletteIndex={1}
         />
         <StatCard
           icon={Clock}
           label="Salary Pending"
           value={monthlyPayrollSummary.salaryPending}
           subtext={`${monthlyPayrollSummary.pendingCount} employees`}
-          bgColor="bg-yellow-500/20 text-yellow-300"
+          paletteIndex={2}
         />
         <StatCard
           icon={TrendingUp}
           label="Processing Status"
           value={`${Math.round((monthlyPayrollSummary.processedCount / monthlyPayrollSummary.totalEmployees) * 100)}%`}
           subtext="of payroll completed"
-          bgColor="bg-purple-500/20 text-purple-300"
+          paletteIndex={3}
         />
       </div>
 
       {/* Payroll Processing Records */}
-      <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
+      <div className="rounded-[20px] border border-white/10 bg-white/5 p-6">
         <div className="mb-6 space-y-4">
           <div>
             <h2 className="text-xl font-bold text-white">Payroll Processing Records</h2>
@@ -355,10 +361,10 @@ const PayrollOverview: React.FC = () => {
                 <th className="px-4 py-3 text-right text-xs font-semibold uppercase text-white/60">
                   Basic Salary
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold uppercase text-white/60">
+                <th className="px-4 py-3 text-right text-xs font-bold uppercase text-white">
                   Allowances
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold uppercase text-white/60">
+                <th className="px-4 py-3 text-right text-xs font-bold uppercase text-white">
                   Deductions
                 </th>
                 <th className="px-4 py-3 text-right text-xs font-semibold uppercase text-white/60">
@@ -375,30 +381,32 @@ const PayrollOverview: React.FC = () => {
                   key={rec.id}
                   className="border-b border-white/5 transition hover:bg-white/5"
                 >
-                  <td className="px-4 py-4 font-medium text-white">{rec.employeeName}</td>
-                  <td className="px-4 py-4 text-white/80">{rec.department}</td>
-                  <td className="px-4 py-4 text-right text-white/80">
+                  <td className="px-4 py-4 font-bold text-white">{rec.employeeName}</td>
+                  <td className="px-4 py-4 font-semibold text-white">{rec.department}</td>
+                  <td className="px-4 py-4 text-right font-semibold text-white">
                     ₹{rec.basicSalary.toLocaleString()}
                   </td>
                   <td className="px-4 py-4 text-right">
-                    <span className="text-green-300">+₹{rec.allowances.toLocaleString()}</span>
+                    <span style={{ color: '#22c55e', fontWeight: 'bold' }}>+₹{rec.allowances.toLocaleString()}</span>
                   </td>
                   <td className="px-4 py-4 text-right">
-                    <span className="text-red-300">-₹{rec.deductions.toLocaleString()}</span>
+                    <span style={{ color: '#f87171', fontWeight: 'bold' }}>-₹{rec.deductions.toLocaleString()}</span>
                   </td>
                   <td className="px-4 py-4 text-right font-semibold text-white">
                     ₹{rec.netSalary.toLocaleString()}
                   </td>
                   <td className="px-4 py-4 text-center">
-                    <span
-                      className={`rounded-lg px-3 py-1 text-xs font-semibold ${
-                        rec.status === "processed"
-                          ? "bg-green-500/20 text-green-300"
-                          : "bg-yellow-500/20 text-yellow-300"
-                      }`}
-                    >
-                      {rec.status.charAt(0).toUpperCase() + rec.status.slice(1)}
-                    </span>
+                    {(() => {
+                      const pal = rec.status === "processed" ? cardPalette[1] : cardPalette[2];
+                      return (
+                        <span
+                          className="rounded-lg px-3 py-1 text-xs font-semibold"
+                          style={{ backgroundColor: pal.bg, color: pal.text }}
+                        >
+                          {rec.status.charAt(0).toUpperCase() + rec.status.slice(1)}
+                        </span>
+                      );
+                    })()}
                   </td>
                 </tr>
               ))}
@@ -408,7 +416,7 @@ const PayrollOverview: React.FC = () => {
       </div>
 
       {/* Department-wise Payroll Cost */}
-      <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
+      <div className="rounded-[20px] border border-white/10 bg-white/5 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-bold text-white">Department-wise Payroll Cost</h2>
           <p className="mt-1 text-sm text-white/60">
@@ -424,7 +432,7 @@ const PayrollOverview: React.FC = () => {
             >
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Building2 className="h-5 w-5 text-blue-300" />
+                  <Building2 className="h-5 w-5" style={{ color: getPaletteFor(dept.department + 'icon').text }} />
                   <h3 className="font-semibold text-white">{dept.department}</h3>
                 </div>
                 <span className="text-sm font-bold text-white">
@@ -433,37 +441,49 @@ const PayrollOverview: React.FC = () => {
               </div>
 
               <div className="mb-3 grid grid-cols-5 gap-2 text-xs">
-                <div className="rounded-lg bg-blue-500/10 p-2 text-center">
-                  <p className="text-white/60">Employees</p>
-                  <p className="text-lg font-bold text-white">{dept.employees}</p>
-                </div>
-                <div className="rounded-lg bg-green-500/10 p-2 text-center">
-                  <p className="text-white/60">Avg Salary</p>
-                  <p className="text-sm font-bold text-green-300">
-                    ₹{(dept.averageSalary / 1000).toFixed(0)}K
-                  </p>
-                </div>
-                <div className="rounded-lg bg-green-500/10 p-2 text-center">
-                  <p className="text-white/60">Processed</p>
-                  <p className="text-lg font-bold text-green-300">{dept.processed}</p>
-                </div>
-                <div className="rounded-lg bg-yellow-500/10 p-2 text-center">
-                  <p className="text-white/60">Pending</p>
-                  <p className="text-lg font-bold text-yellow-300">{dept.pending}</p>
-                </div>
-                <div className="rounded-lg bg-blue-500/10 p-2 text-center">
-                  <p className="text-white/60">% of Total</p>
-                  <p className="text-sm font-bold text-blue-300">
-                    {((dept.totalCost / monthlyPayrollSummary.totalPayroll) * 100).toFixed(1)}%
-                  </p>
-                </div>
+                {(() => {
+                  const palTotal = getPaletteFor(dept.department + "employees");
+                  const palAvg = getPaletteFor(dept.department + "avg");
+                  const palProcessed = getPaletteFor(dept.department + "processed");
+                  const palPending = getPaletteFor(dept.department + "pending");
+                  const palPercent = getPaletteFor(dept.department + "percent");
+                  return (
+                    <>
+                      <div className="rounded-lg p-2 text-center" style={{ backgroundColor: palTotal.bg }}>
+                        <p className="mb-1 text-sm font-semibold" style={{ color: palTotal.text, opacity: 0.95 }}>Employees</p>
+                        <p className="text-lg font-bold" style={{ color: palTotal.text }}>{dept.employees}</p>
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ backgroundColor: palAvg.bg }}>
+                        <p className="mb-1 text-sm font-semibold" style={{ color: palAvg.text, opacity: 0.95 }}>Avg Salary</p>
+                        <p className="text-sm font-bold" style={{ color: palAvg.text }}>
+                          ₹{(dept.averageSalary / 1000).toFixed(0)}K
+                        </p>
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ backgroundColor: palProcessed.bg }}>
+                        <p className="mb-1 text-sm font-semibold" style={{ color: palProcessed.text, opacity: 0.95 }}>Processed</p>
+                        <p className="text-lg font-bold" style={{ color: palProcessed.text }}>{dept.processed}</p>
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ backgroundColor: palPending.bg }}>
+                        <p className="mb-1 text-sm font-semibold" style={{ color: palPending.text, opacity: 0.95 }}>Pending</p>
+                        <p className="text-lg font-bold" style={{ color: palPending.text }}>{dept.pending}</p>
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ backgroundColor: palPercent.bg }}>
+                        <p className="mb-1 text-sm font-semibold" style={{ color: palPercent.text, opacity: 0.95 }}>% of Total</p>
+                        <p className="text-sm font-bold" style={{ color: palPercent.text }}>
+                          {((dept.totalCost / monthlyPayrollSummary.totalPayroll) * 100).toFixed(1)}%
+                        </p>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
 
               <div className="h-2 overflow-hidden rounded-full bg-white/10">
                 <div
-                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-400"
+                  className="h-full"
                   style={{
                     width: `${(dept.totalCost / monthlyPayrollSummary.totalPayroll) * 100}%`,
+                    backgroundColor: '#06b6d4',
                   }}
                 />
               </div>
@@ -473,7 +493,7 @@ const PayrollOverview: React.FC = () => {
       </div>
 
       {/* Deductions and Allowances Summary */}
-      <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
+      <div className="rounded-[20px] border border-white/10 bg-white/5 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-bold text-white">Deductions & Allowances Summary</h2>
           <p className="mt-1 text-sm text-white/60">
@@ -484,10 +504,11 @@ const PayrollOverview: React.FC = () => {
         <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* Allowances */}
           <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+            {(() => { const pal = getPaletteFor('allowances'); return (
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="font-semibold text-green-300">Total Allowances</h3>
-              <BarChart3 className="h-5 w-5 text-green-300" />
-            </div>
+              <h3 className="text-lg font-bold text-white">Total Allowances</h3>
+              <BarChart3 className="h-5 w-5" style={{ color: pal.text }} />
+            </div>); })()}
             <p className="mb-4 text-2xl font-bold text-white">
               ₹{(totalAllowances / 100000).toFixed(1)}L
             </p>
@@ -498,13 +519,13 @@ const PayrollOverview: React.FC = () => {
                   <div key={idx} className="flex items-center justify-between">
                     <div className="flex-1">
                       <p className="text-sm font-medium text-white">{item.name}</p>
-                      <p className="text-xs text-white/60">{item.count} employees</p>
+                      <p className="text-xs text-white/70">{item.count} employees</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-semibold text-green-300">
+                      <p className="text-sm font-bold text-white">
                         ₹{(item.totalAmount / 100000).toFixed(1)}L
                       </p>
-                      <p className="text-xs text-white/60">{item.percentage}%</p>
+                      <p className="text-xs font-semibold text-white/80">{item.percentage}%</p>
                     </div>
                   </div>
                 ))}
@@ -513,10 +534,11 @@ const PayrollOverview: React.FC = () => {
 
           {/* Deductions */}
           <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+            {(() => { const pal = getPaletteFor('deductions'); return (
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="font-semibold text-red-300">Total Deductions</h3>
-              <BarChart3 className="h-5 w-5 text-red-300" />
-            </div>
+              <h3 className="text-lg font-bold text-white">Total Deductions</h3>
+              <BarChart3 className="h-5 w-5" style={{ color: pal.text }} />
+            </div>); })()}
             <p className="mb-4 text-2xl font-bold text-white">
               ₹{(totalDeductions / 100000).toFixed(1)}L
             </p>
@@ -527,13 +549,13 @@ const PayrollOverview: React.FC = () => {
                   <div key={idx} className="flex items-center justify-between">
                     <div className="flex-1">
                       <p className="text-sm font-medium text-white">{item.name}</p>
-                      <p className="text-xs text-white/60">{item.count} employees</p>
+                      <p className="text-xs text-white/70">{item.count} employees</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-semibold text-red-300">
+                      <p className="text-sm font-bold text-white">
                         ₹{(item.totalAmount / 100000).toFixed(1)}L
                       </p>
-                      <p className="text-xs text-white/60">{item.percentage}%</p>
+                      <p className="text-xs font-semibold text-white/80">{item.percentage}%</p>
                     </div>
                   </div>
                 ))}
@@ -544,24 +566,33 @@ const PayrollOverview: React.FC = () => {
         {/* Summary Footer */}
         <div className="border-t border-white/10 pt-4">
           <div className="grid grid-cols-3 gap-4">
-            <div className="rounded-lg bg-green-500/10 p-3 text-center">
-              <p className="text-xs text-white/60">Total Allowances</p>
-              <p className="mt-1 text-lg font-bold text-green-300">
-                ₹{(totalAllowances / 100000).toFixed(1)}L
-              </p>
-            </div>
-            <div className="rounded-lg bg-red-500/10 p-3 text-center">
-              <p className="text-xs text-white/60">Total Deductions</p>
-              <p className="mt-1 text-lg font-bold text-red-300">
-                ₹{(totalDeductions / 100000).toFixed(1)}L
-              </p>
-            </div>
-            <div className="rounded-lg bg-blue-500/10 p-3 text-center">
-              <p className="text-xs text-white/60">Net Impact</p>
-              <p className="mt-1 text-lg font-bold text-blue-300">
-                ₹{((totalAllowances - totalDeductions) / 100000).toFixed(1)}L
-              </p>
-            </div>
+            {(() => {
+              const palA = getPaletteFor('summaryAllowance');
+              const palD = getPaletteFor('summaryDeduction');
+              const palN = getPaletteFor('summaryNet');
+              return (
+                <>
+                  <div className="rounded-lg p-3 text-center" style={{ backgroundColor: palA.bg }}>
+                    <p className="text-sm font-semibold" style={{ color: palA.text, opacity: 0.95 }}>Total Allowances</p>
+                    <p className="mt-1 text-lg font-bold" style={{ color: palA.text }}>
+                      ₹{(totalAllowances / 100000).toFixed(1)}L
+                    </p>
+                  </div>
+                  <div className="rounded-lg p-3 text-center" style={{ backgroundColor: palD.bg }}>
+                    <p className="text-sm font-semibold" style={{ color: palD.text, opacity: 0.95 }}>Total Deductions</p>
+                    <p className="mt-1 text-lg font-bold" style={{ color: palD.text }}>
+                      ₹{(totalDeductions / 100000).toFixed(1)}L
+                    </p>
+                  </div>
+                  <div className="rounded-lg p-3 text-center" style={{ backgroundColor: palN.bg }}>
+                    <p className="text-sm font-semibold" style={{ color: palN.text, opacity: 0.95 }}>Net Impact</p>
+                    <p className="mt-1 text-lg font-bold" style={{ color: palN.text }}>
+                      ₹{((totalAllowances - totalDeductions) / 100000).toFixed(1)}L
+                    </p>
+                  </div>
+                </>
+              );
+            })()}
           </div>
         </div>
       </div>

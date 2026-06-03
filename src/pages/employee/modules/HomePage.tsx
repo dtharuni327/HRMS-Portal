@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import employeeImage from "../../../images/image3.png";
+import SystemConfigCard from "../../../components/employee/SystemConfigCard";
 import {
   BadgeCheck,
   Cake,
@@ -947,6 +948,11 @@ const HomePage: React.FC<HomePageProps> = ({
           </motion.div>
         </div>
       </section>
+
+      {/* Row 4 - System Configuration */}
+      <motion.div variants={itemVariants}>
+        <SystemConfigCard />
+      </motion.div>
 
       {/* Employee Summary Cards */}
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">

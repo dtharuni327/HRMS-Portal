@@ -22,6 +22,7 @@ interface QuickAction {
   description: string;
   buttonLabel: string;
   route: string;
+  color: string;
 }
 
 const QuickActionsSection: React.FC = () => {
@@ -33,6 +34,7 @@ const QuickActionsSection: React.FC = () => {
       description: "Manage user roles and permissions",
       buttonLabel: "Open Module",
       route: "/superadmin/user-roles",
+      color: "#ede9fe",
     },
     {
       id: "new-user",
@@ -41,6 +43,7 @@ const QuickActionsSection: React.FC = () => {
       description: "Add employees, HRs and managers",
       buttonLabel: "Create User",
       route: "/superadmin/new-user",
+      color: "#d1fae5",
     },
     {
       id: "departments",
@@ -49,6 +52,7 @@ const QuickActionsSection: React.FC = () => {
       description: "Manage organization departments",
       buttonLabel: "View Departments",
       route: "/superadmin/departments",
+      color: "#dbeafe",
     },
     {
       id: "holidays",
@@ -57,6 +61,7 @@ const QuickActionsSection: React.FC = () => {
       description: "Configure company holidays",
       buttonLabel: "Manage Holidays",
       route: "/superadmin/holidays",
+      color: "#fef3c7",
     },
     {
       id: "leave-types",
@@ -65,6 +70,7 @@ const QuickActionsSection: React.FC = () => {
       description: "Configure employee leave policies",
       buttonLabel: "Open Leave Types",
       route: "/superadmin/leave-types",
+      color: "#fce7f3",
     },
     {
       id: "leave-management",
@@ -73,6 +79,7 @@ const QuickActionsSection: React.FC = () => {
       description: "Approve and manage leave requests",
       buttonLabel: "Open Leave Management",
       route: "/superadmin/leave-management-overview",
+      color: "#f5ebe0",
     },
     {
       id: "attendance",
@@ -81,6 +88,7 @@ const QuickActionsSection: React.FC = () => {
       description: "Monitor employee attendance",
       buttonLabel: "View Attendance",
       route: "/superadmin/attendance-overview",
+      color: "#ede9fe",
     },
     {
       id: "payroll",
@@ -89,6 +97,7 @@ const QuickActionsSection: React.FC = () => {
       description: "Manage payroll and salaries",
       buttonLabel: "Open Payroll",
       route: "/superadmin/payroll-overview",
+      color: "#d1fae5",
     },
     {
       id: "projects",
@@ -97,6 +106,7 @@ const QuickActionsSection: React.FC = () => {
       description: "Track ongoing company projects",
       buttonLabel: "Open Projects",
       route: "/superadmin/projects",
+      color: "#dbeafe",
     },
     {
       id: "audit-logs",
@@ -105,6 +115,7 @@ const QuickActionsSection: React.FC = () => {
       description: "View activity and security logs",
       buttonLabel: "View Logs",
       route: "/superadmin/audit-logs",
+      color: "#fef3c7",
     },
     {
       id: "system-health",
@@ -113,6 +124,7 @@ const QuickActionsSection: React.FC = () => {
       description: "Monitor server and database health",
       buttonLabel: "Open Monitor",
       route: "/superadmin/system-health",
+      color: "#fce7f3",
     },
     {
       id: "system-config",
@@ -121,6 +133,7 @@ const QuickActionsSection: React.FC = () => {
       description: "Configure HRMS system settings",
       buttonLabel: "Open Settings",
       route: "/superadmin/system-config",
+      color: "#f5ebe0",
     },
   ];
 
@@ -129,7 +142,7 @@ const QuickActionsSection: React.FC = () => {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.02,
+        staggerChildren: 0.04,
       },
     },
   };
@@ -139,24 +152,25 @@ const QuickActionsSection: React.FC = () => {
       variants={containerVariants}
       initial="hidden"
       animate="show"
-      className="space-y-6"
+      className="space-y-8"
     >
-      {/* Section Header */}
-      <div className="relative">
-        <div className="absolute -left-6 top-0 h-12 w-1 rounded-r-full bg-gradient-to-b from-cyan-500 to-cyan-500/0" />
+      {/* HEADER */}
 
-        <div>
-          <h2 className="text-3xl font-bold text-white">Premium Quick Actions</h2>
-          <p className="mt-2 text-sm text-slate-400">
-            Fast access to all admin modules and configurations
-          </p>
-        </div>
+      <div>
+        <h2 className="text-3xl font-black text-white">
+          Premium Quick Actions
+        </h2>
+
+        <p className="mt-2 text-sm text-slate-400">
+          Fast access to all admin modules and configurations
+        </p>
       </div>
 
-      {/* Cards Grid */}
+      {/* CARDS */}
+
       <motion.div
         variants={containerVariants}
-        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
+        className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3"
       >
         {quickActions.map((action, index) => (
           <QuickActionCard
@@ -167,14 +181,10 @@ const QuickActionsSection: React.FC = () => {
             buttonLabel={action.buttonLabel}
             route={action.route}
             index={index}
+            color={action.color}
           />
         ))}
       </motion.div>
-
-      {/* Decorative bottom accent */}
-      <div className="pointer-events-none flex justify-end pt-4">
-        <div className="h-20 w-40 rounded-full bg-gradient-to-r from-cyan-500/10 to-purple-500/10 blur-3xl" />
-      </div>
     </motion.div>
   );
 };

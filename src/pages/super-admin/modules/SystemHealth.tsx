@@ -35,6 +35,18 @@ interface Alert {
 const SystemHealth: React.FC = () => {
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
 
+  // Pastel accent colors and card text for contrast on pastel fills
+  const accentColors = [
+    "#E6E6FA", // lavender
+    "#D4F1DC", // mint
+    "#FFF5D6", // cream
+    "#DCEEFB", // ice blue
+    "#FADADD", // soft pink
+    "#F5E0C3", // warm beige
+    "#E9D5FF", // soft violet
+  ];
+  const cardText = "#071827";
+
   // System metrics data
   const metrics: SystemMetric[] = [
     {
@@ -154,6 +166,7 @@ const SystemHealth: React.FC = () => {
   );
 
   const getStatusColor = (status: string) => {
+    // kept for compatibility; returns a neutral class when needed
     switch (status) {
       case "healthy":
         return "bg-green-500/20 text-green-300 border-green-500/30";
@@ -163,6 +176,19 @@ const SystemHealth: React.FC = () => {
         return "bg-red-500/20 text-red-300 border-red-500/30";
       default:
         return "bg-gray-500/20 text-gray-300 border-gray-500/30";
+    }
+  };
+
+  const getStatusAccentColor = (status: string) => {
+    switch (status) {
+      case "healthy":
+        return accentColors[1]; // mint
+      case "warning":
+        return accentColors[5]; // warm beige
+      case "critical":
+        return accentColors[4]; // soft pink
+      default:
+        return accentColors[3]; // ice blue
     }
   };
 
@@ -224,6 +250,17 @@ const SystemHealth: React.FC = () => {
     }
   };
 
+  const getAlertAccentColor = (level: string) => {
+    switch (level) {
+      case "critical":
+        return accentColors[4]; // soft pink
+      case "warning":
+        return accentColors[5]; // warm beige
+      default:
+        return accentColors[3]; // ice blue
+    }
+  };
+
   const StatCard = ({
     icon: Icon,
     label,
@@ -239,16 +276,16 @@ const SystemHealth: React.FC = () => {
     status: string;
     bgColor: string;
   }) => (
-    <div className={`rounded-[20px] border ${getStatusColor(status)} bg-gradient-to-br from-white/5 to-transparent p-6 cursor-pointer transition hover:from-white/10`}>
+    <div className="rounded-[20px] p-6 cursor-pointer transition" style={{ backgroundColor: bgColor, color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}>
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white/70">{label}</h3>
-        <div className="rounded-lg bg-white/10 p-2.5">
-          <Icon className="h-5 w-5" />
+        <h3 className="text-sm font-semibold" style={{ color: "rgba(7,24,39,0.6)" }}>{label}</h3>
+        <div className="rounded-lg p-2.5" style={{ backgroundColor: "#071827" }}>
+          <Icon className="h-5 w-5 text-white" />
         </div>
       </div>
       <div className="flex items-baseline gap-2">
-        <p className="text-3xl font-bold text-white">{value}</p>
-        {unit && <p className="text-sm text-white/60">{unit}</p>}
+        <p className="text-3xl font-bold" style={{ color: cardText }}>{value}</p>
+        {unit && <p className="text-sm" style={{ color: "rgba(7,24,39,0.6)" }}>{unit}</p>}
       </div>
     </div>
   );
@@ -263,50 +300,50 @@ const SystemHealth: React.FC = () => {
 
       {/* Status Overview */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
+        <div className="rounded-[20px] p-6" style={{ backgroundColor: accentColors[1], color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}>
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white/70">Healthy Services</h3>
-            <div className="rounded-lg bg-green-500/20 p-2.5">
-              <CheckCircle2 className="h-5 w-5 text-green-300" />
+            <h3 className="text-sm font-semibold" style={{ color: "rgba(7,24,39,0.6)" }}>Healthy Services</h3>
+            <div className="rounded-lg p-2.5" style={{ backgroundColor: "#071827" }}>
+              <CheckCircle2 className="h-5 w-5 text-white" />
             </div>
           </div>
-          <p className="text-3xl font-bold text-white">{serviceStatus.healthy}</p>
-          <p className="mt-1 text-xs text-white/60">out of {serviceStatus.totalServices}</p>
+          <p className="text-3xl font-bold" style={{ color: cardText }}>{serviceStatus.healthy}</p>
+          <p className="mt-1 text-xs" style={{ color: "rgba(7,24,39,0.6)" }}>out of {serviceStatus.totalServices}</p>
         </div>
 
-        <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
+        <div className="rounded-[20px] p-6" style={{ backgroundColor: accentColors[5], color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}>
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white/70">Warning Status</h3>
-            <div className="rounded-lg bg-yellow-500/20 p-2.5">
-              <AlertTriangle className="h-5 w-5 text-yellow-300" />
+            <h3 className="text-sm font-semibold" style={{ color: "rgba(7,24,39,0.6)" }}>Warning Status</h3>
+            <div className="rounded-lg p-2.5" style={{ backgroundColor: "#071827" }}>
+              <AlertTriangle className="h-5 w-5 text-white" />
             </div>
           </div>
-          <p className="text-3xl font-bold text-white">{serviceStatus.warning}</p>
-          <p className="mt-1 text-xs text-white/60">services to monitor</p>
+          <p className="text-3xl font-bold" style={{ color: cardText }}>{serviceStatus.warning}</p>
+          <p className="mt-1 text-xs" style={{ color: "rgba(7,24,39,0.6)" }}>services to monitor</p>
         </div>
 
-        <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
+        <div className="rounded-[20px] p-6" style={{ backgroundColor: accentColors[4], color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}>
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white/70">Critical Status</h3>
-            <div className="rounded-lg bg-red-500/20 p-2.5">
-              <AlertCircle className="h-5 w-5 text-red-300" />
+            <h3 className="text-sm font-semibold" style={{ color: "rgba(7,24,39,0.6)" }}>Critical Status</h3>
+            <div className="rounded-lg p-2.5" style={{ backgroundColor: "#071827" }}>
+              <AlertCircle className="h-5 w-5 text-white" />
             </div>
           </div>
-          <p className="text-3xl font-bold text-white">{serviceStatus.critical}</p>
-          <p className="mt-1 text-xs text-white/60">requires attention</p>
+          <p className="text-3xl font-bold" style={{ color: cardText }}>{serviceStatus.critical}</p>
+          <p className="mt-1 text-xs" style={{ color: "rgba(7,24,39,0.6)" }}>requires attention</p>
         </div>
 
-        <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
+        <div className="rounded-[20px] p-6" style={{ backgroundColor: accentColors[3], color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}>
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white/70">System Health</h3>
-            <div className="rounded-lg bg-cyan-500/20 p-2.5">
-              <TrendingUp className="h-5 w-5 text-cyan-300" />
+            <h3 className="text-sm font-semibold" style={{ color: "rgba(7,24,39,0.6)" }}>System Health</h3>
+            <div className="rounded-lg p-2.5" style={{ backgroundColor: "#071827" }}>
+              <TrendingUp className="h-5 w-5 text-white" />
             </div>
           </div>
-          <p className="text-3xl font-bold text-white">
+          <p className="text-3xl font-bold" style={{ color: cardText }}>
             {Math.round(((serviceStatus.healthy / serviceStatus.totalServices) * 100))}%
           </p>
-          <p className="mt-1 text-xs text-white/60">overall health</p>
+          <p className="mt-1 text-xs" style={{ color: "rgba(7,24,39,0.6)" }}>overall health</p>
         </div>
       </div>
 
@@ -324,7 +361,7 @@ const SystemHealth: React.FC = () => {
                 value={metric.value}
                 unit={metric.unit}
                 status={metric.status}
-                bgColor={getStatusColor(metric.status)}
+                bgColor={getStatusAccentColor(metric.status)}
               />
             );
           })}
@@ -340,21 +377,24 @@ const SystemHealth: React.FC = () => {
             return (
               <div
                 key={alert.id}
-                className={`rounded-lg border ${getAlertColor(alert.level)} bg-gradient-to-br from-white/5 to-transparent p-4 transition hover:from-white/10`}
+                className="rounded-lg p-4 transition"
+                style={{ backgroundColor: getAlertAccentColor(alert.level), color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}
               >
                 <div className="flex gap-4">
                   <div className="flex-shrink-0 pt-0.5">
-                    <AlertIcon className="h-5 w-5" />
+                    <div style={{ backgroundColor: "#071827" }} className="rounded-lg p-2">
+                      <AlertIcon className="h-5 w-5 text-white" />
+                    </div>
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-semibold text-white">{alert.message}</h3>
-                      <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-white/70">
+                      <h3 className="font-semibold" style={{ color: cardText }}>{alert.message}</h3>
+                      <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ backgroundColor: "#E6F4FF", color: "#075985" }}>
                         {alert.service}
                       </span>
                     </div>
-                    <p className="mt-1 text-xs text-white/60">{alert.timestamp}</p>
+                    <p className="mt-1 text-xs" style={{ color: "rgba(7,24,39,0.6)" }}>{alert.timestamp}</p>
                   </div>
                 </div>
               </div>
@@ -364,28 +404,28 @@ const SystemHealth: React.FC = () => {
       </div>
 
       {/* System Information */}
-      <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
-        <h3 className="mb-4 font-semibold text-white">System Information</h3>
+      <div className="rounded-[20px] p-6" style={{ backgroundColor: accentColors[6], color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}>
+        <h3 className="mb-4 font-semibold" style={{ color: "rgba(7,24,39,0.8)" }}>System Information</h3>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <p className="text-sm text-white/60">Last Backup</p>
-            <p className="mt-1 text-lg font-semibold text-white">Today, 08:00 AM</p>
-            <p className="mt-1 text-xs text-white/60">Size: 150 GB</p>
+            <p className="text-sm" style={{ color: "rgba(7,24,39,0.6)" }}>Last Backup</p>
+            <p className="mt-1 text-lg font-semibold" style={{ color: cardText }}>Today, 08:00 AM</p>
+            <p className="mt-1 text-xs" style={{ color: "rgba(7,24,39,0.6)" }}>Size: 150 GB</p>
           </div>
           <div>
-            <p className="text-sm text-white/60">Uptime</p>
-            <p className="mt-1 text-lg font-semibold text-white">45 days, 12 hrs</p>
-            <p className="mt-1 text-xs text-white/60">Since 2026-04-11</p>
+            <p className="text-sm" style={{ color: "rgba(7,24,39,0.6)" }}>Uptime</p>
+            <p className="mt-1 text-lg font-semibold" style={{ color: cardText }}>45 days, 12 hrs</p>
+            <p className="mt-1 text-xs" style={{ color: "rgba(7,24,39,0.6)" }}>Since 2026-04-11</p>
           </div>
           <div>
-            <p className="text-sm text-white/60">Total Users</p>
-            <p className="mt-1 text-lg font-semibold text-white">320 active</p>
-            <p className="mt-1 text-xs text-white/60">42 currently online</p>
+            <p className="text-sm" style={{ color: "rgba(7,24,39,0.6)" }}>Total Users</p>
+            <p className="mt-1 text-lg font-semibold" style={{ color: cardText }}>320 active</p>
+            <p className="mt-1 text-xs" style={{ color: "rgba(7,24,39,0.6)" }}>42 currently online</p>
           </div>
           <div>
-            <p className="text-sm text-white/60">Database Size</p>
-            <p className="mt-1 text-lg font-semibold text-white">45.2 GB</p>
-            <p className="mt-1 text-xs text-white/60">Last optimized: Yesterday</p>
+            <p className="text-sm" style={{ color: "rgba(7,24,39,0.6)" }}>Database Size</p>
+            <p className="mt-1 text-lg font-semibold" style={{ color: cardText }}>45.2 GB</p>
+            <p className="mt-1 text-xs" style={{ color: "rgba(7,24,39,0.6)" }}>Last optimized: Yesterday</p>
           </div>
         </div>
       </div>

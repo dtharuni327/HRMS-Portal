@@ -6,6 +6,7 @@ import {
   Timer,
   ShieldCheck,
   RotateCcw,
+  Clock3,
 } from "lucide-react";
 
 type SystemConfig = {
@@ -27,11 +28,15 @@ const initialConfig: SystemConfig = {
 };
 
 export default function SystemConfiguration() {
-  const [config, setConfig] = useState<SystemConfig>(initialConfig);
+  const [config, setConfig] =
+    useState<SystemConfig>(initialConfig);
+
   const [isSaving, setIsSaving] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
 
@@ -66,16 +71,15 @@ export default function SystemConfiguration() {
     setIsSaving(true);
 
     try {
-      console.log("System Configuration:", config);
+      // Save to localStorage
+      localStorage.setItem("systemConfig", JSON.stringify(config));
+      console.log(config);
 
       await new Promise((resolve) =>
         setTimeout(resolve, 1000)
       );
 
       alert("Configuration saved successfully");
-    } catch (error) {
-      console.error(error);
-      alert("Failed to save configuration");
     } finally {
       setIsSaving(false);
     }
@@ -84,11 +88,11 @@ export default function SystemConfiguration() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">
+        <h1 className="text-[36px] font-black text-white">
           System Configuration
         </h1>
 
-        <p className="mt-2 text-sm text-slate-300">
+        <p className="mt-2 text-slate-400">
           Configure grace period, shift timing,
           week-off days, auto punch-out and overtime rate.
         </p>
@@ -96,33 +100,39 @@ export default function SystemConfiguration() {
 
       <form
         onSubmit={handleSubmit}
-        className="rounded-2xl bg-white p-6 shadow-2xl shadow-black/20"
+        className="rounded-[32px] bg-[#FCFCFD] p-8 shadow-[0_4px_12px_rgba(15,23,42,0.05)]"
       >
-        <div className="mb-6 flex items-center gap-4 border-b border-slate-200 pb-5">
-          <div className="rounded-xl bg-indigo-100 p-3 text-indigo-600">
-            <Settings size={22} />
+        <div className="mb-8 flex items-center gap-4 border-b border-slate-200 pb-6">
+          <div className="rounded-2xl bg-[#E8E3F8] p-4">
+            <Settings
+              size={22}
+              className="text-[#7C3AED]"
+            />
           </div>
 
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">
+            <h2 className="text-2xl font-black text-slate-900">
               Attendance Settings
             </h2>
 
             <p className="text-sm text-slate-500">
-              Manage HRMS attendance rules and timing settings.
+              Manage HRMS attendance rules and timing
+              settings
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           <ConfigInput
             label="Grace Period"
             name="gracePeriod"
             type="number"
-            placeholder="Enter grace period in minutes"
             value={config.gracePeriod}
-            onChange={handleChange}
+            placeholder="Enter grace period in minutes"
             icon={<Timer size={18} />}
+            iconBg="bg-[#E8E3F8]"
+            iconColor="text-[#7C3AED]"
+            onChange={handleChange}
           />
 
           <ConfigInput
@@ -159,7 +169,7 @@ export default function SystemConfiguration() {
                 name="weekOffDays"
                 value={config.weekOffDays}
                 onChange={handleChange}
-                className="w-full appearance-none rounded-xl border border-slate-300 px-4 py-3 pr-11 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100/60"
+                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-800 outline-none transition focus:border-slate-300"
               >
                 <option value="">
                   Select week-off day
@@ -184,7 +194,7 @@ export default function SystemConfiguration() {
 
               <CalendarDays
                 size={18}
-                className="pointer-events-none absolute right-4 top-3.5 text-slate-500"
+                className="absolute right-4 top-3 text-slate-500"
               />
             </div>
           </div>
@@ -193,37 +203,67 @@ export default function SystemConfiguration() {
             label="Overtime Rate"
             name="overtimeRate"
             type="number"
-            placeholder="Enter overtime rate per hour"
             value={config.overtimeRate}
-            onChange={handleChange}
+            placeholder="Enter overtime rate per hour"
             icon={<ShieldCheck size={18} />}
+            iconBg="bg-[#D8EFE0]"
+            iconColor="text-[#059669]"
+            onChange={handleChange}
           />
         </div>
 
-        <div className="mt-8 flex justify-end gap-3">
-          <button
-            type="button"
+        <div className="mt-10 flex justify-end gap-3">
+          <ActionButton
+            variant="secondary"
+            icon={<RotateCcw size={16} />}
+            label="Reset"
             onClick={handleReset}
-            className="flex items-center gap-2 rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
-          >
-            <RotateCcw size={16} />
-            Reset
-          </button>
+          />
 
-          <button
+          <ActionButton
+            variant="primary"
+            icon={<Save size={16} />}
+            label={isSaving ? "Saving..." : "Save Configuration"}
             type="submit"
             disabled={isSaving}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:from-indigo-700 hover:to-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            <Save size={17} />
-
-            {isSaving
-              ? "Saving..."
-              : "Save Configuration"}
-          </button>
+          />
         </div>
       </form>
     </div>
+  );
+}
+
+type ActionButtonProps = {
+  variant: "primary" | "secondary";
+  icon: React.ReactNode;
+  label: string;
+  type?: "button" | "submit";
+  disabled?: boolean;
+  onClick?: () => void;
+};
+
+function ActionButton({
+  variant,
+  icon,
+  label,
+  type = "button",
+  disabled = false,
+  onClick,
+}: ActionButtonProps) {
+  const baseClass = "rounded-2xl px-5 py-3 font-medium transition flex items-center gap-2";
+  const primaryClass = "bg-[#122033] text-white hover:opacity-90 disabled:opacity-70";
+  const secondaryClass = "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50";
+
+  return (
+    <button
+      type={type}
+      disabled={disabled}
+      onClick={onClick}
+      className={`${baseClass} ${variant === "primary" ? primaryClass : secondaryClass}`}
+    >
+      {icon}
+      {label}
+    </button>
   );
 }
 
@@ -234,6 +274,8 @@ type ConfigInputProps = {
   value: string;
   placeholder?: string;
   icon?: React.ReactNode;
+  iconBg?: string;
+  iconColor?: string;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement>
   ) => void;
@@ -246,6 +288,8 @@ function ConfigInput({
   value,
   placeholder,
   icon,
+  iconBg = "bg-white",
+  iconColor = "text-slate-700",
   onChange,
 }: ConfigInputProps) {
   return (
@@ -261,12 +305,16 @@ function ConfigInput({
           value={value}
           placeholder={placeholder}
           onChange={onChange}
-          className="w-full rounded-xl border border-slate-300 px-4 py-3 pr-11 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100/60"
+          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 pr-12 text-slate-800 outline-none transition focus:border-slate-300"
         />
 
-        {type !== "time" && icon && (
-          <div className="absolute right-4 top-3.5 text-slate-500">
-            {icon}
+        {icon && (
+          <div
+            className={`absolute right-3 top-3 rounded-xl p-2 ${iconBg}`}
+          >
+            <span className={iconColor}>
+              {icon}
+            </span>
           </div>
         )}
       </div>

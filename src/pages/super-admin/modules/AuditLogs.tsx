@@ -34,6 +34,18 @@ const AuditLogs: React.FC = () => {
   const [dateFilter, setDateFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "success" | "failed">("all");
 
+  // Pastel accent colors and card text color
+  const accentColors = [
+    "#E6E6FA", // lavender
+    "#D4F1DC", // mint
+    "#FFF5D6", // cream
+    "#DCEEFB", // ice blue
+    "#FADADD", // soft pink
+    "#F5E0C3", // warm beige
+    "#E9D5FF", // soft violet
+  ];
+  const cardText = "#071827";
+
   // Mock data - all activity types
   const auditLogs: AuditLog[] = [
     // Login Activities
@@ -361,16 +373,33 @@ const AuditLogs: React.FC = () => {
     value: number;
     bgColor: string;
   }) => (
-    <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
+    <div className="rounded-[20px] p-6" style={{ backgroundColor: bgColor, color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}>
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white/70">{label}</h3>
-        <div className={`rounded-lg p-2.5 ${bgColor}`}>
-          <Icon className="h-5 w-5" />
+        <h3 className="text-sm font-semibold" style={{ color: "rgba(7,24,39,0.6)" }}>{label}</h3>
+        <div className={`rounded-lg p-2.5`} style={{ backgroundColor: "#071827" }}>
+          <Icon className="h-5 w-5 text-white" />
         </div>
       </div>
-      <p className="text-3xl font-bold text-white">{value}</p>
+      <p className="text-3xl font-bold" style={{ color: cardText }}>{value}</p>
     </div>
   );
+
+  const getActivityAccentColor = (type: string) => {
+    switch (type) {
+      case "login":
+        return accentColors[0];
+      case "employee":
+        return accentColors[6];
+      case "payroll":
+        return accentColors[5];
+      case "role":
+        return accentColors[2];
+      case "admin":
+        return accentColors[4];
+      default:
+        return accentColors[3];
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -397,25 +426,25 @@ const AuditLogs: React.FC = () => {
           icon={Clock}
           label="Total Activities"
           value={stats.totalLogs}
-          bgColor="bg-blue-500/20 text-blue-300"
+          bgColor={accentColors[0]}
         />
         <StatCard
           icon={LogIn}
           label="Login Activities"
           value={stats.loginActivity}
-          bgColor="bg-blue-500/20 text-blue-300"
+          bgColor={accentColors[1]}
         />
         <StatCard
           icon={Users}
           label="Employee Changes"
           value={stats.employeeChanges}
-          bgColor="bg-purple-500/20 text-purple-300"
+          bgColor={accentColors[6]}
         />
         <StatCard
           icon={IndianRupee}
           label="Payroll Changes"
           value={stats.payrollChanges}
-          bgColor="bg-green-500/20 text-green-300"
+          bgColor={accentColors[5]}
         />
       </div>
 
@@ -424,25 +453,25 @@ const AuditLogs: React.FC = () => {
           icon={Lock}
           label="Role Changes"
           value={stats.roleChanges}
-          bgColor="bg-orange-500/20 text-orange-300"
+          bgColor={accentColors[2]}
         />
         <StatCard
           icon={ShieldAlert}
           label="Admin Activities"
           value={stats.adminActivity}
-          bgColor="bg-red-500/20 text-red-300"
+          bgColor={accentColors[4]}
         />
         <StatCard
           icon={CheckCircle2}
           label="Successful"
           value={stats.successCount}
-          bgColor="bg-green-500/20 text-green-300"
+          bgColor={accentColors[3]}
         />
         <StatCard
           icon={AlertCircle}
           label="Failed"
           value={stats.failedCount}
-          bgColor="bg-red-500/20 text-red-300"
+          bgColor={accentColors[2]}
         />
       </div>
 
@@ -516,36 +545,38 @@ const AuditLogs: React.FC = () => {
             const colorClass = getActivityColor(log.activityType);
 
             return (
-              <div
-                key={log.id}
-                className="rounded-lg border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
-              >
+                    <div
+                      key={log.id}
+                      className="rounded-lg p-4 transition"
+                      style={{ backgroundColor: getActivityAccentColor(log.activityType), color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}
+                    >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="flex flex-1 gap-4">
-                    <div className={`rounded-lg p-2.5 ${colorClass}`}>
-                      <IconComponent className="h-5 w-5" />
+                    <div className={`rounded-lg p-2.5`} style={{ backgroundColor: "#071827" }}>
+                      <IconComponent className="h-5 w-5 text-white" />
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="font-semibold text-white">{log.action}</h3>
-                        <span className="rounded-full bg-blue-500/20 px-2.5 py-0.5 text-xs font-semibold text-blue-300">
+                        <h3 className="font-semibold" style={{ color: cardText }}>{log.action}</h3>
+                        <span className="rounded-full px-2.5 py-0.5 text-xs font-semibold" style={{ backgroundColor: "#E6F4FF", color: "#075985" }}>
                           {log.module}
                         </span>
                         <span
-                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                          style={
                             log.status === "success"
-                              ? "bg-green-500/20 text-green-300"
-                              : "bg-red-500/20 text-red-300"
-                          }`}
+                              ? { backgroundColor: "#D1FAE5", color: "#065F46" }
+                              : { backgroundColor: "#FEE2E2", color: "#991B1B" }
+                          }
                         >
                           {log.status.charAt(0).toUpperCase() + log.status.slice(1)}
                         </span>
                       </div>
 
-                      <p className="mt-1 text-sm text-white/80">{log.details}</p>
+                      <p className="mt-1 text-sm" style={{ color: "rgba(7,24,39,0.7)" }}>{log.details}</p>
 
-                      <div className="mt-2 flex flex-wrap gap-4 text-xs text-white/60">
+                      <div className="mt-2 flex flex-wrap gap-4 text-xs" style={{ color: "rgba(7,24,39,0.6)" }}>
                         <span>User: {log.user}</span>
                         <span>IP: {log.ipAddress}</span>
                         <span>{log.timestamp}</span>
@@ -557,8 +588,8 @@ const AuditLogs: React.FC = () => {
             );
           })
         ) : (
-          <div className="rounded-lg border border-white/10 bg-white/5 p-8 text-center">
-            <p className="text-white/60">No audit logs found matching your filters</p>
+          <div className="rounded-lg p-8 text-center" style={{ backgroundColor: accentColors[2], color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}>
+            <p style={{ color: "rgba(7,24,39,0.7)" }}>No audit logs found matching your filters</p>
           </div>
         )}
       </div>

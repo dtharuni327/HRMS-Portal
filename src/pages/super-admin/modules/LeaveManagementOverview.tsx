@@ -9,6 +9,7 @@ import {
   Search,
   Plane,
 } from "lucide-react";
+import { cardPalette, getPaletteFor } from "../../../utils/colorPalette";
 
 interface LeaveRequest {
   id: number;
@@ -211,23 +212,36 @@ const LeaveManagementOverview: React.FC = () => {
     icon: Icon,
     label,
     value,
-    bgColor,
+    paletteIndex = 0,
   }: {
     icon: React.ElementType;
     label: string;
     value: string | number;
-    bgColor: string;
-  }) => (
-    <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white/70">{label}</h3>
-        <div className={`rounded-lg p-2.5 ${bgColor}`}>
-          <Icon className="h-5 w-5" />
+    paletteIndex?: number;
+  }) => {
+    const pal = cardPalette[paletteIndex % cardPalette.length];
+    return (
+      <div
+        className="rounded-[20px] border border-white/10 p-6"
+        style={{ backgroundColor: pal.bg }}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-sm font-semibold" style={{ color: pal.text }}>
+            {label}
+          </h3>
+          <div
+            className="rounded-lg p-2.5"
+            style={{ backgroundColor: pal.text, color: pal.bg }}
+          >
+            <Icon className="h-5 w-5" />
+          </div>
         </div>
+        <p className="text-3xl font-bold" style={{ color: pal.text }}>
+          {value}
+        </p>
       </div>
-      <p className="text-3xl font-bold text-white">{value}</p>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="space-y-8">
@@ -245,30 +259,30 @@ const LeaveManagementOverview: React.FC = () => {
           icon={Clock}
           label="Pending Leave Requests"
           value={pendingRequests}
-          bgColor="bg-yellow-500/20 text-yellow-300"
+          paletteIndex={0}
         />
         <StatCard
           icon={CheckCircle}
           label="Approved Leaves"
           value={approvedLeaves}
-          bgColor="bg-green-500/20 text-green-300"
+          paletteIndex={1}
         />
         <StatCard
           icon={XCircle}
           label="Rejected Leaves"
           value={rejectedLeaves}
-          bgColor="bg-red-500/20 text-red-300"
+          paletteIndex={2}
         />
         <StatCard
           icon={Users}
           label="Employees On Leave"
           value={employeesOnLeave}
-          bgColor="bg-blue-500/20 text-blue-300"
+          paletteIndex={3}
         />
       </div>
 
       {/* Pending Leave Requests */}
-      <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
+      <div className="rounded-[20px] border border-white/10 bg-white/5 p-6">
         <div className="mb-6 space-y-4">
           <div>
             <h2 className="text-xl font-bold text-white">Pending Leave Requests</h2>
@@ -312,25 +326,38 @@ const LeaveManagementOverview: React.FC = () => {
         <div className="space-y-3">
           {filteredRequests.length > 0 ? (
             filteredRequests.map((req) => (
-              <div
-                key={req.id}
-                className="rounded-lg border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
-              >
+                <div
+                  key={req.id}
+                  className="rounded-lg border border-white/10 bg-white/5 p-4 transition hover:bg-white/10"
+                >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="font-semibold text-white">{req.employeeName}</h3>
-                      <span className="rounded-full bg-blue-500/20 px-2.5 py-0.5 text-xs font-semibold text-blue-300">
-                        {req.leaveType}
-                      </span>
+                      {(() => {
+                        const pal = getPaletteFor(req.leaveType);
+                        return (
+                          <span
+                            className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                            style={{ backgroundColor: pal.bg, color: pal.text }}
+                          >
+                            {req.leaveType}
+                          </span>
+                        );
+                      })()}
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                           req.status === "pending"
-                            ? "bg-yellow-500/20 text-yellow-300"
-                            : req.status === "approved"
-                            ? "bg-green-500/20 text-green-300"
-                            : "bg-red-500/20 text-red-300"
+                            ? ""
+                            : ""
                         }`}
+                      style={
+                        req.status === "pending"
+                          ? { backgroundColor: "#FFF4D6", color: "#7A5C00" }
+                          : req.status === "approved"
+                          ? { backgroundColor: "#D1FAE5", color: "#064E3B" }
+                          : { backgroundColor: "#FEE2E2", color: "#7F1D1D" }
+                      }
                       >
                         {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
                       </span>
@@ -365,7 +392,7 @@ const LeaveManagementOverview: React.FC = () => {
       </div>
 
       {/* Employees Currently on Leave */}
-      <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
+      <div className="rounded-[20px] border border-white/10 bg-white/5 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-bold text-white">Employees Currently On Leave</h2>
           <p className="mt-1 text-sm text-white/60">
@@ -403,20 +430,29 @@ const LeaveManagementOverview: React.FC = () => {
                   <td className="px-4 py-4 font-medium text-white">{emp.name}</td>
                   <td className="px-4 py-4 text-white/80">{emp.department}</td>
                   <td className="px-4 py-4">
-                    <span className="rounded-lg bg-purple-500/20 px-3 py-1 text-xs font-semibold text-purple-300">
-                      {emp.leaveType}
-                    </span>
+                    {(() => {
+                      const pal = getPaletteFor(emp.leaveType);
+                      return (
+                        <span
+                          className="rounded-lg px-3 py-1 text-xs font-semibold"
+                          style={{ backgroundColor: pal.bg, color: pal.text }}
+                        >
+                          {emp.leaveType}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td className="px-4 py-4 text-sm text-white/70">
                     {emp.startDate} to {emp.endDate}
                   </td>
                   <td className="px-4 py-4 text-center">
                     <span
-                      className={`rounded-lg px-3 py-1 text-xs font-bold ${
+                      className="rounded-lg px-3 py-1 text-xs font-bold"
+                      style={
                         emp.remainingDays === 0
-                          ? "bg-red-500/20 text-red-300"
-                          : "bg-blue-500/20 text-blue-300"
-                      }`}
+                          ? { backgroundColor: "#FEE2E2", color: "#7F1D1D" }
+                          : { backgroundColor: "#E0F2FE", color: "#075985" }
+                      }
                     >
                       {emp.remainingDays}
                     </span>
@@ -429,7 +465,7 @@ const LeaveManagementOverview: React.FC = () => {
       </div>
 
       {/* Leave Trends by Department */}
-      <div className="rounded-[20px] border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-6">
+      <div className="rounded-[20px] border border-white/10 bg-white/5 p-6">
         <div className="mb-6">
           <h2 className="text-xl font-bold text-white">Leave Trends by Department</h2>
           <p className="mt-1 text-sm text-white/60">
@@ -454,29 +490,40 @@ const LeaveManagementOverview: React.FC = () => {
               </div>
 
               <div className="mb-3 grid grid-cols-4 gap-2 text-xs">
-                <div className="rounded-lg bg-blue-500/10 p-2 text-center">
-                  <p className="text-white/60">Total</p>
-                  <p className="text-lg font-bold text-white">{dept.total}</p>
-                </div>
-                <div className="rounded-lg bg-green-500/10 p-2 text-center">
-                  <p className="text-white/60">Approved</p>
-                  <p className="text-lg font-bold text-green-300">{dept.approved}</p>
-                </div>
-                <div className="rounded-lg bg-yellow-500/10 p-2 text-center">
-                  <p className="text-white/60">Pending</p>
-                  <p className="text-lg font-bold text-yellow-300">{dept.pending}</p>
-                </div>
-                <div className="rounded-lg bg-red-500/10 p-2 text-center">
-                  <p className="text-white/60">Rejected</p>
-                  <p className="text-lg font-bold text-red-300">{dept.rejected}</p>
-                </div>
+                {(() => {
+                  const palTotal = getPaletteFor(dept.department + "total");
+                  const palApproved = getPaletteFor(dept.department + "approved");
+                  const palPending = getPaletteFor(dept.department + "pending");
+                  const palRejected = getPaletteFor(dept.department + "rejected");
+                  return (
+                    <>
+                      <div className="rounded-lg p-2 text-center" style={{ backgroundColor: palTotal.bg }}>
+                        <p className="mb-1 text-sm font-semibold" style={{ color: palTotal.text, opacity: 0.95 }}>Total</p>
+                        <p className="text-lg font-bold" style={{ color: palTotal.text }}>{dept.total}</p>
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ backgroundColor: palApproved.bg }}>
+                        <p className="mb-1 text-sm font-semibold" style={{ color: palApproved.text, opacity: 0.95 }}>Approved</p>
+                        <p className="text-lg font-bold" style={{ color: palApproved.text }}>{dept.approved}</p>
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ backgroundColor: palPending.bg }}>
+                        <p className="mb-1 text-sm font-semibold" style={{ color: palPending.text, opacity: 0.95 }}>Pending</p>
+                        <p className="text-lg font-bold" style={{ color: palPending.text }}>{dept.pending}</p>
+                      </div>
+                      <div className="rounded-lg p-2 text-center" style={{ backgroundColor: palRejected.bg }}>
+                        <p className="mb-1 text-sm font-semibold" style={{ color: palRejected.text, opacity: 0.95 }}>Rejected</p>
+                        <p className="text-lg font-bold" style={{ color: palRejected.text }}>{dept.rejected}</p>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
 
               <div className="h-2 overflow-hidden rounded-full bg-white/10">
                 <div
-                  className="h-full bg-gradient-to-r from-green-500 to-blue-500"
+                  className="h-full"
                   style={{
                     width: `${dept.approvalRate}%`,
+                    backgroundColor: "#10B981",
                   }}
                 />
               </div>
