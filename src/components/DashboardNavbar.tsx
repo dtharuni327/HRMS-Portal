@@ -30,7 +30,7 @@ const DashboardNavbar: React.FC<DashboardNavbarProps> = ({
   const role = roleLabel ?? user?.role ?? 'Employee';
 
   return (
-    <section className="mb-6 rounded-[2rem] border border-slate-500/10 border-l-4 border-l-[#14b8d0] bg-[#0b193b]/80 p-4 shadow-none backdrop-blur-sm">
+    <section className="mb-6 rounded-[2rem] border border-slate-500/10 border-l-4 border-l-[#14b8d0] bg-[#081a4a] p-5 shadow-none backdrop-blur-sm">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-1">
           <h1 className="text-2xl font-black text-white sm:text-3xl">{title}</h1>

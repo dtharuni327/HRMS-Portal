@@ -27,19 +27,11 @@ const RecruitmentModule: FC<RecruitmentModuleProps> = ({
   setJobs
 }) => {
 
-  // =========================
-  // FORM STATES
-  // =========================
-
   const [showJobForm, setShowJobForm] = useState(false);
 
   const [jobTitle, setJobTitle] = useState('');
   const [jobDept, setJobDept] = useState('');
   const [jobStatus, setJobStatus] = useState('Open');
-
-  // =========================
-  // ADD JOB
-  // =========================
 
   const handleAddJob = () => {
 

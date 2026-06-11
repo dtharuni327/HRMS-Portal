@@ -226,6 +226,7 @@ useEffect(() => {
 
         <SparkCard
           overflowVisible
+          hoverable={false}
           className="
             relative
             p-6
@@ -233,11 +234,8 @@ useEffect(() => {
             h-48
             md:h-56
             rounded-[2rem]
-            bg-gradient-to-br
-            from-[#0f172a]
-            via-[#111827]
-            to-[#1e293b]
-            border-transparent
+            bg-[#0f172a]
+            border border-white/10
             shadow-[0_18px_50px_rgba(15,23,42,0.45)]
           "
         >
@@ -497,6 +495,7 @@ useEffect(() => {
   <div className="flex flex-col gap-6">
   <article
     className="
+      hover-zoom-card
       rounded-[2rem]
       border
       border-violet-100
@@ -701,6 +700,7 @@ useEffect(() => {
   {/* CALENDAR */}
   <article
     className="
+      hover-zoom-card
       rounded-[2rem]
       border
       border-slate-200
@@ -1026,39 +1026,39 @@ useEffect(() => {
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="hover-zoom-card bg-white/5 border border-white/10 rounded-2xl p-4">
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                         <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-2">Email</p>
                         <h3 className="text-white text-sm font-bold break-all">{hrDetails.email}</h3>
                       </div>
-                      <div className="hover-zoom-card bg-white/5 border border-white/10 rounded-2xl p-4">
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                         <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-2">Phone</p>
                         <h3 className="text-white text-sm font-bold">{hrDetails.phone}</h3>
                       </div>
-                      <div className="hover-zoom-card bg-white/5 border border-white/10 rounded-2xl p-4">
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                         <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-2">Department</p>
                         <h3 className="text-white text-sm font-bold">{hrDetails.dept}</h3>
                       </div>
-                      <div className="hover-zoom-card bg-white/5 border border-white/10 rounded-2xl p-4">
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                         <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-2">Experience</p>
                         <h3 className="text-white text-sm font-bold">{hrDetails.experience}</h3>
                       </div>
-                      <div className="hover-zoom-card bg-white/5 border border-white/10 rounded-2xl p-4">
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                         <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-2">Employee ID</p>
                         <h3 className="text-white text-sm font-bold">HRM2401</h3>
                       </div>
-                      <div className="hover-zoom-card bg-white/5 border border-white/10 rounded-2xl p-4">
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                         <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-2">Office</p>
                         <h3 className="text-white text-sm font-bold">Hyderabad HQ</h3>
                       </div>
-                      <div className="hover-zoom-card bg-white/5 border border-white/10 rounded-2xl p-4">
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                         <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-2">Joining Date</p>
                         <h3 className="text-white text-sm font-bold">15 Jan 2022</h3>
                       </div>
-                      <div className="hover-zoom-card bg-white/5 border border-white/10 rounded-2xl p-4">
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                         <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-2">Access Level</p>
                         <div className="inline-flex px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-[10px] font-black uppercase tracking-widest">Administrator</div>
                       </div>
-                      <div className="hover-zoom-card bg-white/5 border border-white/10 rounded-2xl p-4">
+                      <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                         <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-2">Recruitment</p>
                         <div className="inline-flex px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-[10px] font-black uppercase tracking-widest">Active Hiring</div>
                       </div>

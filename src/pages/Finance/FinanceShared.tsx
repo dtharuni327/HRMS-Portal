@@ -87,8 +87,9 @@ export interface HRDocument {
   employeeId: number;
   type: string;
   uploadedAt: string;
-  name?: string;       
-  uploadedBy?: string; 
+  name?: string;       // Made optional if not always present
+  uploadedBy?: string; // Made optional if not always present
+  file?: File | string; // 👈 Safely allowed raw File object or string URL paths!
 }
 export interface LeaveData {
   id: number;
@@ -128,20 +129,18 @@ interface SparkCardProps {
   className?: string;
   overflowVisible?: boolean;
   style?: React.CSSProperties;
-  hoverable?: boolean;
 }
 
 export const SparkCard: React.FC<SparkCardProps> = ({
   children,
   className = '',
   overflowVisible = false,
-  style,
-  hoverable = true,
+  style
 }) => (
 
   <div
     className={`
-      ${hoverable ? 'hover-zoom-card' : ''}
+      hover-zoom-card
       relative
       transform
       transition-transform
@@ -170,7 +169,6 @@ interface StatCardProps {
   label: string;
   color: string;
   style?: React.CSSProperties;
-  hoverable?: boolean;
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -178,12 +176,12 @@ export const StatCard: React.FC<StatCardProps> = ({
   value,
   label,
   color,
-  style,
-  hoverable = true,
+  style
 }) => (
+
   <div
-    className={`
-      ${hoverable ? 'hover-zoom-card' : ''}
+    className="
+      hover-zoom-card
       transform
       transition-transform
       duration-200
@@ -193,18 +191,23 @@ export const StatCard: React.FC<StatCardProps> = ({
       flex
       items-center
       gap-6
-    `}
+    "
     style={style}
   >
+
     <div
       className={`
         w-16
         h-16
+
         rounded-3xl
+
         flex
         items-center
         justify-center
+
         bg-white/50
+
         ${color}
       `}
     >
@@ -212,13 +215,17 @@ export const StatCard: React.FC<StatCardProps> = ({
     </div>
 
     <div className="text-left">
-      <h2 className="text-3xl font-black text-slate-900 tracking-tighter">
+
+      <h2 className="text-3xl font-black text-white tracking-tighter">
         {value}
       </h2>
 
-      <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+      <p className="text-[10px] font-black text-white/80 uppercase tracking-widest">
         {label}
       </p>
+
     </div>
+
   </div>
+
 );

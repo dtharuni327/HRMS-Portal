@@ -1,23 +1,20 @@
-// =========================
-// PAYROLL GENERATOR UPDATED
-// Premium Pastel Dashboard UI
-// =========================
+import { useState } from 'react';
+import { SparkCard, type Employee } from '../hrShared';
 
-import React, { useState } from 'react';
-import { SparkCard } from '../hrShared';
+interface PayrollGeneratorProps {
+  employees?: Employee[];
+}
 
-const PayrollGenerator = () => {
-
-  // =========================
-  // STATES
-  // =========================
+const PayrollGenerator = ({ employees = [] }: PayrollGeneratorProps) => {
 
   const [employeeName, setEmployeeName] = useState('');
   const [employeeId, setEmployeeId] = useState('');
-  const [payPeriod, setPayPeriod] = useState('May 2026');
+  const [isNameMenuOpen, setIsNameMenuOpen] = useState(false);
+  const [isIdMenuOpen, setIsIdMenuOpen] = useState(false);
+  const [payPeriod, setPayPeriod] = useState('2026-05');
   const [paidDays, setPaidDays] = useState('');
   const [lopDays, setLopDays] = useState('0');
-  const [payDate, setPayDate] = useState('May 01 2026');
+  const [payDate, setPayDate] = useState('2026-05-01');
 
   const [basicSalary, setBasicSalary] = useState(0);
   const [hra, setHra] = useState(0);
@@ -28,9 +25,10 @@ const PayrollGenerator = () => {
 
   const [generatedPayslips, setGeneratedPayslips] = useState<any[]>([]);
 
-  // =========================
-  // CALCULATIONS
-  // =========================
+  const employeeOptions = employees.map((employee) => ({
+    employeeName: employee.name,
+    employeeId: `EMP-${String(employee.id).padStart(3, '0')}`,
+  }));
 
   const grossEarnings =
     Number(basicSalary) +
@@ -44,9 +42,13 @@ const PayrollGenerator = () => {
   const netPay =
     grossEarnings - totalDeductions;
 
-  // =========================
-  // GENERATE PAYSLIP
-  // =========================
+  const formatMonthLabel = (value: string) =>
+    value
+      ? new Date(`${value}-01`).toLocaleString('en-US', {
+          month: 'long',
+          year: 'numeric',
+        })
+      : 'Select month';
 
   const generatePayslip = () => {
 
@@ -64,7 +66,7 @@ const PayrollGenerator = () => {
 
       employeeName,
       employeeId,
-      payPeriod,
+      payPeriod: formatMonthLabel(payPeriod),
       paidDays,
       lopDays,
       payDate,
@@ -99,8 +101,10 @@ const PayrollGenerator = () => {
     // RESET
     setEmployeeName('');
     setEmployeeId('');
+    setPayPeriod('2026-05');
     setPaidDays('');
     setLopDays('0');
+    setPayDate('2026-05-01');
 
     setBasicSalary(0);
     setHra(0);
@@ -114,15 +118,17 @@ const PayrollGenerator = () => {
 
     <SparkCard
       className="
-        p-8
-        max-w-5xl
+        p-6
+        sm:p-8
+        xl:p-10
+        max-w-7xl
         mx-auto
         bg-gradient-to-br from-[#EEF2FF] via-[#FDF4FF] to-[#ECFEFF]
         backdrop-blur-xl
         border
-        border-slate-200
+        border-slate-200/80
         rounded-[32px]
-        shadow-[0_10px_40px_rgba(0,0,0,0.08)]
+        shadow-[0_14px_45px_rgba(15,23,42,0.12)]
       "
     >
 
@@ -131,12 +137,12 @@ const PayrollGenerator = () => {
 
         <div>
 
-          <h2 className="text-3xl font-black text-slate-800">
+          <h2 className="text-3xl md:text-4xl font-black text-slate-800 leading-tight">
             Employee Pay Summary
           </h2>
 
-          <p className="text-slate-500 font-medium mt-1">
-            Generate and manage payroll details
+          <p className="text-slate-500 font-medium mt-2 text-sm md:text-base">
+            Generate and manage payroll details with a cleaner, more balanced layout.
           </p>
 
         </div>
@@ -165,109 +171,197 @@ const PayrollGenerator = () => {
       </div>
 
       {/* DETAILS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
 
-        <input
-          type="text"
-          placeholder="Employee Name"
-          value={employeeName}
-          onChange={(e) => setEmployeeName(e.target.value)}
-          className="
-            p-4
-            rounded-2xl
-            bg-[#FAFAFA]
-            border
-            border-slate-200
-            text-slate-800
-            outline-none
-            focus:border-slate-400
-            focus:ring-4
-            focus:ring-slate-100
-            transition-all
-          "
-        />
+        <div className="relative">
+          <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Employee Name</label>
+          <button
+            type="button"
+            onClick={() => setIsNameMenuOpen((prev) => !prev)}
+            className="
+              h-14
+              w-full
+              px-4
+              rounded-2xl
+              bg-white/90
+              border
+              border-slate-200
+              text-slate-800
+              shadow-sm
+              text-left
+              flex
+              items-center
+              justify-between
+              focus:border-slate-400
+              focus:ring-4
+              focus:ring-slate-100
+              transition-all
+            "
+          >
+            <span className={employeeName ? 'text-slate-800' : 'text-slate-400'}>
+              {employeeName || 'Select employee name'}
+            </span>
+            <span className="text-slate-400">▾</span>
+          </button>
 
-        <input
-          type="text"
-          placeholder="Employee ID"
-          value={employeeId}
-          onChange={(e) => setEmployeeId(e.target.value)}
-          className="
-            p-4
-            rounded-2xl
-            bg-[#FAFAFA]
-            border
-            border-slate-200
-            text-slate-800
-            outline-none
-            focus:border-slate-400
-            focus:ring-4
-            focus:ring-slate-100
-            transition-all
-          "
-        />
+          {isNameMenuOpen && (
+            <div className="absolute left-0 right-0 top-full z-20 mt-2 max-h-56 overflow-auto rounded-2xl border border-slate-200 bg-white shadow-xl">
+              {employeeOptions.map((item) => (
+                <button
+                  key={item.employeeId}
+                  type="button"
+                  onClick={() => {
+                    setEmployeeName(item.employeeName);
+                    setEmployeeId(item.employeeId);
+                    setIsNameMenuOpen(false);
+                  }}
+                  className="w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-50"
+                >
+                  {item.employeeName}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
-        <input
-          type="text"
-          value={payPeriod}
-          onChange={(e) => setPayPeriod(e.target.value)}
-          className="
-            p-4
-            rounded-2xl
-            bg-[#FAFAFA]
-            border
-            border-slate-200
-            text-slate-800
-            outline-none
-          "
-        />
+        <div className="relative">
+          <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Employee ID</label>
+          <button
+            type="button"
+            onClick={() => setIsIdMenuOpen((prev) => !prev)}
+            className="
+              h-14
+              w-full
+              px-4
+              rounded-2xl
+              bg-white/90
+              border
+              border-slate-200
+              text-slate-800
+              shadow-sm
+              text-left
+              flex
+              items-center
+              justify-between
+              focus:border-slate-400
+              focus:ring-4
+              focus:ring-slate-100
+              transition-all
+            "
+          >
+            <span className={employeeId ? 'text-slate-800' : 'text-slate-400'}>
+              {employeeId || 'Select employee ID'}
+            </span>
+            <span className="text-slate-400">▾</span>
+          </button>
 
-        <input
-          type="number"
-          placeholder="Paid Days"
-          value={paidDays}
-          onChange={(e) => setPaidDays(e.target.value)}
-          className="
-            p-4
-            rounded-2xl
-            bg-[#FAFAFA]
-            border
-            border-slate-200
-            text-slate-800
-            outline-none
-          "
-        />
+          {isIdMenuOpen && (
+            <div className="absolute left-0 right-0 top-full z-20 mt-2 max-h-56 overflow-auto rounded-2xl border border-slate-200 bg-white shadow-xl">
+              {employeeOptions.map((item) => (
+                <button
+                  key={item.employeeId}
+                  type="button"
+                  onClick={() => {
+                    setEmployeeId(item.employeeId);
+                    setEmployeeName(item.employeeName);
+                    setIsIdMenuOpen(false);
+                  }}
+                  className="w-full px-4 py-3 text-left text-sm text-slate-700 hover:bg-slate-50"
+                >
+                  {item.employeeId}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
-        <input
-          type="number"
-          placeholder="Loss Of Pay Days"
-          value={lopDays}
-          onChange={(e) => setLopDays(e.target.value)}
-          className="
-            p-4
-            rounded-2xl
-            bg-[#FAFAFA]
-            border
-            border-slate-200
-            text-slate-800
-            outline-none
-          "
-        />
+        <div>
+          <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Pay Month</label>
+          <input
+            type="month"
+            value={payPeriod}
+            onChange={(e) => setPayPeriod(e.target.value)}
+            className="
+              h-14
+              w-full
+              px-4
+              rounded-2xl
+              bg-white/90
+              border
+              border-slate-200
+              text-slate-800
+              shadow-sm
+              outline-none
+            "
+          />
+          <p className="mt-1 text-xs text-slate-400">Select the payroll month</p>
+        </div>
 
-        <input
-          type="text"
-          value={payDate}
-          onChange={(e) => setPayDate(e.target.value)}
-          className="
-            p-4
-            rounded-2xl
-            bg-[#FAFAFA]
-            border
-            border-slate-200
-            text-slate-800
-            outline-none
-          "
-        />
+        <div>
+          <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Paid Days</label>
+          <input
+            type="number"
+            placeholder="Enter working days paid"
+            value={paidDays}
+            onChange={(e) => setPaidDays(e.target.value)}
+            className="
+              h-14
+              w-full
+              px-4
+              rounded-2xl
+              bg-[#FAFAFA]
+              border
+              border-slate-200
+              text-slate-800
+              outline-none
+            "
+          />
+          <p className="mt-1 text-xs text-slate-400">Number of days paid for this month</p>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">LOP Days</label>
+          <input
+            type="number"
+            placeholder="Enter unpaid days"
+            value={lopDays}
+            onChange={(e) => setLopDays(e.target.value)}
+            className="
+              h-14
+              w-full
+              px-4
+              rounded-2xl
+              bg-[#FAFAFA]
+              border
+              border-slate-200
+              text-slate-800
+              outline-none
+            "
+          />
+          <p className="mt-1 text-xs text-slate-400">Loss of pay days if any</p>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Pay Date</label>
+          <input
+            type="date"
+            value={payDate}
+            onChange={(e) => setPayDate(e.target.value)}
+            className="
+              h-14
+              w-full
+              px-4
+              rounded-2xl
+              bg-white/90
+              border
+              border-slate-200
+              text-slate-800
+              shadow-sm
+              outline-none
+            "
+          />
+          <p className="mt-1 text-xs text-slate-400">Date on which salary will be paid</p>
+        </div>
 
       </div>
 
@@ -280,7 +374,7 @@ const PayrollGenerator = () => {
 
         <div className="space-y-4">
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             <input
               type="text"
@@ -318,7 +412,7 @@ const PayrollGenerator = () => {
 
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             <input
               type="text"
@@ -369,7 +463,7 @@ const PayrollGenerator = () => {
 
         <div className="space-y-4">
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             <input
               type="text"
@@ -407,7 +501,7 @@ const PayrollGenerator = () => {
 
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             <input
               type="text"
@@ -445,7 +539,7 @@ const PayrollGenerator = () => {
 
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             <input
               type="text"
@@ -494,6 +588,8 @@ const PayrollGenerator = () => {
         <div
           className="
             p-6
+            md:p-7
+            min-h-[132px]
             rounded-[28px]
             bg-gradient-to-br
             from-[#E0F2FE]
@@ -510,7 +606,7 @@ const PayrollGenerator = () => {
             Gross Earnings
           </p>
 
-          <h3 className="text-3xl font-black text-slate-800 mt-2">
+          <h3 className="text-3xl md:text-4xl font-black text-slate-800 mt-3 leading-tight">
             ₹{grossEarnings}
           </h3>
 
@@ -520,6 +616,8 @@ const PayrollGenerator = () => {
         <div
           className="
             p-6
+            md:p-7
+            min-h-[132px]
             rounded-[28px]
             bg-gradient-to-br
             from-[#FFE4E6]
@@ -536,7 +634,7 @@ const PayrollGenerator = () => {
             Total Deductions
           </p>
 
-          <h3 className="text-3xl font-black text-slate-800 mt-2">
+          <h3 className="text-3xl md:text-4xl font-black text-slate-800 mt-3 leading-tight">
             ₹{totalDeductions}
           </h3>
 
@@ -546,6 +644,8 @@ const PayrollGenerator = () => {
         <div
           className="
             p-6
+            md:p-7
+            min-h-[132px]
             rounded-[28px]
             bg-gradient-to-br
             from-[#DCFCE7]
@@ -562,7 +662,7 @@ const PayrollGenerator = () => {
             Net Pay
           </p>
 
-          <h3 className="text-3xl font-black text-slate-800 mt-2">
+          <h3 className="text-3xl md:text-4xl font-black text-slate-800 mt-3 leading-tight">
             ₹{netPay}
           </h3>
 

@@ -1,7 +1,3 @@
-// =========================
-// REPORTS MODULE UPDATED
-// Premium Pastel Dashboard UI
-// =========================
 
 import {
   type Dispatch,

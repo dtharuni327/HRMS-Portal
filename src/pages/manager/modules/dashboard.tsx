@@ -233,11 +233,8 @@ useEffect(() => {
             h-48
             md:h-56
             rounded-[2rem]
-            bg-gradient-to-br
-            from-[#0f172a]
-            via-[#111827]
-            to-[#1e293b]
-            border-transparent
+            bg-[#0f172a]
+            border border-white/10
             shadow-[0_18px_50px_rgba(15,23,42,0.45)]
           "
         >

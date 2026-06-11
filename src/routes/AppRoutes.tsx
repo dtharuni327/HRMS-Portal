@@ -13,6 +13,7 @@ import HRDashboard from "../pages/hr/HRDashboard";
 import ManagerDashboard from "../pages/manager/ManagerDashboard";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import ClientDashboard from "../pages/client/ClientDashboard";
+import FinanceDashboard from "../pages/Finance/FinanceDashboard.tsx.tsx";
  
 // Super Admin pages
 import SuperAdminDashboard from "../pages/super-admin/SuperAdminDashboard";
@@ -129,6 +130,18 @@ const AppRoutes: React.FC = () => {
         }
       />
  
+      {/* Finance Routes */}
+      <Route
+        path="/finance"
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRoles={["FINANCE", "Finance"]}>
+              <FinanceDashboard />
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+
       {/* Client Routes */}
       <Route
         path="/client"

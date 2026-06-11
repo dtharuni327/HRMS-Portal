@@ -862,12 +862,10 @@ ${formData.email}`
     overflow-hidden
     font-sans
     relative
-    p-4
+    p-5
+    md:p-6
 
-    bg-gradient-to-br
-    from-[#081a4a]
-    via-[#11286d]
-    to-[#05112b]
+    bg-[#081a4a]
 
     text-slate-100
   "
@@ -877,9 +875,8 @@ ${formData.email}`
       <aside
         onMouseEnter={() => setSidebarOpen(true)}
         onMouseLeave={() => setSidebarOpen(false)}
-        className={`group/sidebar fixed inset-y-5 left-5 z-50 overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-gradient-to-b from-[#071b44] via-[#081d45] to-[#061738] py-4 px-3 shadow-[0_25px_60px_rgba(0,0,0,0.45)] transition-all duration-300 ease-in-out backdrop-blur-xl ${sidebarOpen ? 'w-[250px]' : 'w-[96px]'}`}
+        className={`group/sidebar fixed inset-y-6 left-6 z-50 overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] py-5 px-3 shadow-[0_25px_60px_rgba(0,0,0,0.45)] transition-all duration-300 ease-in-out backdrop-blur-xl ${sidebarOpen ? 'w-[250px]' : 'w-[96px]'}`}
       >
-        <div className="pointer-events-none absolute inset-0 rounded-[2.2rem] bg-[linear-gradient(to_bottom,rgba(59,130,246,0.08),transparent_18%,transparent_82%,rgba(168,85,247,0.06))]" />
         <div className="relative z-10 flex h-full flex-col">
           <nav className="flex flex-1 flex-col gap-1.5 pt-1 min-h-0 overflow-hidden">
             <SidebarIcon icon={<Home size={20} />} label="Home" active={activeTab === 'Home'} onClick={() => setActiveTab('Home')} />
@@ -978,14 +975,18 @@ ${formData.email}`
     flex-col
     relative
     z-10
+    overflow-hidden
+    px-3
+    pb-6
+    pt-3
     transition-all
     duration-300
     min-w-0
 
     ${
       sidebarOpen
-        ? 'ml-[280px]'
-        : 'ml-[132px]'
+        ? 'ml-[292px]'
+        : 'ml-[140px]'
     }
   `}
 >
@@ -1022,7 +1023,7 @@ ${formData.email}`
     overflow-y-auto
     hide-scrollbar
     min-w-0
-    pr-4
+    pr-2
   "
 >
           {activeTab === 'Home' && activePage === 'profile' && (
@@ -1140,7 +1141,7 @@ ${formData.email}`
 const SidebarIcon: React.FC<SidebarIconProps> = ({ icon, label, active, onClick, isLogout }) => (
   <button
     onClick={onClick}
-    className={`relative flex h-[58px] w-full items-center justify-center rounded-[1.4rem] transition-all duration-300 group-hover/sidebar:justify-start group-hover/sidebar:px-[18px] ${active ? 'bg-gradient-to-r from-[#5a4bc7] to-[#4b3f99] text-white shadow-[0_10px_30px_rgba(91,75,199,0.35)]' : 'text-slate-400 hover:bg-white/5 hover:text-white'} ${isLogout ? 'hover:text-rose-400 hover:bg-rose-500/10' : ''}`}
+    className={`relative flex h-[58px] w-full items-center justify-center rounded-[1.4rem] transition-all duration-300 group-hover/sidebar:justify-start group-hover/sidebar:px-[18px] ${active ? 'bg-[#1e3a8a] text-white shadow-[0_10px_30px_rgba(15,23,42,0.35)]' : 'text-slate-400 hover:bg-white/5 hover:text-white'} ${isLogout ? 'hover:text-rose-400 hover:bg-rose-500/10' : ''}`}
   >
     <div
       className={`absolute left-1/2 flex h-12 w-12 -translate-x-1/2 items-center justify-center transition-all duration-300 group-hover/sidebar:left-[18px] group-hover/sidebar:translate-x-0 ${active ? 'text-[#7dd3fc]' : 'text-slate-400 group-hover/sidebar:text-white'}`}
@@ -1150,7 +1151,7 @@ const SidebarIcon: React.FC<SidebarIconProps> = ({ icon, label, active, onClick,
     <span className="ml-[62px] whitespace-nowrap text-[15px] font-semibold tracking-wide opacity-0 transition-all duration-300 group-hover/sidebar:opacity-100">
       {label}
     </span>
-    {active && <div className="absolute left-0 w-1 h-6 bg-gradient-to-b from-[#f5d0fe] via-[#c084fc] to-[#a855f7] rounded-r-full shadow-[0_0_12px_rgba(192,132,252,0.9)]" />}
+    {active && <div className="absolute left-0 w-1 h-6 rounded-r-full bg-[#7dd3fc] shadow-[0_0_12px_rgba(125,211,252,0.45)]" />}
   </button>
 );
 

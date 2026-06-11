@@ -27,10 +27,6 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
   setWfhRequests
 }) => {
 
-  // =========================
-  // STATE
-  // =========================
-
   const allLeaveRequests = leaveData;
 
   const [activeRejectLeaveId, setActiveRejectLeaveId] = useState<number | null>(null);
@@ -62,8 +58,6 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
     .filter((leave) => leave.status === 'Approved')
     .reduce((sum, leave) => sum + leave.days, 0);
   const pendingCount = leaveData.filter((leave) => leave.status === 'Pending').length;
-
-  
 
   // Per-employee stats used by the per-request dropdown
   const [openStatsFor, setOpenStatsFor] = useState<number | null>(null);
@@ -206,11 +200,6 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
 
     setActiveRejectWfhId(null);
   };
-
-  // =========================
-  // APPROVE LEAVE
-  // =========================
-
   const approveLeave = (leaveId: number) => {
     setLeaveData((prev) =>
       prev.map((leave) =>
@@ -272,10 +261,6 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
         : [...prev, leaveId]
     );
   };
-
-  // =========================
-  // REJECT LEAVE
-  // =========================
 
   const approveWfhRequest = (requestId: number) => {
     setWfhRequests((prev) =>
@@ -636,20 +621,20 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
                     </div>
 
                     {openStatsFor === leave.id && (
-                      <div className="mt-3 bg-slate-50 p-3 rounded-lg text-sm text-slate-700">
-                        <p className="font-semibold">Pending requests: {employeeStats[leave.employee]?.pending ?? 0}</p>
-                        <p className="mt-1">Used days: {employeeStats[leave.employee] ? Object.values(employeeStats[leave.employee].taken).reduce((a,b) => a + b, 0) : 0}d</p>
+                      <div className="mt-3 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">
+                        <p className="font-semibold">Pending requests: {employeeStats[leave.employee]?.pendingTotal ?? 0}</p>
+                        <p className="mt-1">Used days: {employeeStats[leave.employee] ? Object.values(employeeStats[leave.employee].taken).reduce((a, b) => a + b, 0) : 0}d</p>
 
                         <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
-                          <div className="p-2 bg-white rounded shadow-sm text-center">
+                          <div className="rounded bg-white p-2 text-center shadow-sm">
                             <div className="font-bold">Casual</div>
                             <div>{employeeStats[leave.employee]?.taken?.Casual ?? 0} / 12</div>
                           </div>
-                          <div className="p-2 bg-white rounded shadow-sm text-center">
+                          <div className="rounded bg-white p-2 text-center shadow-sm">
                             <div className="font-bold">Sick</div>
                             <div>{employeeStats[leave.employee]?.taken?.Sick ?? 0} / 10</div>
                           </div>
-                          <div className="p-2 bg-white rounded shadow-sm text-center">
+                          <div className="rounded bg-white p-2 text-center shadow-sm">
                             <div className="font-bold">Annual</div>
                             <div>{employeeStats[leave.employee]?.taken?.Annual ?? 0} / 18</div>
                           </div>
@@ -775,11 +760,12 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
                               bg-emerald-100
                               text-emerald-700
                               rounded-xl
-                              transition-all
+                              transition-transform
+                              duration-150
                               font-bold
                               text-[10px]
                               uppercase
-                              hover:scale-105
+                              hover:-translate-y-0.5
                             "
                           >
                             <Check size={14} />
@@ -800,11 +786,12 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
                               bg-rose-100
                               text-rose-700
                               rounded-xl
-                              transition-all
+                              transition-transform
+                              duration-150
                               font-bold
                               text-[10px]
                               uppercase
-                              hover:scale-105
+                              hover:-translate-y-0.5
                             "
                           >
                             <XCircle size={14} />
@@ -844,6 +831,19 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
 
       </SparkCard>
 
+      <div className="rounded-3xl bg-slate-900 p-4 shadow-xl sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.24em] text-slate-300">WFH Queue</p>
+            <h3 className="text-2xl font-bold text-white">WFH Requests</h3>
+           </div>
+          <div className="flex flex-wrap gap-2 text-xs font-semibold text-white">
+            <span className="inline-flex items-center rounded-full bg-emerald-500/15 px-3 py-1 text-emerald-100">Pending: {wfhRequests.filter((request) => !request.status || request.status === 'Pending').length}</span>
+            <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-slate-100">Approved: {wfhRequests.filter((request) => request.status === 'Approved').length}</span>
+          </div>
+        </div>
+      </div>
+
       <SparkCard
         className="
           overflow-hidden
@@ -856,21 +856,6 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
         "
       >
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-slate-900">WFH Requests</h3>
-              <p className="text-sm text-slate-500">
-                All work-from-home requests that need HR visibility.
-              </p>
-            </div>
-            <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700">
-  {
-    wfhRequests.filter(
-      request => !request.status || request.status === 'Pending'
-    ).length
-  } Requests
-</span>
-          </div>
 
           <div className="overflow-x-auto">
             <table className="min-w-[900px] w-full text-left text-sm text-slate-700">

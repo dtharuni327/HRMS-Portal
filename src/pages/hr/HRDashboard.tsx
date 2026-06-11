@@ -649,12 +649,10 @@ const DarkHRDashboard: React.FC = () => {
     overflow-hidden
     font-sans
     relative
-    p-4
+    p-5
+    md:p-6
 
-    bg-gradient-to-br
-    from-[#081a4a]
-    via-[#11286d]
-    to-[#05112b]
+    bg-[#081a4a]
 
     text-slate-100
   "
@@ -664,9 +662,8 @@ const DarkHRDashboard: React.FC = () => {
       <aside
         onMouseEnter={() => setSidebarOpen(true)}
         onMouseLeave={() => setSidebarOpen(false)}
-        className={`group/sidebar fixed inset-y-5 left-5 z-50 overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-gradient-to-b from-[#071b44] via-[#081d45] to-[#061738] py-4 px-3 shadow-[0_25px_60px_rgba(0,0,0,0.45)] transition-all duration-300 ease-in-out backdrop-blur-xl ${sidebarOpen ? 'w-[250px]' : 'w-[96px]'}`}
+        className={`group/sidebar fixed inset-y-6 left-6 z-50 overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] py-5 px-3 shadow-[0_25px_60px_rgba(0,0,0,0.45)] transition-all duration-300 ease-in-out backdrop-blur-xl ${sidebarOpen ? 'w-[250px]' : 'w-[96px]'}`}
       >
-        <div className="pointer-events-none absolute inset-0 rounded-[2.2rem] bg-[linear-gradient(to_bottom,rgba(59,130,246,0.08),transparent_18%,transparent_82%,rgba(168,85,247,0.06))]" />
         <div className="relative z-10 flex h-full flex-col">
           <nav className="flex flex-1 flex-col gap-1.5 pt-1 min-h-0 overflow-hidden">
             <SidebarIcon icon={<Home size={20} />} label="Home" active={activeTab === 'Dashboard'} onClick={() => setActiveTab('Dashboard')}/>
@@ -758,7 +755,7 @@ const DarkHRDashboard: React.FC = () => {
         </div>
       </aside>
 
-      <main className={`flex-1 flex flex-col relative z-10 overflow-visible transition-all duration-300 ${sidebarOpen ? 'ml-[280px]' : 'ml-[132px]'}`}>
+      <main className={`flex-1 flex flex-col relative z-10 overflow-hidden px-3 pb-6 pt-3 transition-all duration-300 ${sidebarOpen ? 'ml-[292px]' : 'ml-[140px]'}`}>
         <DashboardNavbar
           title={activeTab === 'Dashboard' ? 'HR Dashboard' : activeTab === 'Tasks' ? 'Task Manager' : activeTab === 'Leave' ? 'Approvals' : activeTab === 'Documents' ? 'Documents' : activeTab}
           subtitle="Manage documents."
@@ -839,7 +836,7 @@ const DarkHRDashboard: React.FC = () => {
           )}
           {activeTab === 'Attendance' && <AttendanceModule employees={employees} attendanceStatus={attendanceStatus} setAttendanceStatus={setAttendanceStatus} />}
           {activeTab === 'Leave' && <LeaveModule leaveData={leaveData} setLeaveData={setLeaveData} wfhRequests={wfhRequests} setWfhRequests={setWfhRequests} />}
-          {activeTab === 'Payroll' && <PayrollModule />}
+          {activeTab === 'Payroll' && <PayrollModule employees={employees} />}
           {activeTab === 'Recruitment' && <RecruitmentModule jobs={jobs} setJobs={setJobs} />}
           {activeTab === 'Tasks' && <TaskManager />}
           {activeTab === 'Documents' && <DocumentsModule employees={employees} onboardingEntries={onboardingEntries} setOnboardingEntries={setOnboardingEntries} documents={documents} setDocuments={setDocuments} isAddingOnboard={isAddingOnboard} setIsAddingOnboard={setIsAddingOnboard} onboardingForm={onboardingForm} setOnboardingForm={setOnboardingForm} handleAddOnboarding={handleAddOnboarding} handleUploadDocument={handleUploadDocument} handleMarkOnboarded={handleMarkOnboarded} handleMarkOffboarded={handleMarkOffboarded} />}

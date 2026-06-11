@@ -57,6 +57,14 @@
       "role": "EMPLOYEE",
       "name": "Employee Two",
       "dashboard": "/employee"
+    },
+    {
+      "id": 8,
+      "email":"finance@gmail.com",
+      "password": "12345",
+      "role": "FINANCE",
+      "name": "Finance User",
+      "dashboard": "/finance"
     }
   ]
 }
