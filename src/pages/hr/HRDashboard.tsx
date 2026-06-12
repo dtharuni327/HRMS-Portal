@@ -1,8 +1,9 @@
-import React, { useState, type ReactNode, type ChangeEvent, type FormEvent } from 'react';
+import React, { useState, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import DashboardNavbar from '../../components/DashboardNavbar';
-import { Home, Users, Search, ClipboardList, Calendar, FileText, UserPlus, BookOpen, FileBarChart, Network, Briefcase, LogOut } from 'lucide-react';
+import HRSidebar from '../../components/hr/HRSidebar';
+import { Search } from 'lucide-react';
 import DashboardModule from './modules/dashboard';
 import ProfilePage from './modules/ProfilePage';
 import EmployeesModule from './modules/Employees';
@@ -18,13 +19,40 @@ import PoliciesModule from './modules/Policies';
 
 import { type Announcement, type Employee, type HRDetails, type Job, type LeaveData, type Policy, type RequestItem, type Training, type OnboardingEntry, type HRDocument, type AttendanceStatus, type Payslip } from './hrShared';
 
-interface SidebarIconProps {
-  icon: ReactNode;
-  label: string;
-  active?: boolean;
-  onClick: () => void;
-  isLogout?: boolean;
-}
+type EmployeeFormState = {
+  name: string;
+  username: string;
+  password: string;
+  email: string;
+  phone: string;
+  aadhaarNumber: string;
+  panNumber: string;
+  address: string;
+  bankName: string;
+  accountNumber: string;
+  ifsc: string;
+  branch: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  bloodGroup: string;
+  maritalStatus: string;
+  nationality: string;
+  passportNumber: string;
+  uan: string;
+  pfNumber: string;
+  esiNumber: string;
+  taxState: string;
+  workMode: 'WFH' | 'Office' | 'Hybrid' | '';
+  role: string;
+  designation: string;
+  dept: string;
+  location: string;
+  reportingManager: string;
+  salary: string;
+  experience: string;
+  joiningDate: string;
+  birthday: string;
+};
 
 const initialAnnouncements: (Announcement & { timestamp: number })[] = [
   { id: 1, title: 'Annual Hackathon 2026 Starting Soon', tag: 'Event', time: '2h ago', timestamp: Date.now() - 2 * 60 * 60 * 1000 },
@@ -50,7 +78,7 @@ const DarkHRDashboard: React.FC = () => {
   const [reportForm, setReportForm] = useState({ name: '' });
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [policyForm, setPolicyForm] = useState({ title: '', content: '', file: null as File | null, type: 'text' as 'text' | 'pdf' });
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<EmployeeFormState>({
     name: '',
     username: '',
     password: '',
@@ -59,6 +87,21 @@ const DarkHRDashboard: React.FC = () => {
     aadhaarNumber: '',
     panNumber: '',
     address: '',
+    bankName: '',
+    accountNumber: '',
+    ifsc: '',
+    branch: '',
+    emergencyContactName: '',
+    emergencyContactPhone: '',
+    bloodGroup: '',
+    maritalStatus: '',
+    nationality: '',
+    passportNumber: '',
+    uan: '',
+    pfNumber: '',
+    esiNumber: '',
+    taxState: '',
+    workMode: '',
     role: '',
     designation: '',
     dept: '',
@@ -438,6 +481,21 @@ const DarkHRDashboard: React.FC = () => {
       aadhaarNumber: '',
       panNumber: '',
       address: '',
+      bankName: '',
+      accountNumber: '',
+      ifsc: '',
+      branch: '',
+      emergencyContactName: '',
+      emergencyContactPhone: '',
+      bloodGroup: '',
+      maritalStatus: '',
+      nationality: '',
+      passportNumber: '',
+      uan: '',
+      pfNumber: '',
+      esiNumber: '',
+      taxState: '',
+      workMode: '',
       role: '',
       designation: '',
       dept: '',
@@ -467,6 +525,21 @@ const DarkHRDashboard: React.FC = () => {
       aadhaarNumber: employee.aadhaarNumber ?? '',
       panNumber: employee.panNumber ?? '',
       address: employee.address ?? '',
+      bankName: employee.bankName ?? '',
+      accountNumber: employee.accountNumber ?? '',
+      ifsc: employee.ifsc ?? '',
+      branch: employee.branch ?? '',
+      emergencyContactName: employee.emergencyContactName ?? '',
+      emergencyContactPhone: employee.emergencyContactPhone ?? '',
+      bloodGroup: employee.bloodGroup ?? '',
+      maritalStatus: employee.maritalStatus ?? '',
+      nationality: employee.nationality ?? '',
+      passportNumber: employee.passportNumber ?? '',
+      uan: employee.uan ?? '',
+      pfNumber: employee.pfNumber ?? '',
+      esiNumber: employee.esiNumber ?? '',
+      taxState: employee.taxState ?? '',
+      workMode: employee.workMode ?? '',
       role: employee.role,
       designation: employee.designation ?? '',
       dept: employee.dept,
@@ -495,6 +568,7 @@ const DarkHRDashboard: React.FC = () => {
         aadhaarNumber: formData.aadhaarNumber,
         panNumber: formData.panNumber,
         address: formData.address,
+        workMode: formData.workMode,
         role: formData.role,
         designation: formData.designation,
         dept: formData.dept,
@@ -517,6 +591,7 @@ const DarkHRDashboard: React.FC = () => {
         aadhaarNumber: formData.aadhaarNumber,
         panNumber: formData.panNumber,
         address: formData.address,
+        workMode: formData.workMode,
         role: formData.role,
         designation: formData.designation,
         dept: formData.dept,
@@ -659,101 +734,13 @@ const DarkHRDashboard: React.FC = () => {
 >
       <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
 
-      <aside
-        onMouseEnter={() => setSidebarOpen(true)}
-        onMouseLeave={() => setSidebarOpen(false)}
-        className={`group/sidebar fixed inset-y-6 left-6 z-50 overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] py-5 px-3 shadow-[0_25px_60px_rgba(0,0,0,0.45)] transition-all duration-300 ease-in-out backdrop-blur-xl ${sidebarOpen ? 'w-[250px]' : 'w-[96px]'}`}
-      >
-        <div className="relative z-10 flex h-full flex-col">
-          <nav className="flex flex-1 flex-col gap-1.5 pt-1 min-h-0 overflow-hidden">
-            <SidebarIcon icon={<Home size={20} />} label="Home" active={activeTab === 'Dashboard'} onClick={() => setActiveTab('Dashboard')}/>
-            <SidebarIcon icon={<Users size={20} />} label="Employees" active={activeTab === 'Employees'} onClick={() => setActiveTab('Employees')} />
-            <SidebarIcon icon={<Briefcase size={20} />} label="Task Manager" active={activeTab === 'Tasks'} onClick={() => setActiveTab('Tasks')} />
-            <SidebarIcon icon={<ClipboardList size={20} />} label="Attendance" active={activeTab === 'Attendance'} onClick={() => setActiveTab('Attendance')} />
-            <SidebarIcon icon={<Calendar size={20} />} label="Approvals" active={activeTab === 'Leave'} onClick={() => setActiveTab('Leave')} />
-            <SidebarIcon icon={<FileText size={20} />} label="Payroll" active={activeTab === 'Payroll'} onClick={() => setActiveTab('Payroll')} />
-            <SidebarIcon icon={<UserPlus size={20} />} label="Recruitment" active={activeTab === 'Recruitment'} onClick={() => setActiveTab('Recruitment')} />
-            <SidebarIcon icon={<BookOpen size={20} />} label="Documents" active={activeTab === 'Documents'} onClick={() => setActiveTab('Documents')} />
-            <SidebarIcon icon={<FileBarChart size={20} />} label="Reports & Policies" active={activeTab === 'Reports'} onClick={() => setActiveTab('Reports')} />
-            <SidebarIcon icon={<Network size={20} />} label="Organization" active={activeTab === 'Organization'} onClick={() => setActiveTab('Organization')} />
-          </nav>
-          {/* LOGOUT SECTION */}
-<div
-  className="
-    mt-3
-    pt-3
-    pb-1
-    border-t
-    border-white/10
-  "
->
-
-  <button
-    onClick={handleLogout}
-    className="
-      relative
-      flex
-      h-[56px]
-      w-full
-      items-center
-      rounded-[1.4rem]
-      transition-all
-      duration-300
-
-      justify-center
-      group-hover/sidebar:justify-start
-
-      px-0
-      group-hover/sidebar:px-[18px]
-
-      text-[#7dd3fc]
-      hover:bg-white/5
-    "
-  >
-
-    {/* ICON */}
-    <div
-      className="
-        flex
-        h-10
-        w-10
-        items-center
-        justify-center
-        shrink-0
-      "
-    >
-      <LogOut size={20} />
-    </div>
-
-    {/* TEXT */}
-    <span
-      className="
-        whitespace-nowrap
-        text-[15px]
-        font-semibold
-        tracking-wide
-
-        opacity-0
-        w-0
-
-        transition-all
-        duration-300
-
-        overflow-hidden
-
-        group-hover/sidebar:opacity-100
-        group-hover/sidebar:w-auto
-        group-hover/sidebar:ml-3
-      "
-    >
-      SIGN OUT
-    </span>
-
-  </button>
-
-</div>
-        </div>
-      </aside>
+      <HRSidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        onLogout={handleLogout}
+      />
 
       <main className={`flex-1 flex flex-col relative z-10 overflow-hidden px-3 pb-6 pt-3 transition-all duration-300 ${sidebarOpen ? 'ml-[292px]' : 'ml-[140px]'}`}>
         <DashboardNavbar
@@ -872,22 +859,5 @@ const DarkHRDashboard: React.FC = () => {
     </div>
   );
 };
-
-const SidebarIcon: React.FC<SidebarIconProps> = ({ icon, label, active, onClick, isLogout }) => (
-  <button
-    onClick={onClick}
-    className={`relative flex h-[58px] w-full items-center justify-center rounded-[1.4rem] transition-all duration-300 group-hover/sidebar:justify-start group-hover/sidebar:px-[18px] ${active ? 'bg-gradient-to-r from-[#5a4bc7] to-[#4b3f99] text-white shadow-[0_10px_30px_rgba(91,75,199,0.35)]' : 'text-slate-400 hover:bg-white/5 hover:text-white'} ${isLogout ? 'hover:text-rose-400 hover:bg-rose-500/10' : ''}`}
-  >
-    <div
-      className={`absolute left-1/2 flex h-12 w-12 -translate-x-1/2 items-center justify-center transition-all duration-300 group-hover/sidebar:left-[18px] group-hover/sidebar:translate-x-0 ${active ? 'text-[#7dd3fc]' : 'text-slate-400 group-hover/sidebar:text-white'}`}
-    >
-      {icon}
-    </div>
-    <span className="ml-[62px] whitespace-nowrap text-[15px] font-semibold tracking-wide opacity-0 transition-all duration-300 group-hover/sidebar:opacity-100">
-      {label}
-    </span>
-    {active && <div className="absolute left-0 w-1 h-6 bg-gradient-to-b from-[#f5d0fe] via-[#c084fc] to-[#a855f7] rounded-r-full shadow-[0_0_12px_rgba(192,132,252,0.9)]" />}
-  </button>
-);
 
 export default DarkHRDashboard;

@@ -38,6 +38,21 @@ interface EmployeeFormData {
 
   address: string;
 
+  bankName: string;
+  accountNumber: string;
+  ifsc: string;
+  branch: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  bloodGroup: string;
+  maritalStatus: string;
+  nationality: string;
+  passportNumber: string;
+  uan: string;
+  pfNumber: string;
+  esiNumber: string;
+  taxState: string;
+
   role: string;
 
   designation: string;
@@ -55,7 +70,10 @@ interface EmployeeFormData {
   joiningDate: string;
 
   birthday: string;
+
   gender: string;
+
+  workMode: 'WFH' | 'Office' | 'Hybrid' | '';
 }
 
 interface EmployeesModuleProps {
@@ -622,6 +640,26 @@ const EmployeesModule: FC<
               }
             />
 
+            <div className="col-span-2 rounded-3xl border border-violet-100 bg-violet-50/80 p-4">
+              <p className="mb-3 text-[11px] font-black uppercase tracking-[0.35em] text-violet-700">Bank & Compliance Details</p>
+              <div className="grid grid-cols-2 gap-4">
+                <input placeholder="Bank Name" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.bankName} onChange={(e) => setFormData({ ...formData, bankName: e.target.value })} />
+                <input placeholder="Account Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.accountNumber} onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })} />
+                <input placeholder="IFSC Code" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.ifsc} onChange={(e) => setFormData({ ...formData, ifsc: e.target.value })} />
+                <input placeholder="Branch" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.branch} onChange={(e) => setFormData({ ...formData, branch: e.target.value })} />
+                <input placeholder="Emergency Contact Name" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.emergencyContactName} onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })} />
+                <input placeholder="Emergency Contact Phone" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.emergencyContactPhone} onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })} />
+                <input placeholder="Blood Group" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.bloodGroup} onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })} />
+                <input placeholder="Marital Status" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.maritalStatus} onChange={(e) => setFormData({ ...formData, maritalStatus: e.target.value })} />
+                <input placeholder="Nationality" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} />
+                <input placeholder="Passport Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.passportNumber} onChange={(e) => setFormData({ ...formData, passportNumber: e.target.value })} />
+                <input placeholder="UAN" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.uan} onChange={(e) => setFormData({ ...formData, uan: e.target.value })} />
+                <input placeholder="PF Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.pfNumber} onChange={(e) => setFormData({ ...formData, pfNumber: e.target.value })} />
+                <input placeholder="ESI Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.esiNumber} onChange={(e) => setFormData({ ...formData, esiNumber: e.target.value })} />
+                <input placeholder="Tax State" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.taxState} onChange={(e) => setFormData({ ...formData, taxState: e.target.value })} />
+              </div>
+            </div>
+
             {/* DEPARTMENT */}
 <select
   required
@@ -747,6 +785,36 @@ const EmployeesModule: FC<
     })
   }
 />
+
+{/* WORK MODE */}
+<select
+  required
+  className="
+    p-4
+    bg-white
+    border
+    border-slate-300
+    rounded-2xl
+    outline-none
+    text-slate-900
+    focus:ring-2
+    focus:ring-violet-300
+    focus:border-violet-400
+    transition-all
+  "
+  value={formData.workMode}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      workMode: e.target.value as 'WFH' | 'Office' | 'Hybrid' | '',
+    })
+  }
+>
+  <option value="">Select Work Mode</option>
+  <option value="WFH">WFH</option>
+  <option value="Office">Office</option>
+  <option value="Hybrid">Hybrid</option>
+</select>
 
 {/* LOCATION */}
 <input

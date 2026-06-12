@@ -1,8 +1,8 @@
-import React, { useState, useEffect, type ReactNode, type ChangeEvent, type FormEvent } from 'react';
+import React, { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import DashboardNavbar from '../../components/DashboardNavbar';
-import { Briefcase, CheckCircle2, BarChart3, Calendar, Users, Clock, FileText, LogOut, Home } from 'lucide-react';
+import ManagerSidebar from '../../components/manager/ManagerSidebar';
 import DashboardModule from './modules/dashboard';
 import ProfilePage from './modules/ProfilePage';
 import ApprovalsModule from './modules/Approvals';
@@ -15,15 +15,43 @@ import TeamDirectoryModule from './modules/TeamDirectory';
 import TeamLeaveCalendarModule from './modules/TeamLeaveCalendar';
 import TaskManagerModule from './modules/TaskManager';
 
-import { type Announcement, type Employee, type HRDetails, type Job, type LeaveData, type Policy, type RequestItem, type Training, type OnboardingEntry, type HRDocument, type AttendanceStatus, type Payslip } from './managerShared';
+import { type Announcement, type Employee, type HRDetails, type Job, type LeaveData, type Policy, type RequestItem, type Training, type AttendanceStatus, type Payslip } from './managerShared';
 
-interface SidebarIconProps {
-  icon: ReactNode;
-  label: string;
-  active?: boolean;
-  onClick: () => void;
-  isLogout?: boolean;
-}
+type EmployeeFormState = {
+  name: string;
+  username: string;
+  password: string;
+  email: string;
+  phone: string;
+  aadhaarNumber: string;
+  panNumber: string;
+  address: string;
+  bankName: string;
+  accountNumber: string;
+  ifsc: string;
+  branch: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  bloodGroup: string;
+  maritalStatus: string;
+  nationality: string;
+  passportNumber: string;
+  uan: string;
+  pfNumber: string;
+  esiNumber: string;
+  taxState: string;
+  workMode: 'WFH' | 'Office' | 'Hybrid' | '';
+  role: string;
+  designation: string;
+  dept: string;
+  location: string;
+  reportingManager: string;
+  salary: string;
+  experience: string;
+  joiningDate: string;
+  birthday: string;
+  gender: string;
+};
 
 const initialAnnouncements: (Announcement & { timestamp: number })[] = [
   { id: 1, title: 'Annual Hackathon 2026 Starting Soon', tag: 'Event', time: '2h ago', timestamp: Date.now() - 2 * 60 * 60 * 1000 },
@@ -39,20 +67,14 @@ const DarkHRDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'Home' | 'Approvals' | 'Regularisation' | 'Attendance' | 'AttendanceAnalytics' | 'ProjectEffortReport' | 'TeamDirectory' | 'TeamLeaveCalendar' | 'Employee' | 'TaskManager'>('Home');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const [isAddingReport, setIsAddingReport] = useState(false);
-  const [isAddingPolicy, setIsAddingPolicy] = useState(false);
-  const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
   const [staffSearch, setStaffSearch] = useState('');
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
   const [announcementForm, setAnnouncementForm] = useState({ title: '', tag: '' });
-  const [reportForm, setReportForm] = useState({ name: '' });
   const [profileImage, setProfileImage] = useState<string | null>(() =>
     localStorage.getItem('employeeProfileImage') || null
   );
-  const [policyForm, setPolicyForm] = useState({ title: '', content: '', file: null as File | null, type: 'text' as 'text' | 'pdf' });
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<EmployeeFormState>({
     name: '',
     username: '',
     password: '',
@@ -61,6 +83,21 @@ const DarkHRDashboard: React.FC = () => {
     aadhaarNumber: '',
     panNumber: '',
     address: '',
+    bankName: '',
+    accountNumber: '',
+    ifsc: '',
+    branch: '',
+    emergencyContactName: '',
+    emergencyContactPhone: '',
+    bloodGroup: '',
+    maritalStatus: '',
+    nationality: '',
+    passportNumber: '',
+    uan: '',
+    pfNumber: '',
+    esiNumber: '',
+    taxState: '',
+    workMode: '',
     role: '',
     designation: '',
     dept: '',
@@ -70,10 +107,8 @@ const DarkHRDashboard: React.FC = () => {
     experience: '',
     joiningDate: '',
     birthday: '',
-    gender: ''
+    gender: 'Male'
   });
-  const [onboardingForm, setOnboardingForm] = useState({ name: '', role: '', dept: '', startDate: '', manager: '' });
-  const [isAddingOnboard, setIsAddingOnboard] = useState(false);
   const [activePage, setActivePage] = useState<'dashboard' | 'profile'>('dashboard');
   const [employeeData] = useState({
     name: 'Rajesh Kumar',
@@ -105,15 +140,6 @@ const DarkHRDashboard: React.FC = () => {
     avatar: employeeData.name.split(' ').map(n => n[0]).join('').toUpperCase(),
     gender: employeeData.gender || 'Male'
   };
-  const [onboardingEntries, setOnboardingEntries] = useState<OnboardingEntry[]>([
-    { id: 1, name: 'Meera Nair', role: 'HR Executive', dept: 'Admin', startDate: '2026-06-01', manager: 'Priya Singh', status: 'Pending' },
-    { id: 2, name: 'Aarav Joshi', role: 'Backend Developer', dept: 'Tech', startDate: '2026-06-10', manager: 'Rahul Sharma', status: 'Pending' },
-  ]);
-  const [documents, setDocuments] = useState<HRDocument[]>([
-    { id: 1, name: 'Offer Letter - Meera Nair.pdf', type: 'pdf', uploadedBy: 'Shrushti Desu', uploadedAt: '2026-05-15', employeeId: 10 },
-    { id: 2, name: 'NDA - Aarav Joshi.pdf', type: 'pdf', uploadedBy: 'Shrushti Desu', uploadedAt: '2026-05-16', employeeId: 2 },
-  ]);
-  
   const [trainings] = useState<Training[]>([
     { id: 1, title: 'Leadership Essentials', instructor: 'Maya Singh', enrollees: 24, status: 'Upcoming', completion: 0 },
     { id: 2, title: 'Advanced Excel', instructor: 'Rohan Patel', enrollees: 18, status: 'Active', completion: 45 },
@@ -425,12 +451,12 @@ const DarkHRDashboard: React.FC = () => {
     { id: 5, name: 'Vikram Seth', type: 'Regularisation', reason: 'Late swipe after onsite session', date: 'May 10', status: 'Pending' }
   ]);
 
-  const [jobs, setJobs] = useState<Job[]>([
+  const [jobs] = useState<Job[]>([
     { id: 1, title: 'Frontend Developer', dept: 'Tech', applicants: 12, status: 'Open' },
     { id: 2, title: 'UI/UX Intern', dept: 'Design', applicants: 45, status: 'Urgent' }
   ]);
 
-  const [policies, setPolicies] = useState<Policy[]>([
+  const [policies] = useState<Policy[]>([
     { id: 1, title: 'Code of Conduct', content: 'Expected behavior standards...', type: 'text', lastUpdated: '2026-04-15' },
     { id: 2, title: 'Leave Policy', content: 'Entitled leave types...', type: 'text', lastUpdated: '2026-03-20' },
     { id: 3, title: 'Remote Work Policy', content: 'Guidelines for working remotely...', type: 'pdf', lastUpdated: '2026-02-10' }
@@ -479,6 +505,21 @@ const DarkHRDashboard: React.FC = () => {
       aadhaarNumber: '',
       panNumber: '',
       address: '',
+      bankName: '',
+      accountNumber: '',
+      ifsc: '',
+      branch: '',
+      emergencyContactName: '',
+      emergencyContactPhone: '',
+      bloodGroup: '',
+      maritalStatus: '',
+      nationality: '',
+      passportNumber: '',
+      uan: '',
+      pfNumber: '',
+      esiNumber: '',
+      taxState: '',
+      workMode: '',
       role: '',
       designation: '',
       dept: '',
@@ -509,6 +550,21 @@ const DarkHRDashboard: React.FC = () => {
       aadhaarNumber: employee.aadhaarNumber || '',
       panNumber: employee.panNumber || '',
       address: employee.address || '',
+      bankName: employee.bankName || '',
+      accountNumber: employee.accountNumber || '',
+      ifsc: employee.ifsc || '',
+      branch: employee.branch || '',
+      emergencyContactName: employee.emergencyContactName || '',
+      emergencyContactPhone: employee.emergencyContactPhone || '',
+      bloodGroup: employee.bloodGroup || '',
+      maritalStatus: employee.maritalStatus || '',
+      nationality: employee.nationality || '',
+      passportNumber: employee.passportNumber || '',
+      uan: employee.uan || '',
+      pfNumber: employee.pfNumber || '',
+      esiNumber: employee.esiNumber || '',
+      taxState: employee.taxState || '',
+      workMode: employee.workMode || '',
       role: employee.role,
       designation: employee.designation || '',
       dept: employee.dept,
@@ -571,6 +627,51 @@ const DarkHRDashboard: React.FC = () => {
 
               address:
                 formData.address,
+
+              workMode:
+                formData.workMode,
+
+              bankName:
+                formData.bankName,
+
+              accountNumber:
+                formData.accountNumber,
+
+              ifsc:
+                formData.ifsc,
+
+              branch:
+                formData.branch,
+
+              emergencyContactName:
+                formData.emergencyContactName,
+
+              emergencyContactPhone:
+                formData.emergencyContactPhone,
+
+              bloodGroup:
+                formData.bloodGroup,
+
+              maritalStatus:
+                formData.maritalStatus,
+
+              nationality:
+                formData.nationality,
+
+              passportNumber:
+                formData.passportNumber,
+
+              uan:
+                formData.uan,
+
+              pfNumber:
+                formData.pfNumber,
+
+              esiNumber:
+                formData.esiNumber,
+
+              taxState:
+                formData.taxState,
 
               role:
                 formData.role,
@@ -641,6 +742,51 @@ const DarkHRDashboard: React.FC = () => {
       address:
         formData.address,
 
+      workMode:
+        formData.workMode,
+
+      bankName:
+        formData.bankName,
+
+      accountNumber:
+        formData.accountNumber,
+
+      ifsc:
+        formData.ifsc,
+
+      branch:
+        formData.branch,
+
+      emergencyContactName:
+        formData.emergencyContactName,
+
+      emergencyContactPhone:
+        formData.emergencyContactPhone,
+
+      bloodGroup:
+        formData.bloodGroup,
+
+      maritalStatus:
+        formData.maritalStatus,
+
+      nationality:
+        formData.nationality,
+
+      passportNumber:
+        formData.passportNumber,
+
+      uan:
+        formData.uan,
+
+      pfNumber:
+        formData.pfNumber,
+
+      esiNumber:
+        formData.esiNumber,
+
+      taxState:
+        formData.taxState,
+
       role:
         formData.role,
 
@@ -697,89 +843,6 @@ ${formData.email}`
   resetEmployeeForm();
 };
 
-  const handleAddReport = (e: FormEvent) => {
-    e.preventDefault();
-    if (reportForm.name.trim()) {
-      setReports(prev => [`${reportForm.name}.pdf`, ...prev]);
-      setReportForm({ name: '' });
-      setIsAddingReport(false);
-    }
-  };
-
-  const handleAddPolicy = (e: FormEvent) => {
-    e.preventDefault();
-    if (!policyForm.title || !policyForm.content) return;
-    setPolicies(prev => [{
-      id: Math.max(...prev.map(p => p.id), 0) + 1,
-      title: policyForm.title,
-      content: policyForm.content,
-      type: policyForm.type,
-      lastUpdated: new Date().toISOString().split('T')[0]
-    }, ...prev]);
-    setPolicyForm({ title: '', content: '', file: null, type: 'text' });
-    setIsAddingPolicy(false);
-  };
-
-  const handleAddOnboarding = (e: FormEvent) => {
-    e.preventDefault();
-    const newEntry: OnboardingEntry = {
-      id: onboardingEntries.length + 1,
-      name: onboardingForm.name,
-      role: onboardingForm.role,
-      dept: onboardingForm.dept,
-      startDate: onboardingForm.startDate,
-      manager: onboardingForm.manager,
-      status: 'Pending',
-    };
-
-    setOnboardingEntries((prev) => [newEntry, ...prev]);
-    setEmployees((prev) => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        name: onboardingForm.name,
-        role: onboardingForm.role,
-        dept: onboardingForm.dept,
-        salary: 0,
-        experience: 0,
-        isMVP: false,
-        joinDate: onboardingForm.startDate,
-      },
-    ]);
-    setOnboardingForm({ name: '', role: '', dept: '', startDate: '', manager: '' });
-    setIsAddingOnboard(false);
-  };
-
-  const handleUploadDocument = (employeeId: number, file: File) => {
-    setDocuments((prev) => [
-      {
-        id: prev.length + 1,
-        name: file.name,
-        type: file.type,
-        uploadedBy: hrDetails.name,
-        uploadedAt: new Date().toLocaleDateString('en-GB'),
-        employeeId,
-      },
-      ...prev,
-    ]);
-  };
-
-  const handleMarkOnboarded = (id: number) => {
-    setOnboardingEntries((prev) =>
-      prev.map((entry) =>
-        entry.id === id ? { ...entry, status: 'Onboarded' } : entry
-      )
-    );
-  };
-
-  const handleMarkOffboarded = (id: number) => {
-    setOnboardingEntries((prev) =>
-      prev.map((entry) =>
-        entry.id === id ? { ...entry, status: 'Offboarded' } : entry
-      )
-    );
-  };
-
   const handleAddAnnouncement = () => {
     if (!announcementForm.title.trim()) return;
     setAnnouncements(prev => [{
@@ -793,65 +856,10 @@ ${formData.email}`
     setIsAnnouncementModalOpen(false);
   };
 
-  const handleCheckIn = () => {
-    setAttendanceStatus(prev => ({
-      ...prev,
-      checkedIn: true,
-      checkInTime: new Date().toLocaleTimeString()
-    }));
-  };
-
-  const handleCheckOut = () => {
-    setAttendanceStatus(prev => ({
-      ...prev,
-      checkedOut: true,
-      checkOutTime: new Date().toLocaleTimeString()
-    }));
-  };
-
-  const handleWFHRequest = (reason: string) => {
-    const newRequest: RequestItem = {
-      id: Math.max(...wfhRequests.map(r => r.id), 0) + 1,
-      name: employeeData.name,
-      type: 'WFH',
-      reason,
-      date: new Date().toLocaleDateString(),
-      status: 'Pending'
-    };
-    setWfhRequests(prev => [newRequest, ...prev]);
-  };
-
-  const handleLeaveRequest = (reason: string) => {
-    const newRequest: RequestItem = {
-      id: Math.max(...requests.map(r => r.id), 0) + 1,
-      name: employeeData.name,
-      type: 'Leave',
-      reason,
-      date: new Date().toLocaleDateString(),
-      status: 'Pending'
-    };
-    setRequests(prev => [newRequest, ...prev]);
-    setLeaveData(prev => [
-      {
-        id: Math.max(...prev.map(l => l.id), 0) + 1,
-        employee: employeeData.name,
-        type: 'Casual',
-        days: 1,
-        startDate: new Date().toLocaleDateString(),
-        status: 'Pending'
-      },
-      ...prev
-    ]);
-  };
-
   const handleLogout = () => {
     logout();
     navigate('/auth/login');
   };
-
-  const performanceData = [
-    { dept: 'Tech', rating: 4.5 }, { dept: 'Design', rating: 4.2 }, { dept: 'HR', rating: 4.8 }, { dept: 'Admin', rating: 4.0 }
-  ];
 
   return (
     <div
@@ -872,101 +880,14 @@ ${formData.email}`
 >
       <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
 
-      <aside
-        onMouseEnter={() => setSidebarOpen(true)}
-        onMouseLeave={() => setSidebarOpen(false)}
-        className={`group/sidebar fixed inset-y-6 left-6 z-50 overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] py-5 px-3 shadow-[0_25px_60px_rgba(0,0,0,0.45)] transition-all duration-300 ease-in-out backdrop-blur-xl ${sidebarOpen ? 'w-[250px]' : 'w-[96px]'}`}
-      >
-        <div className="relative z-10 flex h-full flex-col">
-          <nav className="flex flex-1 flex-col gap-1.5 pt-1 min-h-0 overflow-hidden">
-            <SidebarIcon icon={<Home size={20} />} label="Home" active={activeTab === 'Home'} onClick={() => setActiveTab('Home')} />
-            <SidebarIcon icon={<Users size={20} />} label="Employees" active={activeTab === 'Employee'} onClick={() => setActiveTab('Employee')} />
-            <SidebarIcon icon={<CheckCircle2 size={20} />} label="Approvals" active={activeTab === 'Approvals'} onClick={() => setActiveTab('Approvals')} />
-            <SidebarIcon icon={<Clock size={20} />} label="Regularisation" active={activeTab === 'Regularisation'} onClick={() => setActiveTab('Regularisation')} />
-            <SidebarIcon icon={<Clock size={20} />} label="Attendance" active={activeTab === 'Attendance'} onClick={() => setActiveTab('Attendance')} />
-            <SidebarIcon icon={<BarChart3 size={20} />} label="Analytics" active={activeTab === 'AttendanceAnalytics'} onClick={() => setActiveTab('AttendanceAnalytics')} />
-            <SidebarIcon icon={<FileText size={20} />} label="Project Report" active={activeTab === 'ProjectEffortReport'} onClick={() => setActiveTab('ProjectEffortReport')} />
-            <SidebarIcon icon={<Users size={20} />} label="Team Directory" active={activeTab === 'TeamDirectory'} onClick={() => setActiveTab('TeamDirectory')} />
-            <SidebarIcon icon={<Briefcase size={20} />} label="Task Manager" active={activeTab === 'TaskManager'} onClick={() => { navigate('/manager/task-manager'); }} />
-            <SidebarIcon icon={<Calendar size={20} />} label="Leave Calendar" active={activeTab === 'TeamLeaveCalendar'} onClick={() => setActiveTab('TeamLeaveCalendar')} />
-          </nav>
-          {/* LOGOUT SECTION */}
-<div
-  className="
-    mt-3
-    pt-3
-    pb-1
-    border-t
-    border-white/10
-  "
->
-
-  <button
-    onClick={handleLogout}
-    className="
-      relative
-      flex
-      h-[56px]
-      w-full
-      items-center
-      rounded-[1.4rem]
-      transition-all
-      duration-300
-
-      justify-center
-      group-hover/sidebar:justify-start
-
-      px-0
-      group-hover/sidebar:px-[18px]
-
-      text-[#7dd3fc]
-      hover:bg-white/5
-    "
-  >
-
-    {/* ICON */}
-    <div
-      className="
-        flex
-        h-10
-        w-10
-        items-center
-        justify-center
-        shrink-0
-      "
-    >
-      <LogOut size={20} />
-    </div>
-
-    {/* TEXT */}
-    <span
-      className="
-        whitespace-nowrap
-        text-[15px]
-        font-semibold
-        tracking-wide
-
-        opacity-0
-        w-0
-
-        transition-all
-        duration-300
-
-        overflow-hidden
-
-        group-hover/sidebar:opacity-100
-        group-hover/sidebar:w-auto
-        group-hover/sidebar:ml-3
-      "
-    >
-      SIGN OUT
-    </span>
-
-  </button>
-
-</div>
-        </div>
-      </aside>
+      <ManagerSidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        onLogout={handleLogout}
+        onTaskManagerClick={() => navigate('/manager/task-manager')}
+      />
 
       <main
   className={`
@@ -991,6 +912,7 @@ ${formData.email}`
   `}
 >
         <DashboardNavbar
+          subtitle="Manage operations and team updates."
           title={
             activeTab === 'Home'
               ? 'Dashboard'
@@ -1042,16 +964,7 @@ ${formData.email}`
               employees={employees}
               attendanceStatus={attendanceStatus}
               leaveData={leaveData}
-              handleCheckIn={handleCheckIn}
-              handleCheckOut={handleCheckOut}
-              handleWFHRequest={handleWFHRequest}
-              handleLeaveRequest={handleLeaveRequest}
               announcements={announcements}
-              setAnnouncements={setAnnouncements}
-              onboardingEntries={onboardingEntries}
-              setOnboardingEntries={setOnboardingEntries}
-              isAddingOnboard={isAddingOnboard}
-              setIsAddingOnboard={setIsAddingOnboard}
               showProfileModal={showProfileModal}
               setShowProfileModal={setShowProfileModal}
               handleProfileUpload={(e) => {
@@ -1137,22 +1050,5 @@ ${formData.email}`
     </div>
   );
 };
-
-const SidebarIcon: React.FC<SidebarIconProps> = ({ icon, label, active, onClick, isLogout }) => (
-  <button
-    onClick={onClick}
-    className={`relative flex h-[58px] w-full items-center justify-center rounded-[1.4rem] transition-all duration-300 group-hover/sidebar:justify-start group-hover/sidebar:px-[18px] ${active ? 'bg-[#1e3a8a] text-white shadow-[0_10px_30px_rgba(15,23,42,0.35)]' : 'text-slate-400 hover:bg-white/5 hover:text-white'} ${isLogout ? 'hover:text-rose-400 hover:bg-rose-500/10' : ''}`}
-  >
-    <div
-      className={`absolute left-1/2 flex h-12 w-12 -translate-x-1/2 items-center justify-center transition-all duration-300 group-hover/sidebar:left-[18px] group-hover/sidebar:translate-x-0 ${active ? 'text-[#7dd3fc]' : 'text-slate-400 group-hover/sidebar:text-white'}`}
-    >
-      {icon}
-    </div>
-    <span className="ml-[62px] whitespace-nowrap text-[15px] font-semibold tracking-wide opacity-0 transition-all duration-300 group-hover/sidebar:opacity-100">
-      {label}
-    </span>
-    {active && <div className="absolute left-0 w-1 h-6 rounded-r-full bg-[#7dd3fc] shadow-[0_0_12px_rgba(125,211,252,0.45)]" />}
-  </button>
-);
 
 export default DarkHRDashboard;

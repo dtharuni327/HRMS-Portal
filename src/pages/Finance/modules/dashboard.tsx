@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { CalendarDays, IndianRupee, ReceiptText, ShieldCheck, Users } from 'lucide-react';
+import { CalendarDays, IndianRupee, ReceiptText, Users } from 'lucide-react';
 import { SparkCard, StatCard } from '../FinanceShared';
 
 const financeEmployees = [

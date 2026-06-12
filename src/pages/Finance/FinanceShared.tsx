@@ -87,9 +87,9 @@ export interface HRDocument {
   employeeId: number;
   type: string;
   uploadedAt: string;
-  name?: string;       // Made optional if not always present
-  uploadedBy?: string; // Made optional if not always present
-  file?: File | string; // 👈 Safely allowed raw File object or string URL paths!
+  name?: string;       
+  uploadedBy?: string; 
+  file?: File | string; 
 }
 export interface LeaveData {
   id: number;
@@ -127,6 +127,7 @@ export type AttendanceStatus = Record<number, string>;
 interface SparkCardProps {
   children: ReactNode;
   className?: string;
+  hoverable?: boolean;
   overflowVisible?: boolean;
   style?: React.CSSProperties;
 }
@@ -134,13 +135,13 @@ interface SparkCardProps {
 export const SparkCard: React.FC<SparkCardProps> = ({
   children,
   className = '',
+  hoverable = true,
   overflowVisible = false,
   style
 }) => (
-
   <div
     className={`
-      hover-zoom-card
+      ${hoverable ? 'hover-zoom-card' : ''}
       relative
       transform
       transition-transform
@@ -156,76 +157,28 @@ export const SparkCard: React.FC<SparkCardProps> = ({
     `}
     style={style}
   >
-
     {children}
-
   </div>
-
 );
 
 interface StatCardProps {
-  icon: ReactNode;
-  value: string | number;
   label: string;
+  value: string | number;
   color: string;
-  style?: React.CSSProperties;
+  icon?: ReactNode;
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
-  icon,
-  value,
   label,
+  value,
   color,
-  style
+  icon
 }) => (
-
   <div
-    className="
-      hover-zoom-card
-      transform
-      transition-transform
-      duration-200
-      ease-out
-      p-8
-      rounded-[2.5rem]
-      flex
-      items-center
-      gap-6
-    "
-    style={style}
+    className={`rounded-2xl border border-white/80 bg-gradient-to-br ${color} p-5 shadow-[0_18px_35px_rgba(15,23,42,0.14)] transition-transform duration-200 hover:-translate-y-0.5`}
   >
-
-    <div
-      className={`
-        w-16
-        h-16
-
-        rounded-3xl
-
-        flex
-        items-center
-        justify-center
-
-        bg-white/50
-
-        ${color}
-      `}
-    >
-      {icon}
-    </div>
-
-    <div className="text-left">
-
-      <h2 className="text-3xl font-black text-white tracking-tighter">
-        {value}
-      </h2>
-
-      <p className="text-[10px] font-black text-white/80 uppercase tracking-widest">
-        {label}
-      </p>
-
-    </div>
-
+    {icon && <div className="mb-3 flex items-center justify-start">{icon}</div>}
+    <p className="text-sm font-semibold opacity-90">{label}</p>
+    <h3 className="text-2xl font-bold mt-2">{value}</h3>
   </div>
-
 );

@@ -13,7 +13,7 @@ import HRDashboard from "../pages/hr/HRDashboard";
 import ManagerDashboard from "../pages/manager/ManagerDashboard";
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
 import ClientDashboard from "../pages/client/ClientDashboard";
-import FinanceDashboard from "../pages/Finance/FinanceDashboard.tsx.tsx";
+import FinanceDashboard from "../pages/Finance/FinanceDashboard.tsx";
  
 // Super Admin pages
 import SuperAdminDashboard from "../pages/super-admin/SuperAdminDashboard";

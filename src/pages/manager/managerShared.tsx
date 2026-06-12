@@ -23,6 +23,36 @@ export interface Employee {
 
   address?: string;
 
+  bankName?: string;
+
+  accountNumber?: string;
+
+  ifsc?: string;
+
+  branch?: string;
+
+  emergencyContactName?: string;
+
+  emergencyContactPhone?: string;
+
+  bloodGroup?: string;
+
+  maritalStatus?: string;
+
+  nationality?: string;
+
+  passportNumber?: string;
+
+  uan?: string;
+
+  pfNumber?: string;
+
+  esiNumber?: string;
+
+  taxState?: string;
+
+  workMode?: 'WFH' | 'Office' | 'Hybrid' | '';
+
   role: string;
 
   designation?: string;
@@ -109,9 +139,9 @@ export interface HRDocument {
   employeeId: number;
   type: string;
   uploadedAt: string;
-  name?: string;       // Made optional if not always present
-  uploadedBy?: string; // Made optional if not always present
-  file?: File | string; // 👈 Safely allowed raw File object or string URL paths!
+  name?: string;       
+  uploadedBy?: string; 
+  file?: File | string; 
 }
 export interface LeaveData {
   id: number;
