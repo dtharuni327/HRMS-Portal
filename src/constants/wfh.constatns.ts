@@ -1,0 +1,5 @@
+export const WFH_STATUS = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+};
