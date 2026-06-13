@@ -28,6 +28,105 @@ This module manages employee attendance and Work From Home (WFH) operations in t
 
 ---
 
+# Business Rules
+
+## Attendance
+
+- Employee can punch in only once per day.
+- Punch out is allowed only after a successful punch in.
+- Attendance status is calculated automatically.
+- Working hours are calculated during punch out.
+- Work mode is identified as:
+  - **WFO (Work From Office)**
+  - **WFH (Work From Home)**
+- Auto punch-out is executed through scheduled cron jobs.
+
+## Work From Home
+
+- Employees can create WFH requests.
+- WFH requests require approval from authorized roles.
+- Employees can view their own requests.
+- HR/Admin can view all requests.
+- Request status can be approved or rejected.
+
+---
+
+# Project Structure
+
+```text
+src/
+│
+├── controllers/
+│   ├── attendance/
+│   └── wfh/
+│
+├── services/
+│   ├── attendance/
+│   └── wfh/
+│
+├── repositories/
+│   ├── attendance/
+│   └── wfh/
+│
+├── validations/
+│   ├── attendance/
+│   └── wfh/
+│
+├── routes/
+│   ├── attendanceRoutes.ts
+│   └── wfhRoutes.ts
+│
+├── middleware/
+├── cron/
+├── config/
+├── utils/
+├── types/
+├── app.ts
+└── server.ts
+```
+
+---
+
+# Technology Stack
+
+- **Node.js**
+- **TypeScript**
+- **Express.js**
+- **Microsoft SQL Server (MSSQL)**
+- **JWT Authentication**
+- **Zod Validation**
+- **Node Cron**
+
+---
+
+# Installation
+
+## Install Dependencies
+
+```bash
+npm install
+```
+
+## Run Development Server
+
+```bash
+npm run dev
+```
+
+## Build Project
+
+```bash
+npm run build
+```
+
+## Start Production Server
+
+```bash
+npm start
+```
+
+---
+
 # Authentication
 
 All APIs are protected using **JWT Authentication**.
@@ -68,7 +167,7 @@ POST /api/attendance/punch-in
   "success": true,
   "message": "Punch-in successful",
   "work_mode": "WFO",
-  "punch_in_status": "PRESENT",
+  "punch_in_status": "ON_TIME",
   "punch_time": "2026-06-13T09:00:00.000Z"
 }
 ```
@@ -81,12 +180,6 @@ POST /api/attendance/punch-in
 
 ```http
 POST /api/attendance/punch-out
-```
-
-### Request Body
-
-```json
-{}
 ```
 
 ### Success Response
@@ -139,7 +232,7 @@ GET /api/attendance/history/:empId
 ### Example
 
 ```http
-GET /api/attendance/history/EMP001
+GET /api/attendance/history/E001
 ```
 
 ### Access Roles
@@ -162,7 +255,7 @@ GET /api/attendance/summary/:empId
 ### Example
 
 ```http
-GET /api/attendance/summary/EMP001
+GET /api/attendance/summary/E001
 ```
 
 ### Access Roles
@@ -185,7 +278,7 @@ PUT /api/attendance/update/:empId/:date
 ### Example
 
 ```http
-PUT /api/attendance/update/EMP001/2026-06-13
+PUT /api/attendance/update/E001/2026-06-13
 ```
 
 ### Access Roles
@@ -302,105 +395,6 @@ PUT /api/wfh/update-status/:Emp_id
   "success": true,
   "message": "WFH request status updated successfully"
 }
-```
-
----
-
-# Business Rules
-
-## Attendance
-
-- Employee can punch in only once per day.
-- Punch out is allowed only after a successful punch in.
-- Attendance status is calculated automatically.
-- Working hours are calculated during punch out.
-- Work mode is identified as:
-  - **WFO (Work From Office)**
-  - **WFH (Work From Home)**
-- Auto punch-out is executed through scheduled cron jobs.
-
-## Work From Home
-
-- Employees can create WFH requests.
-- WFH requests require approval from authorized roles.
-- Employees can view their own requests.
-- HR/Admin can view all requests.
-- Request status can be approved or rejected.
-
----
-
-# Project Structure
-
-```text
-src/
-│
-├── controllers/
-│   ├── attendance/
-│   └── wfh/
-│
-├── services/
-│   ├── attendance/
-│   └── wfh/
-│
-├── repositories/
-│   ├── attendance/
-│   └── wfh/
-│
-├── validations/
-│   ├── attendance/
-│   └── wfh/
-│
-├── routes/
-│   ├── attendanceRoutes.ts
-│   └── wfhRoutes.ts
-│
-├── middleware/
-├── cron/
-├── config/
-├── utils/
-├── types/
-├── app.ts
-└── server.ts
-```
-
----
-
-# Technology Stack
-
-- **Node.js**
-- **TypeScript**
-- **Express.js**
-- **Microsoft SQL Server (MSSQL)**
-- **JWT Authentication**
-- **Zod Validation**
-- **Node Cron**
-
----
-
-# Installation
-
-## Install Dependencies
-
-```bash
-npm install
-```
-
-## Run Development Server
-
-```bash
-npm run dev
-```
-
-## Build Project
-
-```bash
-npm run build
-```
-
-## Start Production Server
-
-```bash
-npm start
 ```
 
 ---
