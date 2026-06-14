@@ -18,7 +18,7 @@ export const punchInRepository = async (data: PunchInInput) => {
   request.input("Latitude", sql.Decimal(10, 6), data.latitude || null);
   request.input("Longitude", sql.Decimal(10, 6), data.longitude || null);
 
-  const result = await request.execute("USP_PunchIn");
+  const result = await request.execute("sp_PunchIn");
 
   return result.recordset[0];
 };

@@ -9,7 +9,7 @@ export const getDashboardData = async () => {
   const result = await pool
     .request()
     .input("today", sql.Date, today)
-    .execute("GetAttendanceDashboard");
+    .execute("sp_GetAttendanceDashboard");
 
   return result.recordset[0];
 };

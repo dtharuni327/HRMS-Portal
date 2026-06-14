@@ -18,7 +18,12 @@ export const punchOutService = async (data: PunchOutInput) => {
     if (msg?.includes("Already punched out today")) {
       throw { status: 400, message: "Already punched out today" };
     }
-    
-    throw { status: 500, message: "Server error" };
+    if (msg.includes("Minimum 15 minutes required before punch-out")) {
+      throw {
+        status: 400,
+        message: "Minimum 15 minutes required before punch-out"
+      };
+    }
+    throw { status: 500, message: msg || "Server error" };
   }
 };

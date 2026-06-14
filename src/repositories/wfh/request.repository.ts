@@ -14,7 +14,7 @@ export const createWFHRequest = async (params: {
     .input('from_date', sql.Date, params.from_date)
     .input('to_date', sql.Date, params.to_date)
     .input('reason', sql.VarChar, params.reason)
-    .execute('CreateWFHRequest');
+    .execute('sp_CreateWFHRequest');
   
   return result.recordset[0] || null;
 };

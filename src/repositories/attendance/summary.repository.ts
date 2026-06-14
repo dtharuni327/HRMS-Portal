@@ -13,7 +13,7 @@ export const getAttendanceSummary = async (
     .input("Emp_id", sql.VarChar, empId)
     .input("month", sql.Int, month)
     .input("year", sql.Int, year)
-    .execute("GetAttendanceSummary");
+    .execute("sp_GetAttendanceSummary");
 
   return result.recordsets as any[];
 };

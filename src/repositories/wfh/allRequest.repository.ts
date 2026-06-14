@@ -7,7 +7,7 @@ export const getAllWFHRequests = async (empId: string, role: string) => {
     .request()
     .input('Emp_id', sql.VarChar(10), empId)
     .input('Role', sql.VarChar(50), role)
-    .execute('GetAllWFHRequests');
+    .execute('sp_GetAllWFHRequests');
   
   return result.recordset;
 };

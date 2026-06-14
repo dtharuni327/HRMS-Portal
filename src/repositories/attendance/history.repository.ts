@@ -13,7 +13,7 @@ export const getAttendanceHistory = async (
     .input("Emp_id", sql.VarChar, empId)
     .input("page", sql.Int, page)
     .input("limit", sql.Int, limit)
-    .execute("GetAttendanceHistory");
+    .execute("sp_GetAttendanceHistory");
 
   const recordsets = result.recordsets as any[];
   const firstRow = recordsets[0][0];

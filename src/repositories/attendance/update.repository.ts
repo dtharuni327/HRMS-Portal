@@ -32,7 +32,7 @@ export class UpdateAttendanceRepository {
       .input('total_hours', sql.Decimal(10, 2), params.totalHours)
       .input('punch_in_status', sql.VarChar, params.punchInStatus)
       .input('attendance_status', sql.VarChar, params.attendanceStatus)
-      .execute('UpdateAttendanceRecord');
+      .execute('sp_UpdateAttendanceRecord');
   }
 }
 

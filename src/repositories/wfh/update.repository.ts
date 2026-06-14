@@ -12,7 +12,7 @@ export const updateWFHStatus = async (params: {
     .input('Emp_id', sql.VarChar, params.empId)
     .input('status', sql.VarChar, params.status)
     .input('approved_by', sql.VarChar, params.approvedBy)
-    .execute('UpdateWFHStatus');
+    .execute('sp_UpdateWFHStatus');
   
   return result.recordset[0] || null;
 };
