@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { EMPLOYEE_STATUS, EMPLOYMENT_TYPE, WORK_MODE } from "../../constants/employee.constants";
+import { EMPLOYEE_STATUS, EMPLOYMENT_TYPE, WORK_MODE, GENDER } from "../../constants/employee.constants";
 
 const employeeStatusValues = Object.values(EMPLOYEE_STATUS) as [string, ...string[]];
 const employmentTypeValues = Object.values(EMPLOYMENT_TYPE) as [string, ...string[]];
 const workModeValues = Object.values(WORK_MODE) as [string, ...string[]];
+const genderValues = Object.values(GENDER) as [string, ...string[]];
 
 export const updateEmployeeSchema = z // all fields optional; only provided fields are updated
   .object({
@@ -22,6 +23,13 @@ export const updateEmployeeSchema = z // all fields optional; only provided fiel
     emergency_contact: z
       .string().trim().regex(/^[0-9]{10}$/, "Emergency contact must be 10 digits")
       .optional(),
+
+    DOB: z
+      .string().trim()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "DOB must be YYYY-MM-DD")
+      .optional(),
+
+    Gender: z.enum(genderValues as [string, ...string[]]).optional(),
 
     profile_image: z
       .string().trim().url("profile_image must be a valid URL")

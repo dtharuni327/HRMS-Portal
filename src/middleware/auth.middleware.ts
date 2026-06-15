@@ -47,7 +47,7 @@ export const authenticate = async (
     const pool = await db;
     const result = await pool
       .request()
-      .input("Emp_id", sql.VarChar(10), decoded.Emp_id)
+      .input("Emp_id", sql.VarChar(12), decoded.Emp_id)
       .query(`
         SELECT e.Emp_id, acc.DashboardName
         FROM Employee e

@@ -36,6 +36,15 @@ export const updateEmployee = async (req: AuthRequest, res: Response) => {
   } catch (err: any) {
     const spErr = SP_ERROR_MAP[err?.number]; // SP signals errors via error number
     if (spErr) return res.status(spErr.status).json({ message: spErr.message });
+
+    // String-based RAISERROR('...', 16, 1) calls in the SP default to error
+    // number 50000 — surface the SP's own message as a 400 instead of a
+    // generic 500 (e.g. "Employee not found", "Invalid Gender",
+    // "Access denied: cannot update restricted fields", etc.)
+    if (err?.number === 50000 && err?.message) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: err.message });
+    }
+
     console.error("updateEmployee error:", err);
     return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Server Error" });
   }

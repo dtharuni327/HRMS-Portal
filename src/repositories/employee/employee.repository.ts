@@ -54,6 +54,7 @@ export const createEmployeeRepo = async (data: CreateEmployeeInput) => {
     RoleID, Department_id, Dashboard_id,
     designation, joining_date, employment_type, work_mode,
     client_id, manager_id, profile_image, emergency_contact,
+    DOB, Gender,
   } = data;
 
   const pool = await db;
@@ -73,6 +74,8 @@ export const createEmployeeRepo = async (data: CreateEmployeeInput) => {
   request.input("manager_id", sql.VarChar, manager_id ?? null);
   request.input("profile_image", sql.VarChar, profile_image ?? null);
   request.input("emergency_contact", sql.VarChar, emergency_contact ?? null);
+  request.input("DOB", sql.Date, DOB);
+  request.input("Gender", sql.VarChar, Gender);
 
   return request.execute(EMPLOYEE_SP.CREATE);
 };
@@ -89,6 +92,7 @@ export const updateEmployeeRepo = async (params: UpdateParams) => {
     name, personal_email, phone, emergency_contact, profile_image,
     designation, employment_type, work_mode,
     manager_id, department_id, client_id, role_id, employee_status,
+    DOB, Gender,
   } = params;
 
   const pool = await db;
@@ -110,6 +114,8 @@ export const updateEmployeeRepo = async (params: UpdateParams) => {
   request.input("client_id", sql.Int, client_id ?? null);
   request.input("role_id", sql.Int, role_id ?? null);
   request.input("employee_status", sql.VarChar, employee_status ?? null);
+  request.input("DOB", sql.Date, DOB ?? null);
+  request.input("Gender", sql.VarChar, Gender ?? null);
 
   return request.execute(EMPLOYEE_SP.UPDATE);
 };
