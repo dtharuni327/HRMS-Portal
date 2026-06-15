@@ -5,6 +5,6 @@ export const getHolidayHistoryRepository =async () => {
     return await pool
       .request()
       .execute(
-        "USP_Holiday_History"
+        "SP_Holiday_History"
       );
 };

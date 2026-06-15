@@ -3,5 +3,5 @@ export const getUsedHolidayRepository = async () => {
   const pool = await db;
   return await pool
     .request()
-    .execute("USP_Get_Used_Holidays");
+    .execute("SP_Get_Used_Holidays");
 };

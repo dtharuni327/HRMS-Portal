@@ -7,5 +7,5 @@ export const verifyEmailRepository =async (email: string,
         .request()
         .input("Email",sql.VarChar,email)
         .input("OTP",sql.VarChar,otp)
-        .execute("USP_Email_Verification");
+        .execute("SP_Email_Verification");
 };

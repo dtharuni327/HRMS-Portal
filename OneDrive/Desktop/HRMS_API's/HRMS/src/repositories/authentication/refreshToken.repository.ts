@@ -6,5 +6,5 @@ export const refreshTokenRepository =async (Emp_id: string,
         return await pool.request()
         .input("Emp_id",sql.VarChar,Emp_id)
         .input("RefreshToken",sql.VarChar,refreshToken)
-        .execute("USP_Refresh_Token");
+        .execute("SP_Refresh_Token");
     };

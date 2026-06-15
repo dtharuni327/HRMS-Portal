@@ -7,5 +7,5 @@ export const resetPasswordRepository =async (email: string,otp: string,
         .input("Email",sql.VarChar,email)
         .input("OTP",sql.VarChar,otp)
         .input("Password",sql.VarChar,password)
-        .execute("USP_Reset_Password");
+        .execute("SP_Reset_Password");
 };

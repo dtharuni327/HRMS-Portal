@@ -23,7 +23,7 @@ async (
       user.Emp_id
     )
     .execute(
-      "USP_Notification_Visibility_Update"
+      "SP_Notification_Visibility_Update"
     );
 
 };

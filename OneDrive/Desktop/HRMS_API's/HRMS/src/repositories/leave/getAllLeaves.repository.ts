@@ -21,7 +21,6 @@ async (
       user.role
     )
     .execute(
-      "USP_Leave_Get"
+      "SP_Leave_Get"
     );
-
 };

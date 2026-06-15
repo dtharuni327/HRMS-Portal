@@ -4,5 +4,5 @@ export const loginRepository = async( username:string)=>{
     const pool = await db; 
     return await pool.request()
     .input("Username", sql.VarChar, username)
-    .execute("USP_Login");
+    .execute("SP_Login");
 };

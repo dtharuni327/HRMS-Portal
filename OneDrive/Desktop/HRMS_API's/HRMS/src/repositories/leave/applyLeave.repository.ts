@@ -16,6 +16,6 @@ async (
     .input("FromDate", sql.Date, data.from_date)
     .input("ToDate", sql.Date, data.to_date)
     .input("Reason", sql.VarChar, data.reason)
-    .execute("USP_Leave_Request");
+    .execute("SP_Leave_Request");
 
 };

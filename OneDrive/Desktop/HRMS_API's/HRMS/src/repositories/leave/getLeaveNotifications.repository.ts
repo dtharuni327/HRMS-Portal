@@ -17,7 +17,7 @@ async (
       user.Emp_id
     )
     .execute(
-      "USP_Leave_Notifications"
+      "SP_Leave_Notifications"
     );
 
 };

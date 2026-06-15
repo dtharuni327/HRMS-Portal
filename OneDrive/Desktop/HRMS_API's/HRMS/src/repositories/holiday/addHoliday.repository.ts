@@ -8,5 +8,5 @@ export const addHolidayRepository =async (data: any) => {
       .input("HolidayDate",sql.Date,data.holiday_date)
       .input("ClientId",sql.Int,data.client_id)
       .input("Region",sql.VarChar,data.region)
-      .execute("USP_Holiday_Create");
+      .execute("SP_Holiday_Create");
 };

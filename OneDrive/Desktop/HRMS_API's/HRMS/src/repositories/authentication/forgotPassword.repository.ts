@@ -5,5 +5,5 @@ export const forgotPasswordRepository =async (email: string,otp: string) => {
     return await pool.request()
     .input("Email",sql.VarChar,email)
     .input("OTP",sql.VarChar,otp)
-    .execute("USP_Forgot_Password");
+    .execute("SP_Forgot_Password");
 };

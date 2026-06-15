@@ -3,5 +3,5 @@ export const getRemainingHolidayRepository = async () => {
   const pool = await db;
   return await pool
     .request()
-    .execute("USP_Get_Remaining_Holidays");
+    .execute("SP_Get_Remaining_Holidays");
 };

@@ -6,5 +6,5 @@ export const sendEmailVerificationRepository =async (email: string,
         return await pool.request()
         .input("Email",sql.VarChar,email)
         .input("OTP",sql.VarChar,otp)
-        .execute("USP_Send_OTP");
+        .execute("SP_Send_OTP");
 };
