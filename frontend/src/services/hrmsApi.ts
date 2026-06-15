@@ -98,6 +98,43 @@ export const hrmsApi = {
     });
   },
 
+  async updateEmployee(
+    empId: string,
+    data: Record<string, unknown>,
+  ) {
+    return apiRequest<any>(`/api/employees/${empId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async getDepartments() {
+    const payload = await apiRequest<any>("/api/departments");
+    return unwrapData<any[]>(payload, []);
+  },
+
+  async createDepartment(data: Record<string, unknown>) {
+    return apiRequest<any>("/api/departments", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateDepartment(
+    departmentId: string,
+    data: Record<string, unknown>,
+  ) {
+    return apiRequest<any>(`/api/departments/${departmentId}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
+
+  async getRoles() {
+    const payload = await apiRequest<any>("/api/roles");
+    return unwrapData<any[]>(payload, []);
+  },
+
   async getHolidays() {
     const payload = await apiRequest<any>("/api/holidays/all");
     return unwrapData<any[]>(payload, []);

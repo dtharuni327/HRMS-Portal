@@ -17,7 +17,10 @@
       "phone": "9876543210",
       "salary": 1800000,
       "experience": 8,
-      "joining_date": "2021-11-15"
+      "joining_date": "2021-11-15",
+      "client_id": 1,
+      "role_id": 1,
+      "department_id": 1
     },
     {
       "Emp_id": "EMP002",
@@ -36,7 +39,10 @@
       "phone": "9876543211",
       "salary": 1200000,
       "experience": 6,
-      "joining_date": "2022-06-03"
+      "joining_date": "2022-06-03",
+      "client_id": 1,
+      "role_id": 2,
+      "department_id": 2
     },
     {
       "Emp_id": "EMP003",
@@ -55,7 +61,10 @@
       "phone": "9876543212",
       "salary": 1400000,
       "experience": 7,
-      "joining_date": "2022-02-10"
+      "joining_date": "2022-02-10",
+      "client_id": 1,
+      "role_id": 3,
+      "department_id": 3
     },
     {
       "Emp_id": "EMP004",
@@ -74,7 +83,10 @@
       "phone": "9876543213",
       "salary": 900000,
       "experience": 2,
-      "joining_date": "2024-01-15"
+      "joining_date": "2024-01-15",
+      "client_id": 1,
+      "role_id": 4,
+      "department_id": 3
     },
     {
       "Emp_id": "EMP005",
@@ -93,7 +105,10 @@
       "phone": "9876543214",
       "salary": 1000000,
       "experience": 5,
-      "joining_date": "2023-04-18"
+      "joining_date": "2023-04-18",
+      "client_id": 1,
+      "role_id": 5,
+      "department_id": 4
     },
     {
       "Emp_id": "EMP006",
@@ -112,7 +127,100 @@
       "phone": "9876543215",
       "salary": 0,
       "experience": 3,
-      "joining_date": "2024-05-12"
+      "joining_date": "2024-05-12",
+      "client_id": 1,
+      "role_id": 6,
+      "department_id": 5
+    }
+  ],
+  "departments": [
+    {
+      "DepartmentId": 1,
+      "DepartmentName": "Administration",
+      "DepartmentCode": "ADM",
+      "DepartmentHead": "D Tharuni",
+      "HeadRole": "Super Admin",
+      "ParentDepartment": null,
+      "Location": "Hyderabad",
+      "Status": "ACTIVE"
+    },
+    {
+      "DepartmentId": 2,
+      "DepartmentName": "Human Resources",
+      "DepartmentCode": "HR",
+      "DepartmentHead": "Shrushti Desu",
+      "HeadRole": "HR Manager",
+      "ParentDepartment": "Administration",
+      "Location": "Hyderabad",
+      "Status": "ACTIVE"
+    },
+    {
+      "DepartmentId": 3,
+      "DepartmentName": "Engineering",
+      "DepartmentCode": "ENG",
+      "DepartmentHead": "Rahul Sharma",
+      "HeadRole": "Technical Lead",
+      "ParentDepartment": "Administration",
+      "Location": "Bangalore",
+      "Status": "ACTIVE"
+    },
+    {
+      "DepartmentId": 4,
+      "DepartmentName": "Finance",
+      "DepartmentCode": "FIN",
+      "DepartmentHead": "Divya Nair",
+      "HeadRole": "Finance Analyst",
+      "ParentDepartment": "Administration",
+      "Location": "Chennai",
+      "Status": "ACTIVE"
+    },
+    {
+      "DepartmentId": 5,
+      "DepartmentName": "Client",
+      "DepartmentCode": "CLT",
+      "DepartmentHead": "Client User",
+      "HeadRole": "Client Representative",
+      "ParentDepartment": null,
+      "Location": "Mumbai",
+      "Status": "ACTIVE"
+    }
+  ],
+  "roles": [
+    {
+      "RoleId": 1,
+      "RoleName": "SUPER_ADMIN",
+      "Description": "Full system access for handover administration.",
+      "Status": "ACTIVE"
+    },
+    {
+      "RoleId": 2,
+      "RoleName": "HR_ADMIN",
+      "Description": "HR operations, employee onboarding and approvals.",
+      "Status": "ACTIVE"
+    },
+    {
+      "RoleId": 3,
+      "RoleName": "MANAGER",
+      "Description": "Team oversight, approvals and attendance review.",
+      "Status": "ACTIVE"
+    },
+    {
+      "RoleId": 4,
+      "RoleName": "EMPLOYEE",
+      "Description": "Standard employee self-service access.",
+      "Status": "ACTIVE"
+    },
+    {
+      "RoleId": 5,
+      "RoleName": "FINANCE",
+      "Description": "Finance and payroll visibility.",
+      "Status": "ACTIVE"
+    },
+    {
+      "RoleId": 6,
+      "RoleName": "CLIENT",
+      "Description": "Client-facing project and delivery visibility.",
+      "Status": "ACTIVE"
     }
   ],
   "holidays": [

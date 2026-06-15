@@ -2,11 +2,13 @@ import { Router, type NextFunction, type Request, type Response } from "express"
 import {
   calculateTotalDays,
   calculateWorkedHours,
+  type DepartmentRecord,
   findEmployeeByLogin,
   getEmployeeById,
   issueTokens,
   normalizeRole,
   readStore,
+  type RoleRecord,
   sanitizeEmployee,
   startOfToday,
   verifyAccessToken,
@@ -22,6 +24,8 @@ type LocalAuthRequest = Request & {
 
 const authRouter = Router();
 const employeeRouter = Router();
+const departmentRouter = Router();
+const roleRouter = Router();
 const holidayRouter = Router();
 const leaveRouter = Router();
 const wfhRouter = Router();
@@ -112,6 +116,38 @@ const canAccessEmployee =
 
 const toDisplayTime = (isoString: string) =>
   new Date(isoString).toISOString().replace("T", " ").substring(0, 19);
+
+const toPositiveNumber = (value: unknown) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+};
+
+const normalizeStatus = (value: unknown, fallback: "ACTIVE" | "ARCHIVED") => {
+  const normalized = String(value ?? fallback).trim().toUpperCase();
+  return normalized === "ARCHIVED" ? "ARCHIVED" : "ACTIVE";
+};
+
+const formatDepartment = (department: DepartmentRecord, employees: EmployeeRecord[]) => ({
+  ...department,
+  EmployeeCount: employees.filter((employee) => {
+    if (employee.department_id && employee.department_id === department.DepartmentId) {
+      return true;
+    }
+
+    return employee.department_name === department.DepartmentName;
+  }).length,
+});
+
+const formatRole = (role: RoleRecord, employees: EmployeeRecord[]) => ({
+  ...role,
+  EmployeeCount: employees.filter((employee) => {
+    if (employee.role_id && employee.role_id === role.RoleId) {
+      return true;
+    }
+
+    return normalizeRole(employee.role_name) === normalizeRole(role.RoleName);
+  }).length,
+});
 
 authRouter.post("/login", async (req, res) => {
   const { username, password } = req.body ?? {};
@@ -268,7 +304,20 @@ employeeRouter.post(
       salary: Number(req.body.salary || 0),
       experience: Number(req.body.experience || 0),
       joining_date: String(req.body.joining_date || startOfToday()),
+      emergency_contact: req.body.emergency_contact ? String(req.body.emergency_contact) : null,
+      DOB: req.body.DOB ? String(req.body.DOB) : null,
+      Gender: req.body.Gender ? String(req.body.Gender) : null,
+      employment_type: req.body.employment_type ? String(req.body.employment_type) : null,
+      profile_image: req.body.profile_image ? String(req.body.profile_image) : null,
+      client_id: toPositiveNumber(req.body.client_id),
+      role_id: toPositiveNumber(req.body.role_id ?? req.body.RoleID),
+      department_id: toPositiveNumber(req.body.department_id ?? req.body.Department_id),
+      dashboard_id: toPositiveNumber(req.body.dashboard_id ?? req.body.Dashboard_id),
     };
+
+    if (req.body.role_name || req.body.role) {
+      employee.role_name = normalizeRole(String(req.body.role_name || req.body.role)) as RoleName;
+    }
 
     store.employees.push(employee);
     await writeStore(store);
@@ -292,6 +341,10 @@ employeeRouter.put(
     const current = store.employees[index];
     const updated: EmployeeRecord = {
       ...current,
+      username:
+        req.body.username !== undefined
+          ? String(req.body.username).toLowerCase().replace(/\s+/g, "")
+          : current.username,
       name: req.body.name ?? current.name,
       company_email: req.body.personal_email ?? req.body.email ?? current.company_email,
       personal_email: req.body.personal_email ?? req.body.email ?? current.personal_email,
@@ -300,12 +353,189 @@ employeeRouter.put(
       work_mode: req.body.work_mode ?? current.work_mode,
       employee_status: String(req.body.employee_status ?? current.employee_status).toUpperCase(),
       manager_id: req.body.manager_id ?? current.manager_id,
+      department_name:
+        req.body.department_name ?? req.body.department ?? current.department_name,
+      role_name: req.body.role_name || req.body.role
+        ? (normalizeRole(String(req.body.role_name || req.body.role)) as RoleName)
+        : current.role_name,
+      location: req.body.location ?? current.location,
+      salary: req.body.salary !== undefined ? Number(req.body.salary) : current.salary,
+      experience:
+        req.body.experience !== undefined ? Number(req.body.experience) : current.experience,
+      joining_date: req.body.joining_date ?? current.joining_date,
+      emergency_contact: req.body.emergency_contact ?? current.emergency_contact ?? null,
+      DOB: req.body.DOB ?? current.DOB ?? null,
+      Gender: req.body.Gender ?? current.Gender ?? null,
+      employment_type: req.body.employment_type ?? current.employment_type ?? null,
+      profile_image: req.body.profile_image ?? current.profile_image ?? null,
+      client_id:
+        req.body.client_id !== undefined
+          ? toPositiveNumber(req.body.client_id)
+          : current.client_id ?? null,
+      role_id:
+        req.body.role_id !== undefined || req.body.RoleID !== undefined
+          ? toPositiveNumber(req.body.role_id ?? req.body.RoleID)
+          : current.role_id ?? null,
+      department_id:
+        req.body.department_id !== undefined || req.body.Department_id !== undefined
+          ? toPositiveNumber(req.body.department_id ?? req.body.Department_id)
+          : current.department_id ?? null,
+      dashboard_id:
+        req.body.dashboard_id !== undefined || req.body.Dashboard_id !== undefined
+          ? toPositiveNumber(req.body.dashboard_id ?? req.body.Dashboard_id)
+          : current.dashboard_id ?? null,
     };
 
     store.employees[index] = updated;
     await writeStore(store);
 
     res.status(200).json({ success: true, data: sanitizeEmployee(updated) });
+  },
+);
+
+departmentRouter.get(
+  "/",
+  authenticate,
+  authorize("SUPER_ADMIN", "HR_ADMIN"),
+  async (_req, res) => {
+    const store = await readStore();
+    res.status(200).json({
+      success: true,
+      data: store.departments.map((department) => formatDepartment(department, store.employees)),
+    });
+  },
+);
+
+departmentRouter.post(
+  "/",
+  authenticate,
+  authorize("SUPER_ADMIN", "HR_ADMIN"),
+  async (req, res) => {
+    const store = await readStore();
+    const nextId = Math.max(0, ...store.departments.map((department) => department.DepartmentId)) + 1;
+
+    const department: DepartmentRecord = {
+      DepartmentId: nextId,
+      DepartmentName: String(req.body.name ?? req.body.DepartmentName ?? "Department"),
+      DepartmentCode: String(req.body.code ?? req.body.DepartmentCode ?? `DPT${nextId}`),
+      DepartmentHead: String(req.body.head ?? req.body.manager ?? req.body.DepartmentHead ?? ""),
+      HeadRole: String(req.body.role ?? req.body.HeadRole ?? ""),
+      ParentDepartment: req.body.parentDepartment ?? req.body.ParentDepartment ?? null,
+      Location: String(req.body.location ?? req.body.Location ?? "India"),
+      Status: normalizeStatus(req.body.status ?? req.body.Status, "ACTIVE"),
+    };
+
+    store.departments.unshift(department);
+    await writeStore(store);
+
+    res.status(201).json({
+      success: true,
+      data: formatDepartment(department, store.employees),
+    });
+  },
+);
+
+departmentRouter.put(
+  "/:departmentId",
+  authenticate,
+  authorize("SUPER_ADMIN", "HR_ADMIN"),
+  async (req, res) => {
+    const store = await readStore();
+    const departmentId = Number(req.params.departmentId);
+    const index = store.departments.findIndex((department) => department.DepartmentId === departmentId);
+
+    if (index === -1) {
+      return res.status(404).json({ success: false, message: "Department not found" });
+    }
+
+    const current = store.departments[index];
+    const updated: DepartmentRecord = {
+      ...current,
+      DepartmentName: req.body.name ?? req.body.DepartmentName ?? current.DepartmentName,
+      DepartmentCode: req.body.code ?? req.body.DepartmentCode ?? current.DepartmentCode,
+      DepartmentHead: req.body.head ?? req.body.manager ?? req.body.DepartmentHead ?? current.DepartmentHead,
+      HeadRole: req.body.role ?? req.body.HeadRole ?? current.HeadRole,
+      ParentDepartment:
+        req.body.parentDepartment ?? req.body.ParentDepartment ?? current.ParentDepartment,
+      Location: req.body.location ?? req.body.Location ?? current.Location,
+      Status:
+        req.body.status !== undefined || req.body.Status !== undefined
+          ? normalizeStatus(req.body.status ?? req.body.Status, current.Status)
+          : current.Status,
+    };
+
+    store.departments[index] = updated;
+    await writeStore(store);
+
+    res.status(200).json({
+      success: true,
+      data: formatDepartment(updated, store.employees),
+    });
+  },
+);
+
+roleRouter.get(
+  "/",
+  authenticate,
+  authorize("SUPER_ADMIN", "HR_ADMIN"),
+  async (_req, res) => {
+    const store = await readStore();
+    res.status(200).json({
+      success: true,
+      data: store.roles.map((role) => formatRole(role, store.employees)),
+    });
+  },
+);
+
+roleRouter.post(
+  "/",
+  authenticate,
+  authorize("SUPER_ADMIN", "HR_ADMIN"),
+  async (req, res) => {
+    const store = await readStore();
+    const nextId = Math.max(0, ...store.roles.map((role) => role.RoleId)) + 1;
+    const role: RoleRecord = {
+      RoleId: nextId,
+      RoleName: String(req.body.name ?? req.body.RoleName ?? "Role"),
+      Description: String(req.body.description ?? req.body.Description ?? ""),
+      Status: normalizeStatus(req.body.status ?? req.body.Status, "ACTIVE"),
+    };
+
+    store.roles.unshift(role);
+    await writeStore(store);
+
+    res.status(201).json({ success: true, data: formatRole(role, store.employees) });
+  },
+);
+
+roleRouter.put(
+  "/:roleId",
+  authenticate,
+  authorize("SUPER_ADMIN", "HR_ADMIN"),
+  async (req, res) => {
+    const store = await readStore();
+    const roleId = Number(req.params.roleId);
+    const index = store.roles.findIndex((role) => role.RoleId === roleId);
+
+    if (index === -1) {
+      return res.status(404).json({ success: false, message: "Role not found" });
+    }
+
+    const current = store.roles[index];
+    const updated: RoleRecord = {
+      ...current,
+      RoleName: req.body.name ?? req.body.RoleName ?? current.RoleName,
+      Description: req.body.description ?? req.body.Description ?? current.Description,
+      Status:
+        req.body.status !== undefined || req.body.Status !== undefined
+          ? normalizeStatus(req.body.status ?? req.body.Status, current.Status)
+          : current.Status,
+    };
+
+    store.roles[index] = updated;
+    await writeStore(store);
+
+    res.status(200).json({ success: true, data: formatRole(updated, store.employees) });
   },
 );
 
@@ -681,9 +911,11 @@ utilityRouter.get("/users", async (_req, res) => {
 export {
   attendanceRouter,
   authRouter,
+  departmentRouter,
   employeeRouter,
   holidayRouter,
   leaveRouter,
+  roleRouter,
   utilityRouter,
   wfhRouter,
 };

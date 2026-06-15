@@ -4,9 +4,11 @@ import dotenv from "dotenv";
 import {
   attendanceRouter,
   authRouter,
+  departmentRouter,
   employeeRouter,
   holidayRouter,
   leaveRouter,
+  roleRouter,
   utilityRouter,
   wfhRouter,
 } from "./local/api";
@@ -37,6 +39,8 @@ app.get("/", (_req: Request, res: Response) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/employees", employeeRouter);
+app.use("/api/departments", departmentRouter);
+app.use("/api/roles", roleRouter);
 app.use("/api/attendance", attendanceRouter);
 app.use("/api/wfh", wfhRouter);
 app.use("/api/holidays", holidayRouter);

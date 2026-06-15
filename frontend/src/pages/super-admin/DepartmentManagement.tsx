@@ -1,4 +1,4 @@
-import { useMemo, useState, type ChangeEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from "react";
 import {
   Building2,
   Plus,
@@ -12,6 +12,7 @@ import {
   UserPlus,
   Trash2,
 } from "lucide-react";
+import { superAdminApi } from "../../services/superAdminApi";
 
 type DepartmentStatus = "Active" | "Archived";
 
@@ -149,6 +150,18 @@ const emptyForm: Omit<Department, "id" | "employeeCount" | "status"> = {
   location: "",
 };
 
+const mapApiDepartment = (department: Awaited<ReturnType<typeof superAdminApi.getDepartments>>[number]): Department => ({
+  id: Number(department.id),
+  name: department.name,
+  code: department.name.slice(0, 3).toUpperCase(),
+  manager: department.head,
+  role: "",
+  parentDepartment: "",
+  employeeCount: department.employeesCount,
+  location: "India",
+  status: department.status === "inactive" ? "Archived" : "Active",
+});
+
 export default function Department() {
   const [departments, setDepartments] =
     useState<Department[]>(initialDepartments);
@@ -171,6 +184,22 @@ export default function Department() {
     : null;
 
   const [formData, setFormData] = useState(emptyForm);
+
+  useEffect(() => {
+    const loadDepartments = async () => {
+      try {
+        const rows = await superAdminApi.getDepartments();
+
+        if (rows.length > 0) {
+          setDepartments(rows.map(mapApiDepartment));
+        }
+      } catch (error) {
+        console.warn("Unable to load departments from backend, using local data.", error);
+      }
+    };
+
+    loadDepartments();
+  }, []);
 
   const filteredDepartments = useMemo(() => {
     return departments.filter((dept) => {
@@ -229,7 +258,20 @@ export default function Department() {
     setIsFormOpen(true);
   };
 
-  const handleArchive = (id: number) => {
+  const handleArchive = async (id: number) => {
+    const current = departments.find((dept) => dept.id === id);
+    if (!current) return;
+
+    try {
+      await superAdminApi.updateDepartment(String(id), {
+        name: current.name,
+        head: current.manager,
+        status: "inactive",
+      });
+    } catch (error) {
+      console.warn("Unable to archive department in backend, keeping UI update local.", error);
+    }
+
     setDepartments((prev) =>
       prev.map((dept) =>
         dept.id === id ? { ...dept, status: "Archived" } : dept
@@ -237,7 +279,20 @@ export default function Department() {
     );
   };
 
-  const handleActivate = (id: number) => {
+  const handleActivate = async (id: number) => {
+    const current = departments.find((dept) => dept.id === id);
+    if (!current) return;
+
+    try {
+      await superAdminApi.updateDepartment(String(id), {
+        name: current.name,
+        head: current.manager,
+        status: "active",
+      });
+    } catch (error) {
+      console.warn("Unable to activate department in backend, keeping UI update local.", error);
+    }
+
     setDepartments((prev) =>
       prev.map((dept) =>
         dept.id === id ? { ...dept, status: "Active" } : dept
@@ -245,7 +300,7 @@ export default function Department() {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!formData.name || !formData.code || !formData.manager) {
@@ -254,6 +309,16 @@ export default function Department() {
     }
 
     if (editingDepartmentId) {
+      try {
+        await superAdminApi.updateDepartment(String(editingDepartmentId), {
+          name: formData.name,
+          head: formData.manager,
+          status: "active",
+        });
+      } catch (error) {
+        console.warn("Unable to update department in backend, keeping UI update local.", error);
+      }
+
       setDepartments((prev) =>
         prev.map((dept) =>
           dept.id === editingDepartmentId
@@ -265,8 +330,21 @@ export default function Department() {
         )
       );
     } else {
+      let createdDepartmentId = Date.now();
+
+      try {
+        const created = await superAdminApi.createDepartment({
+          name: formData.name,
+          head: formData.manager,
+          status: "active",
+        });
+        createdDepartmentId = Number(created.id);
+      } catch (error) {
+        console.warn("Unable to create department in backend, keeping UI update local.", error);
+      }
+
       const newDepartment: Department = {
-        id: Date.now(),
+        id: createdDepartmentId,
         ...formData,
         employeeCount: 0,
         status: "Active",

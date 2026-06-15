@@ -9,13 +9,93 @@ import type {
 } from "../types/superAdmin.types";
 import { hrmsApi } from "./hrmsApi";
 
+const toDisplayRole = (role: string): EmployeeUser["role"] => {
+  const normalized = role.trim().toUpperCase().replace(/\s+/g, "_");
+
+  switch (normalized) {
+    case "SUPER_ADMIN":
+      return "Super Admin";
+    case "HR_ADMIN":
+    case "HR_MANAGER":
+      return "HR";
+    case "MANAGER":
+      return "Manager";
+    case "FINANCE":
+      return "Finance";
+    default:
+      return "Employee";
+  }
+};
+
+const toBackendRole = (role?: EmployeeUser["role"]) => {
+  switch (role) {
+    case "Super Admin":
+      return "SUPER_ADMIN";
+    case "HR":
+      return "HR_ADMIN";
+    case "Manager":
+      return "MANAGER";
+    case "Finance":
+      return "FINANCE";
+    default:
+      return "EMPLOYEE";
+  }
+};
+
 export const superAdminApi = {
-  getDepartments: async () => [] as Department[],
+  getDepartments: async () => {
+    const rows = await hrmsApi.getDepartments();
+    return rows.map((row: any, index: number) => ({
+      id: String(row.DepartmentId ?? row.id ?? index + 1),
+      name: row.DepartmentName ?? row.name ?? "Department",
+      head: row.DepartmentHead ?? row.head ?? row.manager ?? "Not assigned",
+      employeesCount: Number(row.EmployeeCount ?? row.employeesCount ?? 0),
+      status:
+        String(row.Status ?? row.status ?? "active").toLowerCase() === "archived"
+          ? "inactive"
+          : "active",
+    })) as Department[];
+  },
 
-  createDepartment: async (data: Partial<Department>) => data as Department,
+  createDepartment: async (data: Partial<Department>) => {
+    const payload = await hrmsApi.createDepartment({
+      name: data.name ?? "Department",
+      head: data.head ?? "",
+      status: data.status === "inactive" ? "ARCHIVED" : "ACTIVE",
+    });
 
-  updateDepartment: async (_id: string, data: Partial<Department>) =>
-    data as Department,
+    const row = payload?.data ?? payload;
+    return {
+      id: String(row.DepartmentId ?? Date.now()),
+      name: row.DepartmentName ?? data.name ?? "Department",
+      head: row.DepartmentHead ?? data.head ?? "Not assigned",
+      employeesCount: Number(row.EmployeeCount ?? 0),
+      status:
+        String(row.Status ?? "ACTIVE").toLowerCase() === "archived"
+          ? "inactive"
+          : "active",
+    } as Department;
+  },
+
+  updateDepartment: async (id: string, data: Partial<Department>) => {
+    const payload = await hrmsApi.updateDepartment(id, {
+      name: data.name,
+      head: data.head,
+      status: data.status === "inactive" ? "ARCHIVED" : "ACTIVE",
+    });
+
+    const row = payload?.data ?? payload;
+    return {
+      id: String(row.DepartmentId ?? id),
+      name: row.DepartmentName ?? data.name ?? "Department",
+      head: row.DepartmentHead ?? data.head ?? "Not assigned",
+      employeesCount: Number(row.EmployeeCount ?? 0),
+      status:
+        String(row.Status ?? "ACTIVE").toLowerCase() === "archived"
+          ? "inactive"
+          : "active",
+    } as Department;
+  },
 
   getHolidays: async () => {
     const rows = await hrmsApi.getHolidays();
@@ -67,9 +147,7 @@ export const superAdminApi = {
         row.email ??
         "employee@example.com",
       role:
-        String(row.role_name ?? row.role ?? row.RoleName ?? "Employee")
-          .replace(/_/g, " ")
-          .replace(/\b\w/g, (char) => char.toUpperCase()) as EmployeeUser["role"],
+        toDisplayRole(String(row.role_name ?? row.role ?? row.RoleName ?? "Employee")),
       department:
         row.department_name ??
         row.DepartmentName ??
@@ -84,9 +162,13 @@ export const superAdminApi = {
   },
 
   updateEmployee: async (id: string, data: Partial<EmployeeUser>) => {
-    if (data.status) {
-      await hrmsApi.updateEmployeeStatus(id, data.status.toUpperCase());
-    }
+    await hrmsApi.updateEmployee(id, {
+      employee_status: data.status?.toUpperCase(),
+      role: toBackendRole(data.role),
+      department: data.department,
+      name: data.name,
+      personal_email: data.email,
+    });
 
     return {
       id,

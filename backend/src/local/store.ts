@@ -28,6 +28,33 @@ export interface EmployeeRecord {
   salary: number;
   experience: number;
   joining_date: string;
+  emergency_contact?: string | null;
+  DOB?: string | null;
+  Gender?: string | null;
+  employment_type?: string | null;
+  profile_image?: string | null;
+  client_id?: number | null;
+  role_id?: number | null;
+  department_id?: number | null;
+  dashboard_id?: number | null;
+}
+
+export interface DepartmentRecord {
+  DepartmentId: number;
+  DepartmentName: string;
+  DepartmentCode: string;
+  DepartmentHead: string;
+  HeadRole: string;
+  ParentDepartment: string | null;
+  Location: string;
+  Status: "ACTIVE" | "ARCHIVED";
+}
+
+export interface RoleRecord {
+  RoleId: number;
+  RoleName: string;
+  Description: string;
+  Status: "ACTIVE" | "ARCHIVED";
 }
 
 export interface HolidayRecord {
@@ -78,6 +105,8 @@ export interface AttendanceRecord {
 
 export interface HrmsStore {
   employees: EmployeeRecord[];
+  departments: DepartmentRecord[];
+  roles: RoleRecord[];
   holidays: HolidayRecord[];
   leaves: LeaveRecord[];
   wfhRequests: WfhRecord[];
