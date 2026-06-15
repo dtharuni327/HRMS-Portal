@@ -1,0 +1,246 @@
+{
+  "employees": [
+    {
+      "Emp_id": "EMP001",
+      "username": "superadmin",
+      "password": "Super@123",
+      "name": "D Tharuni",
+      "company_email": "superadmin@company.com",
+      "personal_email": "superadmin@company.com",
+      "role_name": "SUPER_ADMIN",
+      "department_name": "Administration",
+      "employee_status": "ACTIVE",
+      "designation": "Super Admin",
+      "work_mode": "Office",
+      "manager_id": null,
+      "location": "Hyderabad",
+      "phone": "9876543210",
+      "salary": 1800000,
+      "experience": 8,
+      "joining_date": "2021-11-15"
+    },
+    {
+      "Emp_id": "EMP002",
+      "username": "hradmin",
+      "password": "Hr@12345",
+      "name": "Shrushti Desu",
+      "company_email": "hradmin@company.com",
+      "personal_email": "hradmin@company.com",
+      "role_name": "HR_ADMIN",
+      "department_name": "Human Resources",
+      "employee_status": "ACTIVE",
+      "designation": "HR Manager",
+      "work_mode": "Office",
+      "manager_id": "EMP001",
+      "location": "Hyderabad",
+      "phone": "9876543211",
+      "salary": 1200000,
+      "experience": 6,
+      "joining_date": "2022-06-03"
+    },
+    {
+      "Emp_id": "EMP003",
+      "username": "manager",
+      "password": "Manager@123",
+      "name": "Rahul Sharma",
+      "company_email": "manager@company.com",
+      "personal_email": "manager@company.com",
+      "role_name": "MANAGER",
+      "department_name": "Engineering",
+      "employee_status": "ACTIVE",
+      "designation": "Technical Lead",
+      "work_mode": "Hybrid",
+      "manager_id": "EMP001",
+      "location": "Bangalore",
+      "phone": "9876543212",
+      "salary": 1400000,
+      "experience": 7,
+      "joining_date": "2022-02-10"
+    },
+    {
+      "Emp_id": "EMP004",
+      "username": "employee",
+      "password": "Employee@123",
+      "name": "Ramakrishna",
+      "company_email": "employee@company.com",
+      "personal_email": "employee@company.com",
+      "role_name": "EMPLOYEE",
+      "department_name": "Engineering",
+      "employee_status": "ACTIVE",
+      "designation": "Software Engineer",
+      "work_mode": "Hybrid",
+      "manager_id": "EMP003",
+      "location": "Hyderabad",
+      "phone": "9876543213",
+      "salary": 900000,
+      "experience": 2,
+      "joining_date": "2024-01-15"
+    },
+    {
+      "Emp_id": "EMP005",
+      "username": "finance",
+      "password": "Finance@123",
+      "name": "Divya Nair",
+      "company_email": "finance@company.com",
+      "personal_email": "finance@company.com",
+      "role_name": "FINANCE",
+      "department_name": "Finance",
+      "employee_status": "ACTIVE",
+      "designation": "Finance Analyst",
+      "work_mode": "Office",
+      "manager_id": "EMP001",
+      "location": "Chennai",
+      "phone": "9876543214",
+      "salary": 1000000,
+      "experience": 5,
+      "joining_date": "2023-04-18"
+    },
+    {
+      "Emp_id": "EMP006",
+      "username": "client",
+      "password": "Client@123",
+      "name": "Client User",
+      "company_email": "client@company.com",
+      "personal_email": "client@company.com",
+      "role_name": "CLIENT",
+      "department_name": "Client",
+      "employee_status": "ACTIVE",
+      "designation": "Client Representative",
+      "work_mode": "Remote",
+      "manager_id": "EMP001",
+      "location": "Mumbai",
+      "phone": "9876543215",
+      "salary": 0,
+      "experience": 3,
+      "joining_date": "2024-05-12"
+    }
+  ],
+  "holidays": [
+    {
+      "HolidayId": 1,
+      "HolidayName": "Independence Day",
+      "HolidayDate": "2026-08-15",
+      "Region": "India",
+      "Type": "public",
+      "client_id": 1
+    },
+    {
+      "HolidayId": 2,
+      "HolidayName": "Ganesh Chaturthi",
+      "HolidayDate": "2026-08-27",
+      "Region": "India",
+      "Type": "restricted",
+      "client_id": 1
+    },
+    {
+      "HolidayId": 3,
+      "HolidayName": "Gandhi Jayanti",
+      "HolidayDate": "2026-10-02",
+      "Region": "India",
+      "Type": "public",
+      "client_id": 1
+    }
+  ],
+  "leaves": [
+    {
+      "LeaveId": 3,
+      "Emp_id": "EMP004",
+      "EmployeeName": "Ramakrishna",
+      "LeaveType": "Sick",
+      "FromDate": "2026-06-21",
+      "ToDate": "2026-06-21",
+      "TotalDays": 1,
+      "Reason": "Medical appointment",
+      "Status": "APPROVED",
+      "RequestedAt": "2026-06-15T10:17:08.398Z"
+    },
+    {
+      "LeaveId": 1,
+      "Emp_id": "EMP004",
+      "EmployeeName": "Ramakrishna",
+      "LeaveType": "Casual",
+      "FromDate": "2026-06-18",
+      "ToDate": "2026-06-19",
+      "TotalDays": 2,
+      "Reason": "Family function",
+      "Status": "PENDING",
+      "RequestedAt": "2026-06-15T09:30:00.000Z"
+    },
+    {
+      "LeaveId": 2,
+      "Emp_id": "EMP003",
+      "EmployeeName": "Rahul Sharma",
+      "LeaveType": "Annual",
+      "FromDate": "2026-06-20",
+      "ToDate": "2026-06-22",
+      "TotalDays": 3,
+      "Reason": "Vacation",
+      "Status": "APPROVED",
+      "RequestedAt": "2026-06-12T08:00:00.000Z"
+    }
+  ],
+  "wfhRequests": [
+    {
+      "Id": 3,
+      "Emp_id": "EMP004",
+      "EmployeeName": "Ramakrishna",
+      "FromDate": "2026-06-23",
+      "ToDate": "2026-06-23",
+      "Reason": "Need to be home for broadband installation",
+      "Status": "PENDING",
+      "RequestedAt": "2026-06-15T10:17:06.690Z"
+    },
+    {
+      "Id": 1,
+      "Emp_id": "EMP004",
+      "EmployeeName": "Ramakrishna",
+      "FromDate": "2026-06-17",
+      "ToDate": "2026-06-17",
+      "Reason": "Home maintenance visit",
+      "Status": "PENDING",
+      "RequestedAt": "2026-06-15T07:15:00.000Z"
+    },
+    {
+      "Id": 2,
+      "Emp_id": "EMP003",
+      "EmployeeName": "Rahul Sharma",
+      "FromDate": "2026-06-16",
+      "ToDate": "2026-06-16",
+      "Reason": "Vendor coordination",
+      "Status": "APPROVED",
+      "RequestedAt": "2026-06-14T10:30:00.000Z"
+    }
+  ],
+  "attendance": [
+    {
+      "Emp_id": "EMP004",
+      "Date": "2026-06-15",
+      "punch_in_time": "2026-06-15T10:17:06.121Z",
+      "work_mode": "Office",
+      "punch_in_status": "ON_TIME",
+      "attendance_status": "Present",
+      "punch_out_time": "2026-06-15T10:17:44.455Z",
+      "total_hours": 0.01
+    },
+    {
+      "Emp_id": "EMP004",
+      "Date": "2026-06-13",
+      "punch_in_time": "2026-06-13T03:35:00.000Z",
+      "punch_out_time": "2026-06-13T11:55:00.000Z",
+      "work_mode": "Office",
+      "punch_in_status": "ON_TIME",
+      "attendance_status": "Present",
+      "total_hours": 8.33
+    },
+    {
+      "Emp_id": "EMP004",
+      "Date": "2026-06-14",
+      "punch_in_time": "2026-06-14T03:42:00.000Z",
+      "punch_out_time": "2026-06-14T12:05:00.000Z",
+      "work_mode": "WFH",
+      "punch_in_status": "ON_TIME",
+      "attendance_status": "WFH",
+      "total_hours": 8.38
+    }
+  ]
+}
