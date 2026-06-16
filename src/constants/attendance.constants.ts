@@ -37,3 +37,11 @@ export const HISTORY = {
   },
 };
 
+
+
+export const ATTENDANCE_ANALYTICS = {
+  MESSAGE: {
+    FETCH_SUCCESS: "Analytics fetched successfully",
+    FETCH_FAILED: "Analytics fetch failed"
+  }
+};

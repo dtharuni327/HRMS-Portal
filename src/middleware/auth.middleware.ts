@@ -10,9 +10,8 @@ interface CustomUser extends JwtPayload {
 export interface AuthRequest extends Request {
   user?: {
     Emp_id: string;
-    role: string; // Dynamic field holding 'SUPER_ADMIN', 'HR_ADMIN', etc.
-    Dashboard_id?: number;  // ← ADD THIS
-
+    role: string; 
+    Dashboard_id?: number;  
   };
 }
 
@@ -41,12 +40,13 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
 
     const pool = await db;
     
-    // Kept strictly to MSSQL, completely removed 'active' to stop the column error
+    // GET Dashboard_id from database
     const result = await pool.request()
       .input("Emp_id", sql.VarChar(10), decoded.Emp_id)
       .query(`
         SELECT 
           e.Emp_id,
+          e.Dashboard_id,
           acc.DashboardName
         FROM Employee e
         INNER JOIN Access acc ON e.Dashboard_id = acc.Id
@@ -59,15 +59,15 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
 
     const user = result.recordset[0];
 
-    // Safety check to verify DashboardName exists in the database record
     if (!user.DashboardName) {
       return res.status(401).json({ message: "Dashboard access configuration missing for this profile" });
     }
 
+    // SAVE Dashboard_id to req.user
     req.user = {
       Emp_id: user.Emp_id,
-      // Standardize formatting cleanly (e.g., "HR Manager" or "HR Admin" -> "HR_ADMIN")
-      role: String(user.DashboardName).toUpperCase().trim().replace(/\s+/g, "_"), 
+      role: String(user.DashboardName).toUpperCase().trim().replace(/\s+/g, "_"),
+      Dashboard_id: user.Dashboard_id,  // ← ADD THIS LINE
     };
 
     next();

@@ -1,26 +1,11 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 
-/* ================================
-   ROUTE IMPORTS
-================================ */
-
-//import authRoutes from "./routes/authRoutes";
-//import employeeRoutes from "./routes/employeeRoutes";
-
 import attendanceRoutes from "./routes/attendanceRoutes";
 import wfhRoutes from "./routes/wfhRoutes";
-
-//import departmentRoutes from "./routes/departmentRoutes";
-//import leaveRoutes from "./routes/leaveRoutes";
-//import holidayRoutes from "./routes/holidaysRoutes";
-//import roleRoutes from "./routes/rolesRoutes";
-
+import payrollRoutes from "./routes/payrollRoutes"
+import payslipRoutes from "./routes/payslipRoutes"
 const app = express();
-
-/* ================================
-   MIDDLEWARE
-================================ */
 
 app.use(
   cors({
@@ -30,37 +15,20 @@ app.use(
 );
 app.use(express.json());
 
-/* ================================
-   HEALTH CHECK
-================================ */
+
 
 app.get("/", (req: Request, res: Response) => {
   res.send("API is running...");
 });
 
-/* ================================
-   ROUTES
-================================ */
-
-//app.use("/api/auth", authRoutes);
-
-//app.use("/api/employees", employeeRoutes);
 
 app.use("/api/attendance", attendanceRoutes);
 
 app.use("/api/wfh", wfhRoutes);  
 
-//app.use("/api/departments", departmentRoutes);
+app.use("/api/payroll", payrollRoutes)
 
-//app.use("/api/roles", roleRoutes);
-
-//app.use("/api/leave", leaveRoutes);
-
-//app.use("/api/holidays", holidayRoutes);
-
-/* ================================
-   404 HANDLER
-================================ */
+app.use("/api/payslip",payslipRoutes)
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({
@@ -68,9 +36,6 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-/* ================================
-   GLOBAL ERROR HANDLER
-================================ */
 
 app.use(
   (err: any, req: Request, res: Response, next: NextFunction) => {
