@@ -51,6 +51,7 @@ Deferred after handover:
 - [Technical Architecture](./docs/TECHNICAL_ARCHITECTURE.md)
 - [Product Scope Cut](./docs/PRODUCT_SCOPE.md)
 - [Handover Checklist](./docs/HANDOVER_CHECKLIST.md)
+- [JSON to SQL Mapping](./docs/JSON_SQL_MAPPING.md)
 
 ## Suggested Repository Layout
 
