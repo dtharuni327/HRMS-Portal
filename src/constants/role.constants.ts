@@ -8,7 +8,7 @@ export const ROLE_MESSAGES = {
   NAME_REQUIRED: "Role name is required",
   DEPT_ID_REQUIRED: "Valid Department ID is required",
   INVALID_ID: "Invalid role ID format",
-  INVALID_DEPT_QUERY: "Department ID must be a valid number",
+  ROLE_DELETED: "Role deleted successfully",
   UNAUTHORIZED: "Unauthorized",
   INTERNAL_SERVER_ERROR: "Internal server error"
 };   

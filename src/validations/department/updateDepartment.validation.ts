@@ -1,11 +1,14 @@
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 
-export const updateDepartmentValidation = [
-  body("department_id")
+export const departmentIdParamValidation = [
+  param("id")
     .notEmpty()
     .withMessage("Department Id is required")
     .isNumeric()
-    .withMessage("Department Id must be numeric"),
+    .withMessage("Department Id must be numeric")
+];
+
+export const updateDepartmentValidation = [
   body("department_name")
     .notEmpty()
     .withMessage("Department name is required"),

@@ -7,6 +7,7 @@ export const DEPARTMENT_MESSAGES = {
   ANOTHER_NAME_EXISTS: "Another department with this name already exists",
   NAME_REQUIRED: "Department name is required",
   INVALID_ID: "Invalid department ID format",
+  DEPARTMENT_DELETED: "Department deleted successfully",
   UNAUTHORIZED: "Unauthorized",
   INTERNAL_SERVER_ERROR: "Internal server error"
 };

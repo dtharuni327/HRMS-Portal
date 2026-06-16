@@ -4,7 +4,7 @@ import { updateDepartmentService } from "../../services/department/updateDepartm
 export const updateDepartment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = Number(req.params.id);
-    const result = await updateDepartmentService(id, req.body);
+    const result = await updateDepartmentService(id, req.body, req.user);
     return res.status(200).json(result);
   } catch (error) {
     next(error);
