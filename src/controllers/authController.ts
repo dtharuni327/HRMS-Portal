@@ -363,7 +363,7 @@ export const login = async (
         process.env.JWT_SECRET as string,
  
         {
-          expiresIn: "15m",
+          expiresIn: "30d",
         }
       );
  

@@ -19,8 +19,14 @@ const config: sql.config = {
   },
 };
 
-export const db = new sql.ConnectionPool(config);
 
-db.connect()
-  .then(() => console.log("MSSQL Connected"))
-  .catch((err) => console.log("DB Connection Error:", err));
+export const db: Promise<sql.ConnectionPool> = new sql.ConnectionPool(config)
+  .connect()
+  .then((pool) => {
+    console.log("MSSQL Connected");
+    return pool;
+  })
+  .catch((err) => {
+    console.error("DB Connection Error:", err);
+    throw err;
+  });

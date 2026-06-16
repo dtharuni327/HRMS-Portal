@@ -16,799 +16,1106 @@ A Node.js + TypeScript REST API for an HR Management System, backed by Microsoft
 
 ---
 
-## Project Structure
+# HRMS API Reference
+
+All APIs run on `http://localhost:5000` and require a Bearer token in every request:
 
 ```
-src/
-├── app.ts                          # Express app setup, middleware, routes
-├── server.ts                       # Server entry point
-├── config/
-│   └── db.ts                       # MSSQL connection pool
-├── constants/
-│   └── employee.constants.ts       # Enums, SP names, HTTP status codes
-├── controllers/
-│   ├── authController.ts           # Register, login, OTP, refresh token
-│   └── employee/
-│       ├── create.employee.controller.ts
-│       ├── getAll.employee.controller.ts
-│       ├── getById.employee.controller.ts
-│       └── update.employee.controller.ts
-├── middleware/
-│   ├── auth.middleware.ts          # JWT authentication
-│   ├── role.middleware.ts          # Role-based & self-access authorization
-│   └── validation.middleware.ts    # Zod schema validation
-├── repositories/
-│   └── employee/
-│       └── employee.repository.ts  # All DB calls (via stored procedures)
-├── routes/
-│   ├── authRoutes.ts
-│   └── employee.routes.ts
-├── services/
-│   └── employee/
-│       ├── create.employee.service.ts
-│       ├── getAll.employee.service.ts
-│       ├── getById.employee.service.ts
-│       └── update.employee.service.ts
-├── types/
-│   └── express.d.ts                # Express Request type augmentation
-└── validations/
-    └── employee/
-        ├── create.employee.validation.ts
-        ├── getAll.employee.validation.ts
-        ├── getById.employee.validation.ts
-        └── update.employee.validation.ts
+Authorization: Bearer <accessToken>
 ```
 
 ---
 
-## Environment Variables
+## Table of Contents
 
-Create a `.env` file in the project root:
-
-```env
-# Server
-PORT=5000
-
-# Database
-DB_SERVER=your_sql_server
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_NAME=your_db_name
-
-# JWT
-JWT_SECRET=your_jwt_secret
-JWT_REFRESH_SECRET=your_refresh_secret
-
-# Email (Gmail)
-MAIL_USER=your_gmail@gmail.com
-MAIL_PASS=your_gmail_app_password
-
-# CORS
-ALLOWED_ORIGIN=http://localhost:3000
-```
-
-> **Note:** For Gmail, use an [App Password](https://support.google.com/accounts/answer/185833) — not your regular Gmail password.
+1. [Employee](#1-employee)
+2. [Profile Management](#2-profile-management)
+3. [Team Directory](#3-team-directory)
+4. [Organisation Structure](#4-organisation-structure)
+5. [Documents Management](#5-documents-management)
+6. [Recruitment](#6-recruitment)
 
 ---
 
-## Getting Started
+## 1. Employee
 
-```bash
-# Install dependencies
-npm install
-
-# Run in development (hot reload)
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production build
-npm start
-```
+**Base URL:** `http://localhost:5000/api/employees`
 
 ---
 
-# DATABASE (FULL STRUCTURE)
+### Create Employee
 
-## Create Database
+`POST /api/employees`
 
-```sql
-CREATE DATABASE hrms_portal;
-GO
-USE hrms_portal;
-GO
-/* =====================================================
- 
-   DEPARTMENT TABLE
- 
-===================================================== */
- CREATE TABLE Department (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
-    DepartmentName VARCHAR(100) NOT NULL UNIQUE
-);
+> Super Admin / HR Admin only
 
-/* =====================================================
-   INSERT DEPARTMENTS
-===================================================== */
-INSERT INTO Department (DepartmentName) VALUES 
-('Administration'),    -- Id 1
-('Human Resources'),   -- Id 2
-('Management'),        -- Id 3
-('Technology'),        -- Id 4
-('Finance'),           -- Id 5
-('Sales & Marketing'), -- Id 6
-('Operations');        -- Id 7
-GO
-/* =====================================================
-   ROLES TABLE
-===================================================== */
-CREATE TABLE roles (
-    Id INT PRIMARY KEY, 
-    role_name VARCHAR(100) NOT NULL,
-    department_id INT NOT NULL,
-    CONSTRAINT FK_Roles_Department FOREIGN KEY (department_id) REFERENCES Department(Id) ON DELETE CASCADE,
-    CONSTRAINT UQ_Role_Per_Department UNIQUE (role_name, department_id)
-);
-GO
+**Field rules:**
+- `DOB` — YYYY-MM-DD, must be in the past; employee must be at least 18
+- `Gender` — `MALE`, `FEMALE`, or `OTHER`
+- `joining_date` — YYYY-MM-DD, cannot be a future date
+- `employment_type` — `FULL_TIME`, `CONTRACT`, or `INTERN`
+- `work_mode` — `WFH`, `WFO`, or `HYBRID`
+- `employee_status` — defaults to `ACTIVE`
+- `emergency_contact` — must differ from `phone`
+- `Emp_id`, `username`, `company_email` — auto-generated (`CFT20260001` format)
 
-/* =====================================================
-   INSERT ROLES
-===================================================== */
-INSERT INTO roles (Id, role_name, department_id) VALUES
-(101, 'Super Admin', 1), (102, 'Receptionist', 1), (103, 'Office Coordinator', 1),
-(104, 'Executive Assistant', 1), (105, 'Front Desk Staff', 1), (106, 'Facilities/Admin Executive', 1),
-(107, 'Document & Records Staff', 1);
-
--- Human Resources (Department Id 2 -> IDs start at 201)
-INSERT INTO roles (Id, role_name, department_id) VALUES
-(201, 'HR Manager', 2), (202, 'HR Executive', 2), (203, 'Recruiter', 2),
-(204, 'Payroll Staff', 2), (205, 'Employee Relations Staff', 2), (206, 'HR Intern', 2);
-
--- Management (Department Id 3 -> IDs start at 301)
-INSERT INTO roles (Id, role_name, department_id) VALUES
-(301, 'Director', 3), (302, 'General Manager', 3), (303, 'Delivery Head', 3),
-(304, 'Project Manager', 3), (305, 'Operations Manager', 3), (306, 'Business Manager', 3);
-
--- Technology (Department Id 4 -> IDs start at 401)
-INSERT INTO roles (Id, role_name, department_id) VALUES
-(401, 'Associate Software Engineer', 4), (402, 'Software Engineer', 4), (403, 'Frontend Developer', 4),
-(404, 'Backend Developer', 4), (405, 'Full Stack Developer', 4), (406, 'Mobile App Developer', 4),
-(407, 'UI/UX Designer', 4), (408, 'QA Engineer / Tester', 4), (409, 'DevOps Engineer', 4),
-(410, 'System Administrator', 4), (411, 'Network Engineer', 4), (412, 'Database Administrator (DBA)', 4),
-(413, 'Cybersecurity Analyst', 4), (414, 'Cloud Engineer', 4), (415, 'Technical Lead', 4),
-(416, 'Engineering Manager', 4), (417, 'IT Support Executive', 4), (418, 'Help Desk Technician', 4),
-(419, 'Data Engineer', 4), (420, 'AI/ML Engineer', 4);
-
--- Finance (Department Id 5 -> IDs start at 501)
-INSERT INTO roles (Id, role_name, department_id) VALUES
-(501, 'Accountant', 5), (502, 'Senior Accountant', 5), (503, 'Finance Executive', 5),
-(504, 'Finance Manager', 5), (505, 'Accounts Executive', 5), (506, 'Accounts Manager', 5),
-(507, 'Payroll Executive', 5), (508, 'Payroll Manager', 5), (509, 'Billing Executive', 5),
-(510, 'Tax Consultant', 5), (511, 'Auditor', 5), (512, 'Financial Analyst', 5), (513, 'Budget Analyst', 5);
-
--- Sales & Marketing (Department Id 6 -> IDs start at 601)
-INSERT INTO roles (Id, role_name, department_id) VALUES
-(601, 'Sales Executive', 6), (602, 'Senior Sales Executive', 6), (603, 'Business Development Executive (BDE)', 6),
-(604, 'Business Development Manager (BDM)', 6), (605, 'Sales Manager', 6), (606, 'Account Manager', 6),
-(607, 'Client Relationship Manager', 6), (608, 'IT Sales Executive', 6), (609, 'Digital Marketing Executive', 6),
-(610, 'SEO Specialist', 6), (611, 'Social Media Manager', 6), (612, 'Content Writer', 6),
-(613, 'Content Marketing Executive', 6), (614, 'Graphic Designer', 6), (615, 'Marketing Analyst', 6);
-
--- Operations (Department Id 7 -> IDs start at 701)
-INSERT INTO roles (Id, role_name, department_id) VALUES
-(701, 'Operations Executive', 7), (702, 'Operations Manager', 7), (703, 'Project Coordinator', 7),
-(704, 'Project Manager', 7), (705, 'Delivery Manager', 7), (706, 'Business Operations Associate', 7),
-(707, 'Process Coordinator', 7), (708, 'Client Success Executive', 7), (709, 'Resource Manager', 7),
-(710, 'Vendor Coordinator', 7), (711, 'Service Delivery Executive', 7), (712, 'Workflow Coordinator', 7);
-GO
-
-
-/*============================
- ACCE--SS TABLE
-=============================*/
-
-CREATE TABLE Access (
-    Id INT PRIMARY KEY, 
-    DashboardName VARCHAR(50) NOT NULL UNIQUE
-);
-
-INSERT INTO Access (Id, DashboardName) VALUES 
-(1, 'SUPER_ADMIN'),
-(2, 'HR_ADMIN'),
-(3, 'MANAGER'),
-(4, 'EMPLOYEE'),
-(5, 'FINANCE'),
-(6, 'CLIENT');
-GO
-
-/* =====================================================
-CLIENTS TABLE
-===================================================== */
- 
-CREATE TABLE clients (
-    client_id INT IDENTITY(1,1) PRIMARY KEY,
-    client_name VARCHAR(100)
-    NOT NULL,
-    region VARCHAR(100)
-    NULL,
-    created_at DATETIME2
-    DEFAULT GETDATE()
-);
- 
-GO
- 
-/* =====================================================
-   INSERT CLIENTS
-===================================================== */
- 
-SET IDENTITY_INSERT clients ON;
-GO
- 
-INSERT INTO clients
-(
-    client_id,
-    client_name,
-    region
-)
- 
-VALUES
- 
-(
-    1,
-    'TCS Chennai',
-    'Tamil Nadu'
-),
- 
-(
-    2,
-    'Infosys US',
-    'United States'
-),
- 
-(
-    3,
-    'Dubai Client',
-    'UAE'
-);
-GO
-SET IDENTITY_INSERT clients OFF;
-GO
-
-/* =====================================================
-   EMPLOYEE TABLE
-===================================================== */
-CREATE TABLE Employee (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
-    Emp_id VARCHAR(10) UNIQUE NULL,
-    Name VARCHAR(100) NOT NULL,
-    username VARCHAR(100) UNIQUE NOT NULL,
-    personal_email VARCHAR(150) UNIQUE NOT NULL,
-    company_email VARCHAR(150) UNIQUE NOT NULL,
-    Phone VARCHAR(10) UNIQUE NOT NULL,
-    RoleID INT NOT NULL,
-    Department_id INT NOT NULL,
-    client_id INT NULL,
-    Dashboard_id INT NOT NULL,
-    designation VARCHAR(100) NOT NULL,
-    manager_id VARCHAR(10) NULL,
-    joining_date DATE NOT NULL,
-    employment_type VARCHAR(20) NOT NULL CHECK (employment_type IN ('FULL_TIME', 'CONTRACT', 'INTERN')),
-    work_mode VARCHAR(20) NOT NULL CHECK (work_mode IN ('WFH', 'WFO', 'HYBRID')),
-    profile_image VARCHAR(255) NULL,
-    emergency_contact VARCHAR(10) NULL,
-    employee_status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE' CHECK (employee_status IN ('ACTIVE', 'INACTIVE', 'RESIGNED', 'TERMINATED', 'ON_NOTICE')),
-    CreatedAt DATETIME2 DEFAULT GETDATE(),
-    UpdatedAt DATETIME2 DEFAULT GETDATE(),
-
-    /* =============================
-       FOREIGN KEYS
-    ============================= */
-    CONSTRAINT fk_role FOREIGN KEY (RoleID) REFERENCES roles(id),
-    CONSTRAINT fk_department FOREIGN KEY (Department_id) REFERENCES Department(Id),
-    CONSTRAINT fk_employee_client FOREIGN KEY (client_id) REFERENCES clients(client_id) ON DELETE SET NULL,
-    CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES Employee(Emp_id),
-    CONSTRAINT fk_employee_access FOREIGN KEY (Dashboard_id) REFERENCES Access(Id)
-);
-GO
-
-/* =====================================================
-   INDEXES
-===================================================== */
-CREATE INDEX idx_employee_role ON Employee(RoleID);
-CREATE INDEX idx_employee_department ON Employee(Department_id);
-CREATE INDEX idx_employee_manager ON Employee(manager_id);
-CREATE INDEX idx_employee_status ON Employee(employee_status);
-CREATE INDEX idx_employee_client ON Employee(client_id);
-CREATE INDEX idx_employee_dashboard ON Employee(Dashboard_id);
-GO
-
-INSERT INTO Employee (
-    Emp_id,
-    Name,
-    username,
-    personal_email,
-    company_email,
-    Phone,
-    RoleID,
-    Department_id,
-    client_id,
-    Dashboard_id,
-    designation,
-    manager_id,
-    joining_date,
-    employment_type,
-    work_mode,
-    profile_image,
-    emergency_contact,
-    employee_status
-)
-VALUES
-
-/* =========================
-   SUPER ADMIN (E001)
-   RoleID: 101 (Super Admin)
-   Dashboard_id: 1 (SUPER_ADMIN)
-========================= */
-(
-    'E001',
-    'Kartick',
-    'kartick_E001',
-    'kartick@gmail.com',
-    'kartick_E001@hrms.com',
-    '9876213311',
-    101,                    -- Super Admin
-    1,                      -- Administration
-    1,                      -- TCS Chennai
-    1,                      -- SUPER_ADMIN
-    'Super Admin',
-    NULL,
-    '2024-01-10',
-    'FULL_TIME',
-    'WFO',
-    NULL,
-    '9123456780',
-    'ACTIVE'
-),
-
-/* =========================
-   HR ADMIN (E002)
-   RoleID: 201 (HR Manager)
-   Dashboard_id: 2 (HR_ADMIN)
-========================= */
-(
-    'E002',
-    'Deepika',
-    'deepika_E002',
-    'deepika@gmail.com',
-    'deepika_E002@hrms.com',
-    '9876213312',
-    201,                    -- HR Manager
-    2,                      -- Human Resources
-    1,                      -- TCS Chennai
-    2,                      -- HR_ADMIN
-    'HR Admin',
-    'E003',
-    '2024-02-15',
-    'FULL_TIME',
-    'HYBRID',
-    NULL,
-    '9123456781',
-    'ACTIVE'
-),
-
-/* =========================
-   MANAGER 1 - Engineering Manager (E003)
-   RoleID: 416 (Engineering Manager) - Department 4
-   Dashboard_id: 3 (MANAGER)
-========================= */
-(
-    'E003',
-    'Arun',
-    'arun_E003',
-    'arun@gmail.com',
-    'arun_E003@hrms.com',
-    '9876213313',
-    416,                    -- Engineering Manager (Technology Dept)
-    4,                      -- Technology
-    2,                      -- Infosys US
-    3,                      -- MANAGER
-    'Engineering Manager',
-    NULL,
-    '2024-03-12',
-    'FULL_TIME',
-    'WFO',
-    NULL,
-    '9123456782',
-    'ACTIVE'
-),
-
-/* =========================
-   MANAGER 2 - QA Manager (E004)
-   RoleID: 305 (Operations Manager) - Department 3
-   Dashboard_id: 3 (MANAGER)
-========================= */
-(
-    'E004',
-    'Priya',
-    'priya_E004',
-    'priya@gmail.com',
-    'priya_E004@hrms.com',
-    '9876213314',
-    305,                    -- Operations Manager
-    3,                      -- Management
-    1,                      -- TCS Chennai
-    3,                      -- MANAGER
-    'QA Manager',
-    NULL,
-    '2024-04-01',
-    'FULL_TIME',
-    'HYBRID',
-    NULL,
-    '9123456783',
-    'ACTIVE'
-),
-
-/* =========================
-   MANAGER 3 - Finance Manager (E005)
-   RoleID: 504 (Finance Manager)
-   Dashboard_id: 3 (MANAGER)
-========================= */
-(
-    'E005',
-    'Vignesh',
-    'vignesh_E005',
-    'vignesh@gmail.com',
-    'vignesh_E005@hrms.com',
-    '9876213315',
-    504,                    -- Finance Manager
-    5,                      -- Finance
-    3,                      -- Dubai Client
-    3,                      -- MANAGER
-    'Finance Manager',
-    NULL,
-    '2024-04-18',
-    'FULL_TIME',
-    'WFH',
-    NULL,
-    '9123456784',
-    'ACTIVE'
-),
-
-/* =========================
-   EMPLOYEE 1 - Software Engineer (E006)
-   RoleID: 402 (Software Engineer)
-   Dashboard_id: 4 (EMPLOYEE)
-   Manager: E003
-========================= */
-(
-    'E006',
-    'Kavin',
-    'kavin_E006',
-    'kavin@gmail.com',
-    'kavin_E006@hrms.com',
-    '9876213316',
-    402,                    -- Software Engineer
-    4,                      -- Technology
-    2,                      -- Infosys US
-    4,                      -- EMPLOYEE
-    'Software Engineer',
-    'E003',
-    '2025-01-10',
-    'FULL_TIME',
-    'HYBRID',
-    NULL,
-    '9123456785',
-    'ACTIVE'
-),
-
-/* =========================
-   EMPLOYEE 2 - QA Engineer (E007)
-   RoleID: 408 (QA Engineer / Tester)
-   Dashboard_id: 4 (EMPLOYEE)
-   Manager: E004
-========================= */
-(
-    'E007',
-    'Nisha',
-    'nisha_E007',
-    'nisha@gmail.com',
-    'nisha_E007@hrms.com',
-    '9876213317',
-    408,                    -- QA Engineer / Tester
-    4,                      -- Technology
-    1,                      -- TCS Chennai
-    4,                      -- EMPLOYEE
-    'QA Engineer',
-    'E004',
-    '2025-02-20',
-    'FULL_TIME',
-    'WFO',
-    NULL,
-    '9123456786',
-    'ACTIVE'
-),
-
-/* =========================
-   EMPLOYEE 3 - Finance Executive (E008)
-   RoleID: 503 (Finance Executive)
-   Dashboard_id: 4 (EMPLOYEE)
-   Manager: E005
-========================= */
-(
-    'E008',
-    'Rahul',
-    'rahul_E008',
-    'rahul@gmail.com',
-    'rahul_E008@hrms.com',
-    '9876213318',
-    503,                    -- Finance Executive
-    5,                      -- Finance
-    3,                      -- Dubai Client
-    4,                      -- EMPLOYEE
-    'Finance Executive',
-    'E005',
-    '2025-03-05',
-    'FULL_TIME',
-    'WFH',
-    NULL,
-    '9123456787',
-    'ACTIVE'
-),
-
-/* =========================
-   FINANCE - Finance Analyst (E009)
-   RoleID: 512 (Financial Analyst)
-   Dashboard_id: 5 (FINANCE)
-   Manager: E005
-========================= */
-(
-    'E009',
-    'Suresh',
-    'suresh_E009',
-    'suresh@gmail.com',
-    'suresh_E009@hrms.com',
-    '9876213319',
-    512,                    -- Financial Analyst
-    5,                      -- Finance
-    3,                      -- Dubai Client
-    5,                      -- FINANCE
-    'Finance Analyst',
-    'E005',
-    '2024-06-01',
-    'FULL_TIME',
-    'HYBRID',
-    NULL,
-    '9123456788',
-    'ACTIVE'
-);
-GO
-
-/* =====================================================
- 
-   AUTHENTICATION TABLE
- 
-===================================================== */
-CREATE TABLE authentication (
-    id INT IDENTITY(1,1) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    username VARCHAR(100) NOT NULL UNIQUE,
-    company_email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    Emp_id VARCHAR(10) NOT NULL UNIQUE,
-    client_id INT NULL,
-    phone VARCHAR(20) NULL,
-    active BIT DEFAULT 1,
-    email_verified BIT DEFAULT 0,
-    verify_email_token VARCHAR(255) NULL,
-    reset_otp VARCHAR(10) NULL,
-    reset_otp_expires DATETIME2 NULL,
-    refresh_token VARCHAR(MAX) NULL,
-    created_at DATETIME2 DEFAULT GETDATE(),
-    updated_at DATETIME2 DEFAULT GETDATE(),
-    CONSTRAINT fk_auth_emp
- 
-    FOREIGN KEY (Emp_id)
- 
-    REFERENCES Employee(Emp_id),
-    CONSTRAINT fk_auth_client
- 
-    FOREIGN KEY (client_id)
- 
-    REFERENCES clients(client_id)
-);
- 
-GO
-/* =========================================
-   UNIQUE PHONE ONLY FOR NON-NULL VALUES 
-========================================= */
-CREATE UNIQUE INDEX UX_auth_phone
- 
-ON authentication(phone)
- 
-WHERE phone IS NOT NULL;
- 
-GO
-=========================================================
-# AUTHENTICATION APIs
-=========================================================
-# Register
-
-## Endpoint
-
-```bash
-POST /api/auth/register
-```
-
-## Sample Request
-
-```bash
-{
-  "username": "kavi_E010",
-  "password": "Welcome@123"
-}
-```
-**Password rules** — minimum 8 characters, must include uppercase, lowercase, digit, and one of `@#$%^&*!?`.
-
-## Sample Response
-
-```bash
-{
-  "success": true,
-  "message": "Register successful",
-  "employee": {
-    "Emp_id": "E010",
-    "username": "kavi_E010",
-    "company_email": "kavi_E010@hrms.com"
-  }
-}
-```
-
----
-
-# Login
-
-## Endpoint
-
-```bash
-POST /api/auth/login
-```
-
-## Sample Request
-
-```bash
-{
-  "username": "kavin_E006",
-  "password": "Welcome@123"
-}
-```
-
-## Sample Response
-
-```bash
-{
-  "message": "Login successful",
-  "accessToken": "<jwt>",
-  "refreshToken": "<jwt>",
-  "user": {
-    "name": "Kavin",
-    "username": "kavin_E006",
-    "email": "kavin_E006@hrms.com",
-    "Emp_id": "E006",
-    "role": "EMPLOYEE",
-    "display_role": "Software Engineer"
-  }
-}
-```
-
----
-
-# Refresh Token
-
-## Endpoint
-
-```bash
-POST /api/auth/refresh-token
-```
-
-## Sample Request
-
-```bash
-{
-  "refreshToken": "your_refresh_token"
-}
-```
-
-## Sample Response
-
-```bash
-{
-  "accessToken": "new_access_token"
-}
-```
-========================================================
-# EMPLOYEE APIs
-========================================================
-## Base URL
-
-```bash
-http://localhost:5000/api/employees
-```
----
-
-# Create Employee
-
-## Endpoint
-
-```bash
-POST /api/employees
-```
-
-## Sample Request
-
-```bash
+**Request:**
+```json
 {
   "name": "Kavinkumar Sanjay",
-  "personal_email": "kavin1@gmail.com",
-  "phone": "9876543212",
+  "personal_email": "kavin@gmail.com",
+  "phone": "9876543210",
+  "DOB": "1996-02-14",
+  "Gender": "MALE",
   "RoleID": 402,
   "Department_id": 4,
   "Dashboard_id": 4,
   "designation": "Software Engineer",
   "joining_date": "2026-06-05",
   "employment_type": "FULL_TIME",
-  "work_mode": "HYBRID"
+  "work_mode": "HYBRID",
+  "manager_id": "CFT20260003",
+  "client_id": 2,
+  "emergency_contact": "9876500000"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Employee created successfully",
+  "employee": {
+    "Emp_id": "CFT20260010",
+    "Name": "Kavinkumar Sanjay",
+    "username": "kavinkumar_CFT20260010",
+    "company_email": "kavinkumar_CFT20260010@hrms.com",
+    "designation": "Software Engineer",
+    "employment_type": "FULL_TIME",
+    "work_mode": "HYBRID",
+    "employee_status": "ACTIVE"
+  }
+}
+```
+
+**Errors:**
+```json
+{ "message": "Email already exists" }
+{ "message": "Phone already exists" }
+{ "message": "Invalid RoleID" }
+{ "message": "Invalid or unauthorized manager_id" }
+{ "message": "Employee cannot be their own manager" }
+```
+
+---
+
+### Get All Employees
+
+`GET /api/employees`
+
+> Super Admin / HR Admin / Manager only. Managers see only their direct reports.
+
+**Query parameters:**
+
+| Param | Example |
+|-------|---------|
+| `search` | `kavin`, `CFT20260006` |
+| `department` | `Technology` |
+| `role` | `Software Engineer` |
+| `status` | `ACTIVE`, `INACTIVE`, `RESIGNED`, `TERMINATED`, `ON_NOTICE` |
+| `page` / `limit` | `1` / `10` |
+
+**Response:**
+```json
+{
+  "employees": [
+    {
+      "Emp_id": "CFT20260006",
+      "Name": "Kavin",
+      "designation": "Software Engineer",
+      "DepartmentName": "Technology",
+      "manager_name": "Arun",
+      "employment_type": "FULL_TIME",
+      "work_mode": "HYBRID",
+      "employee_status": "ACTIVE"
+    }
+  ],
+  "total": 1
 }
 ```
 
 ---
 
-# Get All Employees
+### Get Employee by ID
 
-## Endpoint
+`GET /api/employees/:empId`
 
-```bash
-GET /api/employees
+> Super Admin / HR Admin → any employee. Manager → own team only. Employee / Finance → own profile only.
+
+**Errors:**
+```json
+{ "message": "Employee not found" }
+{ "message": "Access denied: not your team member" }
+{ "message": "Access denied" }
 ```
 
 ---
 
-# Get all employees with search, filter, and pagination.
-```bash
-GET /api/employees
-GET /api/employees?search=kavi
-GET /api/employees?search=E006
-GET /api/employees?department=Technology
-GET /api/employees?role=Software Engineer
-GET /api/employees?status=ACTIVE
-GET /api/employees?status=ACTIVE&department=Technology&page=1&limit=10
-GET /api/employees?search=kavi&status=ACTIVE
+### Update Employee
 
----
+`PUT /api/employees/:empId`
 
-# Get Employee By ID
+> All fields optional — send only what needs to change.
 
-## Endpoint
+**Self-editable fields** (any role, own profile): `name`, `phone`, `emergency_contact`, `profile_image`, `work_mode`, `DOB`, `Gender`
 
-```bash
-GET /api/employees/E010
+**Admin-only fields** (Super Admin / HR Admin): `personal_email`, `designation`, `employment_type`, `manager_id`, `department_id`, `client_id`, `role_id`, `employee_status`
+
+**Employee self update:**
+```json
+{
+  "phone": "9876543299",
+  "work_mode": "WFH",
+  "Gender": "MALE"
+}
 ```
 
----
-
-# Update Employee
-
-## Endpoint
-
-```bash
-PUT /api/employees/E010
-```
-
-## Sample Request
-
-```bash
+**Admin update:**
+```json
 {
   "designation": "Senior Software Engineer",
-  "work_mode": "HYBRID",
-  "employee_status": "ACTIVE"
+  "employee_status": "ACTIVE",
+  "manager_id": "CFT20260003",
+  "department_id": 4,
+  "role_id": 403
 }
+```
+
+**Errors:**
+```json
+{ "message": "You can only update your own profile" }
+{ "message": "Access denied: cannot update restricted fields" }
+{ "message": "Employee cannot be their own manager" }
+```
+
+---
+
+## 2. Profile Management
+
+**Base URL:** `http://localhost:5000/api/profile`
+
+These APIs act only on the **currently logged-in employee** (derived from the token). There is no `:empId` param — you cannot view or edit another employee's profile through this module.
+
+---
+
+### Get My Profile
+
+`GET /api/profile/me`
+
+**Response:**
+```json
+{
+  "success": true,
+  "profile": {
+    "Emp_id": "CFT20260006",
+    "Name": "Kavin",
+    "username": "kavin_CFT20260006",
+    "personal_email": "kavin@gmail.com",
+    "company_email": "kavin_CFT20260006@hrms.com",
+    "Phone": "9876543210",
+    "emergency_contact": "9123456785",
+    "profile_image": null,
+    "DOB": "1996-02-14",
+    "Gender": "MALE",
+    "designation": "Software Engineer",
+    "employment_type": "FULL_TIME",
+    "work_mode": "HYBRID",
+    "employee_status": "ACTIVE",
+    "joining_date": "2025-01-10",
+    "DepartmentName": "Technology",
+    "role_name": "Software Engineer",
+    "manager_id": "CFT20260003",
+    "manager_name": "Arun"
+  }
+}
+```
+
+---
+
+### Update My Profile
+
+`PUT /api/profile/me`
+
+All fields optional. Fields like role, designation, department, manager, and employee_status are **not editable here** — use the Employee module.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `personal_email` | string | valid email |
+| `phone` | string | 10 digits |
+| `emergency_contact` | string | 10 digits |
+| `profile_image` | string | valid URL |
+| `address` | string | 2–255 characters |
+| `work_mode` | string | `WFH`, `WFO`, or `HYBRID` |
+
+**Request:**
+```json
+{
+  "phone": "9876543299",
+  "work_mode": "WFH"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Profile updated successfully",
+  "profile": {
+    "Emp_id": "CFT20260006",
+    "Name": "Kavin",
+    "personal_email": "kavin@gmail.com",
+    "Phone": "9876543299",
+    "emergency_contact": "9123456785",
+    "profile_image": null,
+    "address": null,
+    "designation": "Software Engineer",
+    "employment_type": "FULL_TIME",
+    "work_mode": "WFH",
+    "employee_status": "ACTIVE",
+    "joining_date": "2025-01-10",
+    "department_name": "Technology",
+    "role_name": "Software Engineer",
+    "manager_id": "CFT20260003"
+  }
+}
+```
+
+---
+
+### Change My Password
+
+`PUT /api/profile/me/password`
+
+**Password rules:** minimum 8 characters, must include uppercase, lowercase, digit, and a special character.
+
+**Request:**
+```json
+{
+  "currentPassword": "Welcome@123",
+  "newPassword": "NewPass@456"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Password updated successfully"
+}
+```
+
+**Errors:**
+```json
+{ "message": "Current password is incorrect" }
+{ "message": "Profile not found" }
+```
+
+---
+
+## 3. Team Directory
+
+**Base URL:** `http://localhost:5000/api/team-directory`
+
+All roles can access — the SP enforces role-based scoping automatically:
+
+| Role | Sees |
+|---|---|
+| `SUPER_ADMIN` / `HR_ADMIN` | All active employees (dept/search filters apply) |
+| `MANAGER` | Own direct reports only |
+| `EMPLOYEE` | Colleagues in same department only |
+
+No new tables — reads from existing `Employee`, `roles`, `Department`, `attendance` tables.
+
+---
+
+### Get Team Directory
+
+`GET /api/team-directory`
+
+Returns employees grouped by department. Each group matches one card in the `TeamDirectoryModule` UI.
+
+```
+GET /api/team-directory
+GET /api/team-directory?dept=Technology
+GET /api/team-directory?search=kavin
+GET /api/team-directory?search=Software Engineer
+```
+
+`dept` — filter by `DepartmentName` (e.g. `Technology`, `Finance`). Ignored for `MANAGER` role (already scoped to their team).  
+`search` — searches across `name`, `designation`, `role_name`.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "dept": "Technology",
+      "employeeCount": 2,
+      "employees": [
+        {
+          "Emp_id": "CFT20260006",
+          "name": "Kavin",
+          "email": "kavin_CFT20260006@hrms.com",
+          "phone": "9876213316",
+          "designation": "Software Engineer",
+          "role": "Software Engineer",
+          "dept": "Technology",
+          "work_mode": "HYBRID",
+          "employee_status": "ACTIVE",
+          "profile_image": null,
+          "joining_date": "2025-01-10",
+          "manager_id": "CFT20260003",
+          "manager_name": "Arun",
+          "experience": 1,
+          "seniority": "Junior"
+        },
+        {
+          "Emp_id": "CFT20260007",
+          "name": "Nisha",
+          "email": "nisha_CFT20260007@hrms.com",
+          "phone": "9876213317",
+          "designation": "QA Engineer",
+          "role": "QA Engineer / Tester",
+          "dept": "Technology",
+          "work_mode": "WFO",
+          "employee_status": "ACTIVE",
+          "profile_image": null,
+          "joining_date": "2025-02-20",
+          "manager_id": "CFT20260004",
+          "manager_name": "Priya",
+          "experience": 1,
+          "seniority": "Junior"
+        }
+      ]
+    },
+    {
+      "dept": "Finance",
+      "employeeCount": 1,
+      "employees": [
+        {
+          "Emp_id": "CFT20260008",
+          "name": "Rahul",
+          "email": "rahul_CFT20260008@hrms.com",
+          "phone": "9876213318",
+          "designation": "Finance Executive",
+          "role": "Finance Executive",
+          "dept": "Finance",
+          "work_mode": "WFH",
+          "employee_status": "ACTIVE",
+          "profile_image": null,
+          "joining_date": "2025-03-05",
+          "manager_id": "CFT20260005",
+          "manager_name": "Vignesh",
+          "experience": 1,
+          "seniority": "Junior"
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+### Get Team Member Detail
+
+`GET /api/team-directory/:empId`
+
+```
+GET /api/team-directory/CFT20260006
+```
+
+Returns the employee's full profile plus a 7-day attendance preview (the `P / H / A` strip shown in `TeamDirectoryModule`).
+
+**Access rules:**
+- `SUPER_ADMIN` / `HR_ADMIN` → any employee
+- `MANAGER` → own direct reports only
+- `EMPLOYEE` → self or same department only
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "Emp_id": "CFT20260006",
+    "name": "Kavin",
+    "email": "kavin_CFT20260006@hrms.com",
+    "phone": "9876213316",
+    "designation": "Software Engineer",
+    "role": "Software Engineer",
+    "dept": "Technology",
+    "work_mode": "HYBRID",
+    "employee_status": "ACTIVE",
+    "profile_image": null,
+    "joining_date": "2025-01-10",
+    "manager_id": "CFT20260003",
+    "manager_name": "Arun",
+    "manager_email": "arun_CFT20260003@hrms.com",
+    "experience": 1,
+    "seniority": "Junior",
+    "client_name": "Infosys US",
+    "Gender": "MALE",
+    "DOB": "1996-02-14",
+    "recentAttendance": [
+      { "date": "2026-06-15", "attendance_status": "P" },
+      { "date": "2026-06-14", "attendance_status": "P" },
+      { "date": "2026-06-13", "attendance_status": "A" },
+      { "date": "2026-06-12", "attendance_status": "P" },
+      { "date": "2026-06-11", "attendance_status": "P" },
+      { "date": "2026-06-10", "attendance_status": "H" },
+      { "date": "2026-06-09", "attendance_status": "P" }
+    ]
+  }
+}
+```
+
+`attendance_status` values:
+- `P` — Present (total_hours ≥ 8)
+- `H` — Half Day (total_hours ≥ 4 and < 8)
+- `A` — Absent
+- `-` — No record (weekend / no punch-in)
+
+**Errors:**
+```json
+{ "message": "Employee not found" }
+{ "message": "Access denied: not your team member" }
+```
+
+---
+
+## 4. Organisation Structure
+
+**Base URL:** `http://localhost:5000/api/organisation`
+
+> **Super Admin / HR Admin only.** The Organisation module in the frontend is an HR view — managers and employees do not have this page.
+
+No new tables — reads from existing `Employee`, `roles`, `Department` tables.
+
+---
+
+### Get Organisation Structure
+
+```
+GET /api/organisation
+GET /api/organisation?dept=Technology
+GET /api/organisation?search=kavin
+GET /api/organisation?search=Software Engineer
+GET /api/organisation?dept=Technology&search=kavin
+```
+
+Returns all active employees grouped by department, sorted alphabetically — matching the card-per-department layout in `OrganisationModule.tsx`.
+
+`dept` — filter by department name (e.g. `Technology`, `Finance`, `Human Resources`). Returns only that department's card.  
+`search` — searches across `name`, `designation`, `role_name`.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "dept": "Finance",
+      "employeeCount": 2,
+      "employees": [
+        {
+          "Emp_id": "CFT20260008",
+          "name": "Rahul",
+          "role": "Finance Executive",
+          "designation": "Finance Executive",
+          "dept": "Finance",
+          "work_mode": "WFH",
+          "employee_status": "ACTIVE",
+          "profile_image": null,
+          "joining_date": "2025-03-05",
+          "manager_id": "CFT20260005",
+          "manager_name": "Vignesh",
+          "experience": 1,
+          "seniority": "Junior"
+        },
+        {
+          "Emp_id": "CFT20260009",
+          "name": "Suresh",
+          "role": "Financial Analyst",
+          "designation": "Finance Analyst",
+          "dept": "Finance",
+          "work_mode": "HYBRID",
+          "employee_status": "ACTIVE",
+          "profile_image": null,
+          "joining_date": "2024-06-01",
+          "manager_id": "CFT20260005",
+          "manager_name": "Vignesh",
+          "experience": 2,
+          "seniority": "Mid-Level"
+        }
+      ]
+    },
+    {
+      "dept": "Technology",
+      "employeeCount": 2,
+      "employees": [
+        {
+          "Emp_id": "CFT20260006",
+          "name": "Kavin",
+          "role": "Software Engineer",
+          "designation": "Software Engineer",
+          "dept": "Technology",
+          "work_mode": "HYBRID",
+          "employee_status": "ACTIVE",
+          "profile_image": null,
+          "joining_date": "2025-01-10",
+          "manager_id": "CFT20260003",
+          "manager_name": "Arun",
+          "experience": 1,
+          "seniority": "Junior"
+        },
+        {
+          "Emp_id": "CFT20260007",
+          "name": "Nisha",
+          "role": "QA Engineer / Tester",
+          "designation": "QA Engineer",
+          "dept": "Technology",
+          "work_mode": "WFO",
+          "employee_status": "ACTIVE",
+          "profile_image": null,
+          "joining_date": "2025-02-20",
+          "manager_id": "CFT20260004",
+          "manager_name": "Priya",
+          "experience": 1,
+          "seniority": "Junior"
+        }
+      ]
+    }
+  ]
+}
+```
+
+`seniority` is computed server-side, mirroring `getSeniority()` in `Organisation.tsx`:
+- `Junior` — experience ≤ 1 year
+- `Mid-Level` — experience ≤ 4 years
+- `Senior` — experience > 4 years
+
+---
+
+## 5. Documents Management
+
+**Base URL:** `http://localhost:5000/api/documents`
+
+Two frontend views are served by these APIs:
+- **HR Documents.tsx** — HR selects an employee and uploads/deletes required documents (Aadhaar, PAN, Resume, Offer Letter, Passport Photo)
+- **Employee DocumentsPage.tsx** — Employee uploads their own documents, tracks status, searches and filters
+
+---
+
+### Upload Document
+
+`POST /api/documents`
+
+> Any logged-in employee (self upload) or HR / Super Admin (upload on behalf of another employee)
+
+`type` — one of `Identity`, `HR`, `Payroll`, `Tax`, `Education`, `Experience`
+
+**Employee self upload:**
+```json
+{
+  "name": "Aadhar Card",
+  "type": "Identity",
+  "fileName": "aadhar-card.pdf",
+  "fileUrl": "https://storage.example.com/docs/aadhar-card.pdf"
+}
+```
+
+**HR upload on behalf of employee:**
+```json
+{
+  "empId": "CFT20260006",
+  "name": "Offer Letter",
+  "type": "HR",
+  "fileName": "kavin-offer-letter.pdf",
+  "fileUrl": "https://storage.example.com/docs/kavin-offer-letter.pdf"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Document uploaded successfully",
+  "data": {
+    "id": 1,
+    "emp_id": "CFT20260006",
+    "employee_name": "Kavin",
+    "uploaded_by_emp_id": "CFT20260002",
+    "uploaded_by_name": "Deepika",
+    "name": "Offer Letter",
+    "type": "HR",
+    "file_name": "kavin-offer-letter.pdf",
+    "file_url": "https://storage.example.com/docs/kavin-offer-letter.pdf",
+    "status": "Pending",
+    "rejection_reason": null,
+    "reviewed_by_emp_id": null,
+    "reviewed_at": null,
+    "uploaded_at": "2026-06-15T10:30:00.000Z"
+  }
+}
+```
+
+**Errors:**
+```json
+{ "message": "Employee not found" }
+{ "message": "A document with this name already exists for this employee. Please delete it first." }
+```
+
+---
+
+### Get Documents
+
+`GET /api/documents`
+
+> Employee → own documents only. HR / Admin / Manager → can filter by `?empId=`
+
+**Query parameters:**
+
+| Param | Values |
+|-------|--------|
+| `empId` | e.g. `CFT20260006` |
+| `status` | `Pending`, `Approved`, `Rejected` |
+| `type` | `Identity`, `HR`, `Payroll`, `Tax`, `Education`, `Experience` |
+| `search` | keyword, e.g. `aadhar` |
+
+```
+GET /api/documents
+GET /api/documents?empId=CFT20260006
+GET /api/documents?status=Pending
+GET /api/documents?type=Identity
+GET /api/documents?search=aadhar
+GET /api/documents?empId=CFT20260006&status=Approved
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "emp_id": "CFT20260006",
+      "employee_name": "Kavin",
+      "uploaded_by_emp_id": "CFT20260006",
+      "uploaded_by_name": "Kavin",
+      "name": "Aadhar Card",
+      "type": "Identity",
+      "file_name": "aadhar-card.pdf",
+      "file_url": "https://storage.example.com/docs/aadhar-card.pdf",
+      "status": "Approved",
+      "rejection_reason": null,
+      "reviewed_by_emp_id": "CFT20260002",
+      "reviewed_by_name": "Deepika",
+      "reviewed_at": "2026-06-15T11:00:00.000Z",
+      "uploaded_at": "2026-06-15T10:30:00.000Z"
+    }
+  ]
+}
+```
+
+---
+
+### Get Document by ID
+
+`GET /api/documents/:id`
+
+> Employees can only view their own documents. HR / Admin / Manager can view any.
+
+```
+GET /api/documents/1
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "emp_id": "CFT20260006",
+    "employee_name": "Kavin",
+    "name": "Aadhar Card",
+    "type": "Identity",
+    "file_name": "aadhar-card.pdf",
+    "file_url": "https://storage.example.com/docs/aadhar-card.pdf",
+    "status": "Pending",
+    "rejection_reason": null,
+    "reviewed_by_emp_id": null,
+    "reviewed_at": null,
+    "uploaded_at": "2026-06-15T10:30:00.000Z"
+  }
+}
+```
+
+---
+
+### Update Document Status
+
+`PUT /api/documents/:id/status`
+
+> HR Admin / Super Admin / Manager only
+
+`status` — `Pending`, `Approved`, `Rejected`. `rejectionReason` is **required** when rejecting.
+
+**Approve:**
+```json
+{ "status": "Approved" }
+```
+
+**Reject:**
+```json
+{
+  "status": "Rejected",
+  "rejectionReason": "Document is not clearly visible. Please re-upload."
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Document status updated successfully",
+  "data": {
+    "id": 1,
+    "emp_id": "CFT20260006",
+    "employee_name": "Kavin",
+    "name": "Aadhar Card",
+    "status": "Approved",
+    "reviewed_by_emp_id": "CFT20260002",
+    "reviewed_by_name": "Deepika",
+    "reviewed_at": "2026-06-15T11:00:00.000Z"
+  }
+}
+```
+
+---
+
+### Delete Document
+
+`DELETE /api/documents/:id`
+
+> Employee can delete their own. HR / Super Admin can delete any.
+
+**Response:**
+```json
+{ "success": true, "message": "Document deleted successfully" }
+```
+
+**Error:**
+```json
+{ "message": "Access denied: you can only delete your own documents" }
+```
+
+---
+
+## 6. Recruitment
+
+**Base URL:** `http://localhost:5000/api/recruitment`
+
+---
+
+### Get All Jobs
+
+`GET /api/recruitment/jobs`
+
+> Accessible by all logged-in roles.
+
+**Query parameters:**
+
+| Param | Values |
+|-------|--------|
+| `search` | e.g. `frontend` |
+| `dept` | e.g. `Engineering` |
+| `status` | `Open`, `Urgent`, `Closing Soon`, `Closed` |
+| `page` / `limit` | pagination |
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "Frontend Developer",
+      "dept": "Engineering",
+      "status": "Open",
+      "location": "Hyderabad",
+      "type": "Full Time",
+      "experience": "1 - 3 Years",
+      "openings": 3,
+      "skills": ["React", "TypeScript", "Tailwind CSS"],
+      "applicants": 4,
+      "posted_by_name": "Deepika",
+      "posted_date": "2026-04-22T00:00:00.000Z",
+      "closing_date": "2026-04-30"
+    }
+  ],
+  "total": 1
+}
+```
+
+---
+
+### Get Job by ID
+
+`GET /api/recruitment/jobs/:id`
+
+> Accessible by all logged-in roles.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "Frontend Developer",
+    "dept": "Engineering",
+    "status": "Open",
+    "location": "Hyderabad",
+    "type": "Full Time",
+    "experience": "1 - 3 Years",
+    "openings": 3,
+    "description": "Build responsive HRMS interfaces.",
+    "skills": ["React", "TypeScript", "Tailwind CSS"],
+    "applicants": 4,
+    "posted_by": "CFT20260002",
+    "posted_by_name": "Deepika",
+    "posted_date": "2026-04-22T00:00:00.000Z",
+    "closing_date": "2026-04-30"
+  }
+}
+```
+
+**Error:**
+```json
+{ "message": "Job not found" }
+```
+
+---
+
+### Create Job Posting
+
+`POST /api/recruitment/jobs`
+
+> HR Admin / Super Admin only
+
+`status` — `Open` (default), `Urgent`, `Closing Soon`, `Closed`  
+`type` — `Full Time` (default), `Part Time`, `Contract`, `Internal Transfer`, `Internship`
+
+**Request:**
+```json
+{
+  "title": "Frontend Developer",
+  "dept": "Engineering",
+  "status": "Open",
+  "location": "Hyderabad",
+  "type": "Full Time",
+  "experience": "1 - 3 Years",
+  "openings": 3,
+  "description": "Build responsive HRMS interfaces.",
+  "skills": ["React", "TypeScript", "Tailwind CSS"],
+  "closingDate": "2026-04-30"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Job posting created successfully",
+  "data": {
+    "id": 4,
+    "title": "Frontend Developer",
+    "dept": "Engineering",
+    "status": "Open",
+    "location": "Hyderabad",
+    "type": "Full Time",
+    "experience": "1 - 3 Years",
+    "openings": 3,
+    "description": "Build responsive HRMS interfaces.",
+    "skills": ["React", "TypeScript", "Tailwind CSS"],
+    "posted_by": "CFT20260002",
+    "posted_by_name": "Deepika",
+    "posted_date": "2026-06-16T10:30:00.000Z",
+    "closing_date": "2026-04-30"
+  }
+}
+```
+
+---
+
+### Update Job Posting
+
+`PUT /api/recruitment/jobs/:id`
+
+> HR Admin / Super Admin only. All fields optional.
+
+**Request:**
+```json
+{
+  "status": "Closing Soon",
+  "openings": 2
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Job updated successfully",
+  "data": {
+    "id": 4,
+    "title": "Frontend Developer",
+    "dept": "Engineering",
+    "status": "Closing Soon",
+    "location": "Hyderabad",
+    "type": "Full Time",
+    "openings": 2,
+    "skills": ["React", "TypeScript", "Tailwind CSS"],
+    "posted_by": "CFT20260002",
+    "closing_date": "2026-04-30"
+  }
+}
+```
+
+---
+
+### Delete Job Posting
+
+`DELETE /api/recruitment/jobs/:id`
+
+> HR Admin / Super Admin only. Cascades to delete all applications for the job.
+
+**Response:**
+```json
+{ "success": true, "message": "Job deleted successfully" }
+```
+
+---
+
+### Apply to Job
+
+`POST /api/recruitment/jobs/:id/apply`
+
+> Any logged-in employee
+
+**Self apply:**
+```json
+{
+  "applicationType": "Self",
+  "candidateName": "Kavin",
+  "candidateEmail": "kavin_CFT20260006@hrms.com",
+  "resumeFileName": "kavin_resume.pdf"
+}
+```
+
+**Referral:**
+```json
+{
+  "applicationType": "Referral",
+  "candidateName": "Priya Verma",
+  "candidateEmail": "priya.verma@gmail.com",
+  "resumeFileName": "priya_resume.pdf"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Application submitted successfully",
+  "data": {
+    "id": 12,
+    "job_id": 1,
+    "applied_by_empid": "CFT20260006",
+    "applied_by_name": "Kavin",
+    "application_type": "Self",
+    "candidate_name": "Kavin",
+    "candidate_email": "kavin_CFT20260006@hrms.com",
+    "resume_file_name": "kavin_resume.pdf",
+    "resume_url": null,
+    "status": "Pending",
+    "rejection_reason": null,
+    "applied_at": "2026-06-16T10:45:00.000Z"
+  }
+}
+```
+
+**Errors:**
+```json
+{ "message": "This job posting is closed" }
+{ "message": "You have already applied for this job" }
+```
+
+---
+
+### Get Applications
+
+`GET /api/recruitment/applications`
+
+> HR Admin / Super Admin / Manager only
+
+**Query parameters:**
+
+| Param | Values |
+|-------|--------|
+| `jobId` | e.g. `1` |
+| `status` | `Pending`, `Screening`, `Interview`, `Offer`, `Hired`, `Rejected` |
+| `empId` | e.g. `CFT20260006` |
+
+---
+
+### Update Application Status
+
+`PUT /api/recruitment/applications/:id/status`
+
+> HR Admin / Super Admin only
+
+`status` — `Pending`, `Screening`, `Interview`, `Offer`, `Hired`, `Rejected`. `rejectionReason` is **required** when rejecting.
+
+**Approve / Move stage:**
+```json
+{ "status": "Interview" }
+```
+
+**Reject:**
+```json
+{
+  "status": "Rejected",
+  "rejectionReason": "Does not meet minimum experience requirement"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Application status updated successfully",
+  "data": {
+    "id": 12,
+    "job_id": 1,
+    "applied_by_empid": "CFT20260006",
+    "application_type": "Self",
+    "candidate_name": "Kavin",
+    "candidate_email": "kavin_CFT20260006@hrms.com",
+    "resume_file_name": "kavin_resume.pdf",
+    "resume_url": null,
+    "status": "Interview",
+    "rejection_reason": null,
+    "applied_at": "2026-06-16T10:45:00.000Z"
+  }
+}
+```
