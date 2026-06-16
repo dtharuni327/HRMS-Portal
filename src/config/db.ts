@@ -21,13 +21,13 @@ export const db = new sql.ConnectionPool(
 .connect()
 .then(pool => {
   console.log(
-    "✅ SQL Server Connected"
+    "SQL Server Connected"
   );
   return pool;
 })
 .catch(error => {
   console.error(
-    "❌ Database Connection Failed",
+    "Database Connection Failed",
     error
   );
   throw error;
