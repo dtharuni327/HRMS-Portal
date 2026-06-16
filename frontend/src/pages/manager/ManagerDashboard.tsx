@@ -924,9 +924,9 @@ ${formData.email}`
     <div
   className="
     flex
-    h-screen
+    min-h-screen
     w-full
-    overflow-hidden
+    overflow-x-hidden
     font-sans
     relative
     p-5
@@ -955,13 +955,13 @@ ${formData.email}`
     flex-col
     relative
     z-10
-    overflow-hidden
     px-3
     pb-6
     pt-3
     transition-all
     duration-300
     min-w-0
+    min-h-[calc(100vh-2.5rem)]
 
     ${
       sidebarOpen
@@ -1000,9 +1000,7 @@ ${formData.email}`
        <div
   className="
     flex-1
-    overflow-x-auto
-    overflow-y-auto
-    hide-scrollbar
+    overflow-visible
     min-w-0
     pr-2
   "

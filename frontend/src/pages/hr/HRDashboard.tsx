@@ -778,9 +778,9 @@ const DarkHRDashboard: React.FC = () => {
     <div
   className="
     flex
-    h-screen
+    min-h-screen
     w-full
-    overflow-hidden
+    overflow-x-hidden
     font-sans
     relative
     p-5
@@ -801,7 +801,7 @@ const DarkHRDashboard: React.FC = () => {
         onLogout={handleLogout}
       />
 
-      <main className={`flex-1 flex flex-col relative z-10 overflow-hidden px-3 pb-6 pt-3 transition-all duration-300 ${sidebarOpen ? 'ml-[292px]' : 'ml-[140px]'}`}>
+      <main className={`relative z-10 flex min-h-[calc(100vh-2.5rem)] min-w-0 flex-1 flex-col px-3 pb-6 pt-3 transition-all duration-300 ${sidebarOpen ? 'ml-[292px]' : 'ml-[140px]'}`}>
         <DashboardNavbar
           title={activeTab === 'Dashboard' ? 'HR Dashboard' : activeTab === 'Tasks' ? 'Task Manager' : activeTab === 'Leave' ? 'Approvals' : activeTab === 'Documents' ? 'Documents' : activeTab}
           subtitle="Manage documents."
@@ -821,7 +821,7 @@ const DarkHRDashboard: React.FC = () => {
           }
         />
 
-        <div className="flex-1 overflow-x-visible overflow-y-auto hide-scrollbar">
+        <div className="flex-1 overflow-visible">
           {activeTab === 'Dashboard' && activePage === 'dashboard' && (
   <DashboardModule
     setActivePage={setActivePage}

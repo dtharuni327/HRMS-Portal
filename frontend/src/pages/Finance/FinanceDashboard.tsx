@@ -21,7 +21,7 @@ const FinanceDashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#081a4a] p-4 text-slate-100">
+    <div className="flex min-h-screen w-full overflow-x-hidden bg-[#081a4a] p-4 text-slate-100">
       <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
 
       <FinanceSidebar
@@ -31,13 +31,13 @@ const FinanceDashboard: React.FC = () => {
         setSidebarOpen={setSidebarOpen}
       />
 
-      <main className={`relative z-10 flex flex-1 flex-col overflow-visible bg-[#081a4a] transition-all duration-300 ${sidebarOpen ? 'ml-[280px]' : 'ml-[132px]'}`}>
+      <main className={`relative z-10 flex min-h-[calc(100vh-2rem)] min-w-0 flex-1 flex-col overflow-visible bg-[#081a4a] transition-all duration-300 ${sidebarOpen ? 'ml-[280px]' : 'ml-[132px]'}`}>
         <DashboardNavbar
           title="Finance Dashboard"
           subtitle="Finance • Role-based Access"
         />
 
-        <div className="hide-scrollbar flex-1 overflow-x-visible overflow-y-auto p-1">
+        <div className="flex-1 overflow-visible p-1">
           <div className="space-y-6">
             {activeTab === 'Dashboard' && <DashboardModule />}
             {activeTab === 'Payroll' && <PayrollModule />}
