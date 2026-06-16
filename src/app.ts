@@ -9,6 +9,10 @@ import systemHealthRoutes from "./routes/systemHealth.routes";
 import { metricsMiddleware } from "./middleware/metrics.middleware";
 import internalJobRoutes from "./routes/internalJob.routes";
 import systemConfigRoutes from "./routes/systemConfig.routes";
+import reimbursementRoutes from "./routes/reimbursement.routes";
+import invoiceRoutes from "./routes/invoice.routes";
+import taxReportsRoutes from "./routes/tax-reports.routes";
+import salaryRoutes from "./routes/salary.routes";
 
 dotenv.config();
 
@@ -31,6 +35,10 @@ app.get("/",
 
 app.use("/department", departmentRoutes); 
 app.use("/role", roleRoutes);             
+app.use("/reimbursement", reimbursementRoutes);
+app.use("/invoice", invoiceRoutes);
+app.use("/tax-reports", taxReportsRoutes);
+app.use("/salary", salaryRoutes);
 
 // Metrics middleware records API request/response metrics
 app.use(metricsMiddleware);
