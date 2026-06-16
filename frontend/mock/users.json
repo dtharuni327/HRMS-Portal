@@ -1,0 +1,73 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "superadmin@gmail.com",
+      "password": "12345",
+      "role": "SUPER_ADMIN",
+      "name": "Super Admin",
+      "dashboard": "/superadmin"
+    },
+    {
+      "id": 2,
+      "email": "hr@gmail.com",
+      "password": "12345",
+      "role": "HR_ADMIN",
+      "name": "HR Manager",
+      "dashboard": "/hr",
+      "gender":"Female"
+    },
+     {
+      "id": 3,
+      "email": "hr1@gmail.com",
+      "password": "12345",
+      "role": "HR_ADMIN",
+      "name": "HR Manager",
+      "dashboard": "/hr",
+      "gender":"Male"
+    },
+    {
+      "id": 4,
+      "email": "manager@gmail.com",
+      "password": "12345",
+      "role": "MANAGER",
+      "name": "Manager",
+      "dashboard": "/manager"
+    },
+    {
+      "id": 5,
+      "email": "client@gmail.com",
+      "password": "12345",
+      "role": "CLIENT",
+      "name": "Client User",
+      "dashboard": "/client"
+    },
+    {
+      "id": 6,
+      "email": "emp01@gmail.com",
+      "password": "12345",
+      "role": "EMPLOYEE",
+      "name": "Employee One",
+      "dashboard": "/employee"
+    },
+    {
+      "id": 7,
+      "email": "emp02@gmail.com",
+      "password": "12345",
+      "role": "EMPLOYEE",
+      "name": "Employee Two",
+      "dashboard": "/employee"
+    },
+    {
+      "id": 8,
+      "email":"finance@gmail.com",
+      "password": "12345",
+      "role": "FINANCE",
+      "name": "Finance User",
+      "dashboard": "/finance"
+    }
+  ]
+}
+
+
+
