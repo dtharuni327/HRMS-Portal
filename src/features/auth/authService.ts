@@ -1,5 +1,5 @@
 import axios from "axios";
-import usersData from "../../data/users.json";
+import usersData from "../../../mock/users.json";
 
 /* =========================
    🌐 API BASE (Vite fix)
@@ -16,7 +16,7 @@ export const login = async (credentials: {
 }) => {
   const user = usersData.users.find(
     (u) =>
-      u.username.toLowerCase() === credentials.email.toLowerCase() &&
+      u.email.toLowerCase() === credentials.email.toLowerCase() &&
       u.password === credentials.password
   );
 
@@ -28,8 +28,8 @@ export const login = async (credentials: {
     success: true,
     user: {
       id: String(user.id),
-      username: user.username,
-      email: user.username,
+      email: user.email,
+      username: user.email,
       role: user.role,
       name: user.name,
       dashboard: user.dashboard,

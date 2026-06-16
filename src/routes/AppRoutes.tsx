@@ -8,17 +8,29 @@ import Login from "../pages/auth/Login";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 
 // Dashboard pages
-import HRDashboard from "../pages/hr/HRDashboard";
-import ManagerDashboard from "../pages/manager/ManagerDashboard";
+// HR and Manager dashboards removed per request
 import EmployeeDashboard from "../pages/employee/EmployeeDashboard";
-import ClientDashboard from "../pages/client/ClientDashboard";
+import {
+  ClientDashboard,
+  InvoiceSummary,
+  AssignedTeamMembers,
+  Attendance,
+  Chat,
+  DocumentSharing,
+  FeedbackSection,
+  MeetingSchedule,
+  Notifications,
+  PaymentHistory,
+  ProjectOverview as ClientProjectOverview,
+  ProjectReport,
+  Support,
+} from "../pages/client/modules";
 import SuperAdminDashboard from "../pages/super-admin/modules/SuperAdminDashboard";
+import ClientLayout from "../components/client/ClientLayout";
 
 // HR / Manager / Employee / Client pages
-import EmployeeManagement from "../pages/hr/EmployeeManagement";
-import TeamOverview from "../pages/manager/TeamOverview";
+// EmployeeManagement and TeamOverview removed with HR/Manager pages
 import MyAttendance from "../pages/employee/MyAttendance";
-import ProjectTracking from "../pages/client/ProjectTracking";
 
 // Super Admin pages
 import NewUser from "../pages/super-admin/modules/NewUser";
@@ -50,51 +62,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
-      {/* HR Routes */}
-      <Route
-        path="/hr"
-        element={
-          <ProtectedRoute>
-            <RoleRoute allowedRoles={["HR_ADMIN"]}>
-              <HRDashboard />
-            </RoleRoute>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/hr/employees"
-        element={
-          <ProtectedRoute>
-            <RoleRoute allowedRoles={["HR_ADMIN"]}>
-              <EmployeeManagement />
-            </RoleRoute>
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Manager Routes */}
-      <Route
-        path="/manager"
-        element={
-          <ProtectedRoute>
-            <RoleRoute allowedRoles={["MANAGER"]}>
-              <ManagerDashboard />
-            </RoleRoute>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/manager/team"
-        element={
-          <ProtectedRoute>
-            <RoleRoute allowedRoles={["MANAGER"]}>
-              <TeamOverview />
-            </RoleRoute>
-          </ProtectedRoute>
-        }
-      />
+      {/* HR and Manager routes removed */}
 
       {/* Employee Routes */}
       <Route
@@ -119,28 +87,35 @@ const AppRoutes: React.FC = () => {
         }
       />
 
-      {/* Client Routes */}
+      {/* Client Routes (use layout so sidebar persists) */}
       <Route
         path="/client"
         element={
           <ProtectedRoute>
             <RoleRoute allowedRoles={["CLIENT"]}>
-              <ClientDashboard />
+              <ClientLayout />
             </RoleRoute>
           </ProtectedRoute>
         }
-      />
-
-      <Route
-        path="/client/projects"
-        element={
-          <ProtectedRoute>
-            <RoleRoute allowedRoles={["CLIENT"]}>
-              <ProjectTracking />
-            </RoleRoute>
-          </ProtectedRoute>
-        }
-      />
+      >
+          <Route index element={<ClientDashboard />} />
+          {/* projects route removed (ProjectTracking component deleted) */}
+          <Route path="contacts" element={<AssignedTeamMembers />} />
+          <Route path="team-members" element={<AssignedTeamMembers />} />
+          <Route path="attendance" element={<Attendance />} />
+          <Route path="chat" element={<Chat />} />
+          <Route path="documents" element={<DocumentSharing />} />
+          <Route path="feedback" element={<FeedbackSection />} />
+          <Route path="invoices" element={<InvoiceSummary />} />
+          <Route path="calendar" element={<MeetingSchedule />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="payments" element={<PaymentHistory />} />
+          <Route path="project-overview" element={<ClientProjectOverview />} />
+          <Route path="project-report" element={<ProjectReport />} />
+          <Route path="support" element={<Support />} />
+          {/* Tasks page removed for clients */}
+          <Route path="settings" element={<Navigate to="/client" replace />} />
+      </Route>
 
       {/* Super Admin Routes */}
       <Route

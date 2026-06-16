@@ -1,0 +1,14 @@
+export { default as AssignedTeamMembers } from "./AssignedTeamMembers";
+export { default as Attendance } from "./Attendance";
+export { default as Chat } from "./Chat";
+export { default as DocumentSharing } from "./DocumentSharing";
+export { default as FeedbackSection } from "./FeedbackSection";
+export { default as InvoiceSummary } from "./InvoiceSummary";
+export { default as MeetingSchedule } from "./MeetingSchedule";
+export { default as Notifications } from "./Notifications";
+export { default as PaymentHistory } from "./PaymentHistory";
+export { default as ProjectOverview } from "./ProjectOverview";
+export { default as ProjectReport } from "./ProjectReport";
+export { default as Support } from "./Support";
+export { default as ClientDashboard } from "./ClientDashboardHome";
+// Removed ClientShared and ProjectTracking placeholders (deleted)
