@@ -5,6 +5,8 @@ This application includes the following modules:
 - Authentication Module
 - Holiday Module
 - Leave Management Module
+- Department Module
+- Role Module
 
 **The application follows a layered architecture using:**
 
@@ -45,26 +47,39 @@ src/
 ├── controllers/
 │   ├── authentication/
 │   ├── holiday/
-│   └── leave/
+│   ├── leave/
+│   ├── department/
+│   └── role/
 │
 ├── services/
 │   ├── authentication/
 │   ├── holiday/
-│   └── leave/
+│   ├── leave/
+│   ├── department/
+│   └── role/
 │
 ├── repositories/
 │   ├── authentication/
 │   ├── holiday/
-│   └── leave/
+│   ├── leave/
+│   ├── department/
+│   └── role/
 │
 ├── validations/
 │   ├── authentication/
 │   ├── holiday/
-│   └── leave/
+│   ├── leave/
+│   ├── department/
+│   └── role/
 │
 ├── middleware/
 │
 ├── routes/
+│   ├── authentication.routes.ts
+│   ├── holiday.routes.ts
+│   ├── leave.routes.ts
+│   ├── department.routes.ts
+│   └── role.routes.ts
 │
 ├── constants/
 │
@@ -104,6 +119,19 @@ src/
 - Update Leave Status
 - Leave Notifications
 - Notification Visibility
+
+**Department Module**
+
+- Add Department
+- Get All Departments
+- Update Department Details
+
+**Role Module**
+
+- Add Role
+- Get All Roles (With Department)
+- Update Role Details
+
 
 **Authentication APIs**
 
@@ -186,6 +214,34 @@ GET /leave/notifications
 Update Notification Visibility
 
 PUT /leave/visibility
+
+**Department APIs**
+
+Add Department
+
+POST /department/add
+
+Get Departments
+
+GET /department/all
+
+Update Department
+
+PUT /department/update/:department_id
+
+**Role APIs**
+
+Add Role
+
+POST /role/add
+
+Get Roles (With Department Filter)
+
+GET /role/all
+
+Update Role
+
+PUT /role/update/:role_id
 
 **Installation**
 
