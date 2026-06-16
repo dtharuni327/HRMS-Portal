@@ -13,5 +13,10 @@
     "resolveJsonModule": true,  
     "forceConsistentCasingInFileNames": true   
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/app.ts",
+    "src/server.ts",
+    "src/config/**/*",
+    "src/sql/**/*"
+  ]
 }

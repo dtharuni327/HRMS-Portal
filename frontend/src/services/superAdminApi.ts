@@ -154,8 +154,8 @@ export const superAdminApi = {
         row.department ??
         "General",
       status:
-        String(row.employee_status ?? row.status ?? "active").toLowerCase() ===
-        "inactive"
+        String(row.employee_status ?? row.status ?? "active").toLowerCase() !==
+        "active"
           ? "inactive"
           : "active",
     })) as EmployeeUser[];

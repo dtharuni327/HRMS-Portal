@@ -11,7 +11,7 @@ import {
   roleRouter,
   utilityRouter,
   wfhRouter,
-} from "./local/api";
+} from "./sql/api";
 
 dotenv.config();
 
