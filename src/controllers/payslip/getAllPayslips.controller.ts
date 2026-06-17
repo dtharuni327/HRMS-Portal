@@ -11,9 +11,7 @@ export const getAllPayslipsController = async (req: Request, res: Response) => {
         message: "Only Super Admin and HR Admin can view all payslips"
       });
     }
-
     const { month, year, status } = req.query;
-
     const monthNum = month ? Number(month) : null;
     const yearNum = year ? Number(year) : null;
     const statusStr = status as string || null;
@@ -26,7 +24,6 @@ export const getAllPayslipsController = async (req: Request, res: Response) => {
         message: result.message ?? "Failed to get payslips"
       });
     }
-
     return res.status(200).json({
       success: true,
       data: result.data ?? []

@@ -11,24 +11,20 @@ export const updatePayslipStatusController = async (req: Request, res: Response)
         message: "Only Super Admin and HR Admin can update payslip status"
       });
     }
-
     const { payslip_id } = req.params;
     const { status, payment_date } = req.body;
-
     if (!payslip_id) {
       return res.status(400).json({
         success: false,
         message: "Payslip ID is required"
       });
     }
-
     if (!status) {
       return res.status(400).json({
         success: false,
         message: "Status is required"
       });
     }
-
     const result = await updatePayslipStatusService(
       Number(payslip_id),
       status,

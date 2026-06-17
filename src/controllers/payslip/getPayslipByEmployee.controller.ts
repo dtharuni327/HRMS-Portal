@@ -14,7 +14,6 @@ export const getPayslipByEmployeeController = async (req: Request, res: Response
         message: "Employee ID is required"
       });
     }
-
     if (dashboard_id === 4 && Emp_id !== userEmp_id) {
       return res.status(403).json({
         success: false,
