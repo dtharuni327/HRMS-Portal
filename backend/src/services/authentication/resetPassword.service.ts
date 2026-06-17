@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import {resetPasswordRepository} 
 from "../../repositories/authentication/resetPassword.repository";
 export const resetPasswordService =async (data: any) => {

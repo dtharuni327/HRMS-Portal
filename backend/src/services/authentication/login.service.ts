@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import {loginRepository} from "../../repositories/authentication/login.repository";
 import {generateTokens} from "../../utils/authentication/generateTokens";
 export const loginService = async (data: any) => {

@@ -1,6 +1,4 @@
 
-//npx json-server mock/users.json --port 5000
-
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Code2, Eye, EyeOff, Lock, User } from "lucide-react";
 
 import { useAuthContext } from "../../context/AuthContext";
+import { hrmsApi } from "../../services/hrmsApi";
 
 export default function DeveloperHubLogin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -53,57 +52,18 @@ const handleSubmit = async (
   try {
     setLoading(true);
 
-    const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/users`
-    );
+    const result = await hrmsApi.login({
+      username: enteredUsername,
+      password,
+    });
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch users");
-    }
-
-    const data = await response.json();
-
-    const foundUser = data.find(
-      (user: any) =>
-        (user.username === enteredUsername || user.email === enteredUsername) &&
-        user.password === password
-    );
-
-    if (!foundUser) {
-      setLoading(false);
-      triggerError("Invalid username or password");
-      return;
-    }
-
-    // save local user
-    localStorage.setItem(
-      "loggedUser",
-      JSON.stringify(foundUser)
-    );
-
-    // fake token
-    const fakeToken = `token-${foundUser.id}-${foundUser.role}`;
-
-    // zustand auth login
-    const userToLogin = {
-      ...foundUser,
-      id: foundUser.id.toString(),
-    };
-
-    login(fakeToken, userToLogin);
-
+    login(result.token, result.user);
     setLoading(false);
-
-    // redirect
-    navigate(foundUser.dashboard);
-  } catch (error) {
+    navigate(result.user.dashboard);
+  } catch (error: any) {
     console.error(error);
-
     setLoading(false);
-
-    triggerError(
-      "Server not running. Start json-server first."
-    );
+    triggerError(error?.message || "Unable to sign in. Please check the server connection.");
   }
 };
 

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import {db} from "../config/db";
 import sql from "mssql";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
  
