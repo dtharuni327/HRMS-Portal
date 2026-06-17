@@ -5,14 +5,14 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-import { Code2, Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Code2, Eye, EyeOff, Lock, User } from "lucide-react";
 
 import { useAuthContext } from "../../context/AuthContext";
 
 export default function DeveloperHubLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [shake, setShake] = useState(false);
@@ -38,8 +38,8 @@ const handleSubmit = async (
 
   setError("");
 
-  if (!email.trim()) {
-    triggerError("Gmail is required");
+  if (!username.trim()) {
+    triggerError("Username is required");
     return;
   }
 
@@ -48,9 +48,7 @@ const handleSubmit = async (
     return;
   }
 
-  const fullEmail = email.includes("@")
-    ? email
-    : `${email}@gmail.com`;
+  const enteredUsername = username.trim();
 
   try {
     setLoading(true);
@@ -67,13 +65,13 @@ const handleSubmit = async (
 
     const foundUser = data.find(
       (user: any) =>
-        user.email === fullEmail &&
+        (user.username === enteredUsername || user.email === enteredUsername) &&
         user.password === password
     );
 
     if (!foundUser) {
       setLoading(false);
-      triggerError("Invalid Gmail or password");
+      triggerError("Invalid username or password");
       return;
     }
 
@@ -177,29 +175,25 @@ const handleSubmit = async (
             {/* FORM */}
             <form onSubmit={handleSubmit} className="space-y-3.5">
 
-              {/* GMAIL */}
+              {/* USERNAME */}
               <div
                 className={`flex items-center gap-3 rounded-lg border px-4 py-2.5 transition ${
-                  email.trim()
+                  username.trim()
                     ? "border-green-400/80 bg-white/5"
-                    : error && !email.trim()
+                    : error && !username.trim()
                     ? "border-red-400/80 bg-white/5"
                     : "border-white/10 bg-white/5"
                 } focus-within:border-sky-400`}
               >
-                <Mail className="text-sky-400" size={16} />
+                <User className="text-sky-400" size={16} />
 
                 <input
                   type="text"
-                  value={email}
-                  onChange={(e) =>
-                    setEmail(e.target.value.replace("@gmail.com", ""))
-                  }
-                  placeholder="Enter your Gmail"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your username"
                   className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
                 />
-
-                <span className="text-xs text-slate-400">@gmail.com</span>
               </div>
 
               {/* PASSWORD */}
@@ -253,7 +247,7 @@ const handleSubmit = async (
                 disabled={loading}
                 className="w-full rounded-lg bg-sky-500 py-2.5 text-sm font-semibold text-black transition hover:bg-sky-400 disabled:opacity-70"
               >
-                {loading ? "Authenticating..." : "Login"}
+                {loading ? "Authenticating..." : "Signin"}
               </button>
 
             </form>
@@ -263,3 +257,4 @@ const handleSubmit = async (
     </main>
   );
 }
+

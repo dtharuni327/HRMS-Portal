@@ -2,6 +2,7 @@
   "users": [
     {
       "id": 1,
+      "username": "superadmin",
       "email": "superadmin@gmail.com",
       "password": "12345",
       "role": "SUPER_ADMIN",
@@ -10,6 +11,7 @@
     },
     {
       "id": 2,
+      "username": "hr",
       "email": "hr@gmail.com",
       "password": "12345",
       "role": "HR_ADMIN",
@@ -19,6 +21,7 @@
     },
      {
       "id": 3,
+      "username": "hr1",
       "email": "hr1@gmail.com",
       "password": "12345",
       "role": "HR_ADMIN",
@@ -28,6 +31,7 @@
     },
     {
       "id": 4,
+      "username": "manager",
       "email": "manager@gmail.com",
       "password": "12345",
       "role": "MANAGER",
@@ -36,6 +40,7 @@
     },
     {
       "id": 5,
+      "username": "client",
       "email": "client@gmail.com",
       "password": "12345",
       "role": "CLIENT",
@@ -44,6 +49,7 @@
     },
     {
       "id": 6,
+      "username": "emp01",
       "email": "emp01@gmail.com",
       "password": "12345",
       "role": "EMPLOYEE",
@@ -52,11 +58,22 @@
     },
     {
       "id": 7,
+      "username": "emp02",
       "email": "emp02@gmail.com",
       "password": "12345",
       "role": "EMPLOYEE",
       "name": "Employee Two",
       "dashboard": "/employee"
+    },
+
+    {
+      "id": 8,
+      "username": "finance",
+      "email":"finance@gmail.com",
+      "password": "12345",
+      "role": "FINANCE",
+      "name": "Finance User",
+      "dashboard": "/finance"
     }
   ]
 }

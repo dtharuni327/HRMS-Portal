@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
-import {
-  CalendarRange,
-  CheckCircle2,
-  Clock3,
-  FileText,
-  ShieldCheck,
-  Video,
-} from 'lucide-react';
+import { clientPalette } from '../../../utils/colorPalette';
+import { CalendarRange, Video } from 'lucide-react';
 
 const initialMeetings = [
   {
@@ -35,11 +29,6 @@ const initialMeetings = [
   },
 ];
 
-const highlights = [
-  { label: 'Upcoming meetings', value: '3', note: 'Planned meetings in the next 7 days.' },
-  { label: 'Demo sessions', value: '1', note: 'Live presentation already scheduled.' },
-  { label: 'Meeting notes', value: '5', note: 'Notes prepared and shared with the client team.' },
-];
 
 const MeetingSchedule: React.FC = () => {
   const [form, setForm] = useState({ title: '', date: '', time: '', attendees: '' });
@@ -127,7 +116,7 @@ const MeetingSchedule: React.FC = () => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border border-[#e5eefb] bg-[#fff8ef] p-6 shadow-[0_18px_45px_rgba(148,163,184,0.22)] lg:p-8">
+      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.warmCream, boxShadow: '0 18px 45px rgba(148,163,184,0.22)'}}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
             <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-amber-700/90">Meeting Schedule</p>
@@ -142,7 +131,7 @@ const MeetingSchedule: React.FC = () => {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#edf7ff] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)] xl:col-span-2 min-h-screen">
+        <article className="rounded-[30px] border p-6 xl:col-span-2 min-h-screen" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.iceBlue, boxShadow: '0 18px 40px rgba(148,163,184,0.18)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Agenda</p>

@@ -1,0 +1,14 @@
+export { default as Approvals } from './Approvals';
+export { default as Attendance } from './Attendance';
+export { default as AttendanceAnalytics } from './AttendanceAnalytics';
+export { default as ClientUpdates } from './ClientUpdates';
+export { default as Dashboard } from './dashboard';
+export { default as Employee } from './Employee';
+export { default as ProfilePage } from './ProfilePage';
+export { default as ProjectEffortReport } from './ProjectEffortReport';
+export { default as RegularisationRequests } from './RegularisationRequests';
+export { default as TaskManager } from './TaskManager';
+export { default as TeamDirectory } from './TeamDirectory';
+export { default as TeamLeaveCalendar } from './TeamLeaveCalendar';
+export { default as ManagerDashboard } from './ManagerDashboard';
+export * as managerShared from './managerShared';

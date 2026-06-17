@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
 
 type User = {
   id: string;

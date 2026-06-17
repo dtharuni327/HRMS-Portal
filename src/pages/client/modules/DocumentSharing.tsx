@@ -1,52 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import {
-  CalendarRange,
-  CheckCircle2,
-  FileText,
-  FolderKanban,
-  ShieldCheck,
-  Wallet,
-} from 'lucide-react';
+import { clientPalette } from '../../../utils/colorPalette';
+import { FileText } from 'lucide-react';
 import { useProjectStore } from '../../../store/projectStore';
 
-const documentGroups = [
-  {
-    title: 'Contracts',
-    count: '4 active',
-    note: 'Master agreement, NDAs, and service terms approved for the current phase.',
-    tone: 'bg-[#edf7ff] border-cyan-100',
-  },
-  {
-    title: 'Project Documents',
-    count: '12 files',
-    note: 'Specifications, technical notes, and implementation guides shared with the client team.',
-    tone: 'bg-[#eefbf4] border-emerald-100',
-  },
-  {
-    title: 'Reports',
-    count: '6 reports',
-    note: 'Weekly progress, status, and monthly operational reports are available for review.',
-    tone: 'bg-[#fff9ea] border-amber-100',
-  },
-  {
-    title: 'Invoices',
-    count: '3 invoices',
-    note: 'Billing summaries, purchase entries, and payment-linked invoices are archived here.',
-    tone: 'bg-[#fff4f8] border-pink-100',
-  },
-  {
-    title: 'Requirement Documents',
-    count: '5 docs',
-    note: 'Business goals, scope notes, and requirement updates for the delivery team.',
-    tone: 'bg-[#f3efff] border-violet-100',
-  },
-  {
-    title: 'Deliverables',
-    count: '8 items',
-    note: 'Milestone-ready outputs, review packets, and sign-off artifacts are listed here.',
-    tone: 'bg-[#effcf7] border-teal-100',
-  },
-];
 
 const recentUploads = [
   { name: 'Project Scope Final.pdf', type: 'Requirement Document', updated: '10 Jun 2026' },
@@ -79,7 +35,7 @@ const DocumentSharing: React.FC = () => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border border-[#e5eefb] bg-[#fff8ef] p-6 shadow-[0_18px_45px_rgba(148,163,184,0.22)] lg:p-8">
+      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.warmCream, boxShadow: '0 18px 45px rgba(148,163,184,0.22)'}}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
             <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-amber-700/90">Document Sharing</p>
@@ -94,7 +50,7 @@ const DocumentSharing: React.FC = () => {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#edf7ff] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#dbeafe', backgroundColor: clientPalette.iceBlue, boxShadow: '0 18px 40px rgba(148,163,184,0.18)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Recent files</p>
@@ -164,7 +120,7 @@ const DocumentSharing: React.FC = () => {
           </div>
         </article>
 
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#fff5f8] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.softPink, boxShadow: '0 18px 40px rgba(148,163,184,0.18)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <p className="text-[12px] uppercase tracking-[0.26em] text-pink-700/90">Document summary</p>

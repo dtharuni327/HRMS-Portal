@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Bell,
-  CalendarRange,
-  CheckCircle2,
-  MessageSquareText,
-  Send,
-  ShieldCheck,
-  Users,
-} from 'lucide-react';
+import { clientPalette } from '../../../utils/colorPalette';
+import { MessageSquareText, Send, Users } from 'lucide-react';
 import { useProjectStore } from '../../../store/projectStore';
 
 const chatThreads = [
@@ -16,6 +9,7 @@ const chatThreads = [
     role: 'Delivery lead',
     status: 'Online',
     preview: 'The latest milestone update is ready for review.',
+    project: '',
     tone: 'bg-[#edf7ff] border-cyan-100',
   },
   {
@@ -23,6 +17,7 @@ const chatThreads = [
     role: 'Support coordination',
     status: 'Available',
     preview: 'Please share the approval summary for the release window.',
+    project: '',
     tone: 'bg-[#fff9ea] border-amber-100',
   },
   {
@@ -30,14 +25,9 @@ const chatThreads = [
     role: 'QA & Engineering',
     status: 'Busy',
     preview: 'We are validating the latest demo build and notes.',
+    project: '',
     tone: 'bg-[#eefbf4] border-emerald-100',
   },
-];
-
-const quickNotes = [
-  { label: 'Unread', value: '5', note: 'Messages awaiting follow-up from the delivery team.' },
-  { label: 'Today', value: '3', note: 'Active conversations scheduled for the current day.' },
-  { label: 'Escalations', value: '1', note: 'High-priority discussion flagged for client response.' },
 ];
 
 const Chat: React.FC = () => {
@@ -67,7 +57,7 @@ const Chat: React.FC = () => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border border-[#e5eefb] bg-[#fff8ef] p-6 shadow-[0_18px_45px_rgba(148,163,184,0.22)] lg:p-8">
+      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.warmCream, boxShadow: '0 18px 45px rgba(148,163,184,0.22)'}}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
             <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-amber-700/90">Chat / Communication</p>
@@ -82,7 +72,7 @@ const Chat: React.FC = () => {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#edf7ff] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#dbeafe', backgroundColor: clientPalette.iceBlue, boxShadow: '0 18px 40px rgba(148,163,184,0.18)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Project communication channels</p>

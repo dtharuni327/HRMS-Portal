@@ -1,0 +1,13 @@
+export { default as BonusIncentives } from './BonusIncentives';
+export { default as Dashboard } from './dashboard';
+export { default as DeductionsManagement } from './DeductionsManagement';
+export { default as EmployeeSalaryDetails } from './EmployeeSalaryDetails';
+export { default as InvoiceManagement } from './InvoiceManagement';
+export { default as Notifications } from './Notifications';
+export { default as PaymentTracking } from './PaymentTracking';
+export { default as Payroll } from './Payroll';
+export { default as PayrollReports } from './PayrollReports';
+export { default as PayslipManagement } from './PayslipManagement';
+export { default as ReimbursementRequests } from './ReimbursementRequests';
+export { default as SalaryDisbursement } from './SalaryDisbursement';
+export { default as TaxReports } from './TaxReports';

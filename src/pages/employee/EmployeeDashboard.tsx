@@ -43,7 +43,7 @@ const sidebarItems = [
   { label: "View All Employees", icon: Users, page: "view-all-employees" as ActivePage },
   { label: "Profile", icon: User, page: "profile" as ActivePage },
   { label: "Announcements", icon: Megaphone, page: "announcements" as ActivePage },
-  { label: "Logout", icon: LogOut, page: "login" as ActivePage },
+  { label: "Signout", icon: LogOut, page: "login" as ActivePage },
 ];
 
 const attendanceData = [
@@ -231,37 +231,27 @@ const EmployeeDashboard: React.FC = () => {
                     transition={{ delay: index * 0.04, duration: 0.28 }}
                     type="button"
                     onClick={() => setActivePage(item.page)}
-                    className={`relative flex h-[58px] w-full items-center text-left transition-all duration-300 ${
+                    className={`relative flex h-[58px] w-full items-center rounded-[1.4rem] transition-all duration-300 ${
                       isActive && !isLoginItem
-                        ? "rounded-[22px] border border-violet-300/25 bg-violet-500/30 text-white shadow-[0_14px_30px_rgba(99,102,241,0.22)]"
-                        : isLoginItem
-                        ? "rounded-[22px] text-sky-300 hover:bg-white/10 hover:text-sky-100"
-                        : "rounded-[22px] text-white/55 hover:bg-white/10 hover:text-white"
+                        ? `${isSidebarExpanded ? 'px-3 justify-start' : 'justify-center'} bg-gradient-to-r from-[#5a4bc7] to-[#4b3f99] text-white shadow-[0_10px_30px_rgba(91,75,199,0.35)]`
+                        : `${isSidebarExpanded ? 'px-3 justify-start' : 'justify-center'} text-slate-400 hover:bg-white/5 hover:text-white`
                     }`}
                   >
-                    {isActive && !isLoginItem && (
-                      <div className="absolute left-0 top-1/2 h-8 w-1.5 -translate-y-1/2 rounded-r-full bg-violet-300 shadow-[0_0_14px_rgba(167,139,250,0.75)]" />
-                    )}
-
-                    <div className="flex w-[58px] min-w-[58px] justify-center">
-                      <Icon
-                        className={`h-5 w-5 ${
-                          isActive && !isLoginItem
-                            ? "text-sky-300"
-                            : isLoginItem
-                            ? "text-sky-300"
-                            : "text-white/55"
-                        }`}
-                      />
-                    </div>
-
-                    <span
-                      className={`ml-1 text-[14px] font-bold uppercase tracking-[0.08em] transition-opacity duration-200 ${
-                        isSidebarExpanded ? "opacity-100" : "opacity-0"
+                    <div
+                      className={`flex h-12 w-12 min-w-[48px] items-center justify-center transition-all duration-300 ${
+                        isActive ? 'text-[#7dd3fc]' : 'text-slate-400'
                       }`}
                     >
+                      <Icon size={20} />
+                    </div>
+
+                    <span className={`ml-3 overflow-hidden whitespace-nowrap text-[15px] font-semibold tracking-wide transition-all duration-300 ${isSidebarExpanded ? 'max-w-[180px] opacity-100' : 'max-w-0 opacity-0'}`}>
                       {item.label}
                     </span>
+
+                    {isActive && (
+                      <div className="absolute left-0 h-6 w-1 rounded-r-full bg-gradient-to-b from-[#f5d0fe] via-[#c084fc] to-[#a855f7] shadow-[0_0_12px_rgba(192,132,252,0.9)]" />
+                    )}
                   </motion.button>
                 );
               })}

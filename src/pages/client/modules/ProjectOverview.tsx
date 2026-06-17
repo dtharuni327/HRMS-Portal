@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { clientPalette } from '../../../utils/colorPalette';
 import { useProjectStore, type Project } from '../../../store/projectStore';
 import {
   CalendarRange,
@@ -80,7 +81,7 @@ const ProjectOverview: React.FC = () => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border border-[#e5eefb] bg-[#fff9ea] p-6 shadow-[0_18px_45px_rgba(148,163,184,0.22)] lg:p-8">
+      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.warmCream, boxShadow: '0 18px 45px rgba(148,163,184,0.22)'}}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
             <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-sky-700/90">Project overview</p>
@@ -95,7 +96,7 @@ const ProjectOverview: React.FC = () => {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
-        <article className="rounded-[30px] border border-[#dbeafe] bg-[#fff5f8] p-6 shadow-[0_18px_40px_rgba(15,23,42,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#dbeafe', backgroundColor: clientPalette.softPink, boxShadow: '0 18px 40px rgba(15,23,42,0.18)'}}>
           <div className="flex items-center gap-3">
             <div className="rounded-2xl border border-sky-200 bg-sky-50 p-3 text-sky-800">
               <FolderKanban className="h-5 w-5" />
@@ -138,7 +139,7 @@ const ProjectOverview: React.FC = () => {
             <CalendarRange className="h-5 w-5 text-sky-700" />
           </div>
 
-          <div className="mb-5 rounded-[24px] border border-cyan-100 bg-white/90 p-4 shadow-sm">
+          <div className="mb-5 rounded-[24px] border p-4 shadow-sm" style={{ borderColor: '#c7eefb', backgroundColor: '#ffffffdd' }}>
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
                 <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Add project</p>
@@ -183,7 +184,7 @@ const ProjectOverview: React.FC = () => {
 
           <div className="space-y-4">
             {projectList.map((project) => (
-              <article key={project.name} className={`rounded-[24px] border p-5 shadow-sm ${activeProject.name === project.name ? 'border-cyan-200 bg-[#edf7ff]' : 'border-pink-100 bg-[#fff4f8]'}`}>
+              <article key={project.name} className={`rounded-[24px] border p-5 shadow-sm`} style={{ borderColor: activeProject.name === project.name ? '#bee7ff' : '#ffdbe9', backgroundColor: activeProject.name === project.name ? clientPalette.iceBlue : clientPalette.softPink }}>
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div className="space-y-3">
                     <div>

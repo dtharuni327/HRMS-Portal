@@ -13,3 +13,16 @@ export const getPaletteFor = (key: string) => {
   const sum = Array.from(key).reduce((s, ch) => s + ch.charCodeAt(0), 0);
   return cardPalette[sum % cardPalette.length];
 };
+
+export const clientPalette = {
+  lavender: '#C3A6FF',
+  mintGreen: '#BFF3D4',
+  warmCream: '#FFF9EA',
+  iceBlue: '#EDF7FF',
+  softSaga: '#F3EAF8',
+  softPink: '#FFF4F8',
+  lightBeige: '#F5EFDB',
+  lilacFrost: '#EADCFD',
+  royalNavy: '#07123A',
+  ivorySand: '#FAF7EE',
+};

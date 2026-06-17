@@ -83,6 +83,14 @@ const ProjectOverview: React.FC = () => {
         </div>
       </div>
 
+      {loading && (
+        <div className="rounded-lg border border-white/10 bg-white/5 p-4 text-sm text-white/70">Loading projects...</div>
+      )}
+
+      {error && (
+        <div className="rounded-lg border border-red-600/20 bg-red-900/10 p-4 text-sm text-red-300">{error}</div>
+      )}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
         <div
           className="rounded-lg p-4"

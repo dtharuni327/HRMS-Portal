@@ -63,4 +63,5 @@ export const useProjectStore = create<ProjectStore>((set) => ({
   setAssignmentsForProject: (projectName: string, members: Member[]) => set((state) => ({ assignments: { ...state.assignments, [projectName]: members } })),
 }));
 
+
 export default useProjectStore;

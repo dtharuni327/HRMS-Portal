@@ -191,7 +191,6 @@ const AnnouncementsPage: React.FC = () => {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.04 }}
-              whileHover={{ y: -4, scale: 1.003 }}
               className="relative overflow-hidden rounded-[24px] border border-black/5 bg-white/50 p-6 transition-all duration-300 hover:bg-white/65"
             >
               <div

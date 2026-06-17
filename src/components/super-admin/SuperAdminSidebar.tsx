@@ -75,30 +75,26 @@ const SuperAdminSidebar = ({ isExpanded, setIsExpanded }: SuperAdminSidebarProps
               to={item.path}
               end={item.path === "/superadmin"}
               className={({ isActive }) =>
-                `relative flex h-[58px] w-full items-center text-left transition-all duration-300 ${
+                `relative flex h-[58px] w-full items-center rounded-[1.4rem] transition-all duration-300 ${
                   isActive
-                    ? "rounded-[22px] border border-violet-300/25 bg-violet-500/30 text-white shadow-[0_14px_30px_rgba(99,102,241,0.22)]"
-                    : "rounded-[22px] text-white/55 hover:bg-white/10 hover:text-white"
+                    ? `${isExpanded ? 'px-3 justify-start' : 'justify-center'} bg-gradient-to-r from-[#5a4bc7] to-[#4b3f99] text-white shadow-[0_10px_30px_rgba(91,75,199,0.35)]`
+                    : `${isExpanded ? 'px-3 justify-start' : 'justify-center'} text-slate-400 hover:bg-white/5 hover:text-white`
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  {isActive && (
-                    <div className="absolute left-0 top-1/2 h-8 w-1.5 -translate-y-1/2 rounded-r-full bg-violet-300 shadow-[0_0_14px_rgba(167,139,250,0.75)]" />
-                  )}
-                  <div className="flex w-[58px] min-w-[58px] justify-center">
-                    <item.icon
-                      className={`h-5 w-5 ${
-                        isActive ? "text-sky-300" : "text-white/55"
-                      }`}
-                    />
-                  </div>
-                  <span
-                    className={`ml-1 text-[14px] font-bold uppercase tracking-[0.08em] transition-opacity duration-200 ${
-                      isExpanded ? "opacity-100" : "opacity-0"
+                  {isActive && <div className="absolute left-0 h-6 w-1 rounded-r-full bg-gradient-to-b from-[#f5d0fe] via-[#c084fc] to-[#a855f7] shadow-[0_0_12px_rgba(192,132,252,0.9)]" />}
+
+                  <div
+                    className={`flex h-12 w-12 min-w-[48px] items-center justify-center transition-all duration-300 ${
+                      isActive ? 'text-[#7dd3fc]' : 'text-slate-400'
                     }`}
                   >
+                    <item.icon size={20} />
+                  </div>
+
+                  <span className={`ml-3 overflow-hidden whitespace-nowrap text-[15px] font-semibold tracking-wide transition-all duration-300 ${isExpanded ? 'max-w-[180px] opacity-100' : 'max-w-0 opacity-0'}`}>
                     {item.label}
                   </span>
                 </>
@@ -119,7 +115,7 @@ const SuperAdminSidebar = ({ isExpanded, setIsExpanded }: SuperAdminSidebarProps
               isExpanded ? "opacity-100" : "opacity-0"
             }`}
           >
-            Logout
+            Signout
           </span>
         </button>
       </div>

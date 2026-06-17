@@ -252,7 +252,6 @@ const InternalJobsPage: React.FC = () => {
               key={card.label}
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
               transition={{ delay: index * 0.04, type: "spring", stiffness: 220, damping: 18 }}
               className={`${pastelCard} ${card.cardClass} p-6 cursor-pointer`}
@@ -342,7 +341,6 @@ const InternalJobsPage: React.FC = () => {
                   stiffness: 260,
                   damping: 18,
                 }}
-                whileHover={{ y: -4, scale: 1.004 }}
                 className="relative flex min-h-[420px] flex-col overflow-hidden rounded-[24px] border border-black/5 bg-white/50 p-5 transition-all duration-300 hover:bg-white/65"
               >
                 <div className="absolute left-0 top-0 h-full w-1 bg-[#6356d8]" />

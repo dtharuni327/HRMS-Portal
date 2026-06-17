@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import employeeImage from "../../../images/image3.png";
+import employeeImage from "../../../images/image.png";
 import SystemConfigCard from "../../../components/employee/SystemConfigCard";
 import {
   BadgeCheck,
@@ -468,8 +468,6 @@ const HomePage: React.FC<HomePageProps> = ({
         {/* Leave Balance */}
         <motion.div
           variants={itemVariants}
-          whileHover={{ y: -4, scale: 1.005 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
           className="relative min-h-[330px] overflow-hidden rounded-[30px] border border-[#0f172a]/10 bg-[#dcefe8] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:shadow-[0_18px_46px_rgba(15,23,42,0.14)] xl:col-span-4"
         >
           <div className="mb-4 flex items-center justify-between">
@@ -525,8 +523,6 @@ const HomePage: React.FC<HomePageProps> = ({
         {/* Tasks Card */}
         <motion.div
           variants={itemVariants}
-          whileHover={{ y: -4, scale: 1.005 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
           className="relative min-h-[340px] overflow-hidden rounded-[30px] border border-[#0f172a]/10 bg-[#ebe5d8] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:shadow-[0_18px_46px_rgba(15,23,42,0.14)] xl:col-span-4"
         >
           <div className="flex items-center justify-between">
@@ -590,8 +586,6 @@ const HomePage: React.FC<HomePageProps> = ({
         {/* Attendance Overview */}
         <motion.div
           variants={itemVariants}
-          whileHover={{ y: -4, scale: 1.005 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
           className="relative overflow-hidden rounded-[30px] border border-[#0f172a]/10 bg-[#dde9f5] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:shadow-[0_18px_46px_rgba(15,23,42,0.14)] xl:col-span-4"
         >
           <div className="mb-4 flex items-center justify-between">
@@ -661,8 +655,6 @@ const HomePage: React.FC<HomePageProps> = ({
         {/* Attendance Graph */}
         <motion.div
           variants={itemVariants}
-          whileHover={{ y: -4, scale: 1.005 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
           className="relative overflow-hidden rounded-[30px] border border-[#0f172a]/10 bg-[#e3efe8] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:shadow-[0_18px_46px_rgba(15,23,42,0.14)] xl:col-span-8"
         >
           <div className="mb-5 flex items-center justify-between">
@@ -727,8 +719,6 @@ const HomePage: React.FC<HomePageProps> = ({
         {/* Attendance Calendar */}
         <motion.div
           variants={itemVariants}
-          whileHover={{ y: -4, scale: 1.005 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
           className="rounded-[30px] border border-[#0f172a]/10 bg-[#eee3e8] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:shadow-[0_18px_46px_rgba(15,23,42,0.14)] xl:col-span-7"
         >
           <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
@@ -836,8 +826,6 @@ const HomePage: React.FC<HomePageProps> = ({
           {/* Upcoming Holidays */}
           <motion.div
             variants={itemVariants}
-            whileHover={{ y: -4, scale: 1.005 }}
-            transition={{ type: "spring", stiffness: 260, damping: 20 }}
             className="relative overflow-hidden rounded-[30px] border border-[#0f172a]/10 bg-[#efe7cf] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:shadow-[0_18px_46px_rgba(15,23,42,0.14)]"
           >
             <div className="mb-6 flex items-center justify-between">
@@ -895,8 +883,6 @@ const HomePage: React.FC<HomePageProps> = ({
           {/* Upcoming Events */}
           <motion.div
             variants={itemVariants}
-            whileHover={{ y: -4, scale: 1.005 }}
-            transition={{ type: "spring", stiffness: 260, damping: 20 }}
             className="relative overflow-hidden rounded-[30px] border border-[#0f172a]/10 bg-[#e7e4f7] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:shadow-[0_18px_46px_rgba(15,23,42,0.14)]"
           >
             <div className="mb-6 flex items-center justify-between">
@@ -958,7 +944,6 @@ const HomePage: React.FC<HomePageProps> = ({
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
         <motion.div
           variants={itemVariants}
-          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className="relative rounded-[30px] border border-black/10 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:shadow-[0_14px_34px_rgba(15,23,42,0.12)] cursor-pointer"
         >
@@ -987,7 +972,6 @@ const HomePage: React.FC<HomePageProps> = ({
 
         <motion.div
           variants={itemVariants}
-          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className="relative rounded-[30px] border border-black/10 bg-[#fff7ed] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:shadow-[0_14px_34px_rgba(15,23,42,0.12)] cursor-pointer"
         >
@@ -1010,7 +994,6 @@ const HomePage: React.FC<HomePageProps> = ({
               {todaysBirthdays.map((employee) => (
                 <motion.div
                   key={employee.id}
-                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="rounded-[20px] border border-black/20 bg-white p-4 text-sm font-semibold text-[#10223d] transition-all duration-200"
                 >

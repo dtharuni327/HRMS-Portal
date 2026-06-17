@@ -46,6 +46,9 @@ import LeaveManagementOverview from "../pages/super-admin/modules/LeaveManagemen
 import PayrollOverview from "../pages/super-admin/modules/PayrollOverview";
 import ProjectOverview from "../pages/super-admin/modules/ProjectOverview";
 import SuperAdminLayout from "../components/super-admin/SuperAdminLayout";
+import { ManagerDashboard } from "../pages/manager/modules";
+import { HRDashboard } from "../pages/hr/modules";
+import FinanceDashboard from "../pages/Finance/FinanceDashboard";
 
 const SuperAdminProtected = ({ children }: { children: React.ReactNode }) => (
   <ProtectedRoute>
@@ -140,6 +143,67 @@ const AppRoutes: React.FC = () => {
         <Route path="system-config" element={<SystemConfig />} />
         <Route path="system-health" element={<SystemHealth />} />
       </Route>
+
+
+ {/* HR Routes */}
+      <Route
+        path="/hr"
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRoles={["HR_ADMIN"]}>
+              <HRDashboard />
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Manager Routes */}
+      <Route
+        path="/manager"
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRoles={["MANAGER"]}>
+              <ManagerDashboard />
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+ 
+      <Route
+        path="/manager/task-manager"
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRoles={["MANAGER"]}>
+              <ManagerDashboard />
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+ 
+      <Route
+        path="/manager/team"
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRoles={["MANAGER"]}>
+              <ManagerDashboard />
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+
+{/* Finance Routes */}
+      <Route
+        path="/finance"
+        element={
+          <ProtectedRoute>
+            <RoleRoute allowedRoles={["FINANCE", "Finance"]}>
+              <FinanceDashboard />
+            </RoleRoute>
+          </ProtectedRoute>
+        }
+      />
+
+
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/login" replace />} />

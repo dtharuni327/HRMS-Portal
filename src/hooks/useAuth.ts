@@ -1,10 +1,13 @@
-import { useSelector } from 'react-redux';
-import { RootState } from '../store'; // Adjust path as needed
+import { useAuthStore } from "../store/authStore";
 
 export const useAuth = () => {
-  const { user, token, isLoading, error } = useSelector((state: RootState) => state.auth);
+  const user = useAuthStore((s) => s.user);
+  const token = useAuthStore((s) => s.token);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  const isAuthenticated = !!token;
+  // Provide placeholders for fields previously expected from Redux
+  const isLoading = false;
+  const error = null as null | string;
 
   return {
     user,

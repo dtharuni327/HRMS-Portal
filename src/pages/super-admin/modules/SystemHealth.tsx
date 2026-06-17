@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
+import type { FC, ElementType } from "react";
 import {
   Server,
   Database,
@@ -8,7 +9,7 @@ import {
   Zap,
   Clock,
   TrendingUp,
-  CheckCircle2,
+  CheckCircle,
   AlertTriangle,
   Wifi,
   Activity,
@@ -32,7 +33,7 @@ interface Alert {
   service: string;
 }
 
-const SystemHealth: React.FC = () => {
+const SystemHealth: FC = () => {
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
 
   // Pastel accent colors and card text for contrast on pastel fills
@@ -165,20 +166,6 @@ const SystemHealth: React.FC = () => {
     []
   );
 
-  const getStatusColor = (status: string) => {
-    // kept for compatibility; returns a neutral class when needed
-    switch (status) {
-      case "healthy":
-        return "bg-green-500/20 text-green-300 border-green-500/30";
-      case "warning":
-        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
-      case "critical":
-        return "bg-red-500/20 text-red-300 border-red-500/30";
-      default:
-        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
-    }
-  };
-
   const getStatusAccentColor = (status: string) => {
     switch (status) {
       case "healthy":
@@ -191,20 +178,6 @@ const SystemHealth: React.FC = () => {
         return accentColors[3]; // ice blue
     }
   };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "healthy":
-        return CheckCircle2;
-      case "warning":
-        return AlertTriangle;
-      case "critical":
-        return AlertCircle;
-      default:
-        return Activity;
-    }
-  };
-
   const getMetricIcon = (name: string) => {
     switch (name) {
       case "Backend API":
@@ -227,7 +200,6 @@ const SystemHealth: React.FC = () => {
         return Wifi;
     }
   };
-
   const getAlertIcon = (level: string) => {
     switch (level) {
       case "critical":
@@ -235,20 +207,11 @@ const SystemHealth: React.FC = () => {
       case "warning":
         return AlertTriangle;
       default:
-        return CheckCircle2;
+        return CheckCircle;
     }
   };
 
-  const getAlertColor = (level: string) => {
-    switch (level) {
-      case "critical":
-        return "bg-red-500/20 text-red-300 border-red-500/30";
-      case "warning":
-        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
-      default:
-        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
-    }
-  };
+  
 
   const getAlertAccentColor = (level: string) => {
     switch (level) {
@@ -266,17 +229,19 @@ const SystemHealth: React.FC = () => {
     label,
     value,
     unit,
-    status,
     bgColor,
+    onClick,
+    selected,
   }: {
-    icon: React.ElementType;
+    icon: ElementType;
     label: string;
     value: string | number;
     unit: string;
-    status: string;
     bgColor: string;
+    onClick?: () => void;
+    selected?: boolean;
   }) => (
-    <div className="rounded-[20px] p-6 cursor-pointer transition" style={{ backgroundColor: bgColor, color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}>
+  <div onClick={onClick} className="rounded-[20px] p-6 cursor-pointer transition" style={{ backgroundColor: bgColor, color: cardText, border: selected ? "2px solid rgba(7,24,39,0.12)" : "1px solid rgba(7,24,39,0.06)" }}>
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-sm font-semibold" style={{ color: "rgba(7,24,39,0.6)" }}>{label}</h3>
         <div className="rounded-lg p-2.5" style={{ backgroundColor: "#071827" }}>
@@ -304,7 +269,7 @@ const SystemHealth: React.FC = () => {
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-sm font-semibold" style={{ color: "rgba(7,24,39,0.6)" }}>Healthy Services</h3>
             <div className="rounded-lg p-2.5" style={{ backgroundColor: "#071827" }}>
-              <CheckCircle2 className="h-5 w-5 text-white" />
+              <CheckCircle className="h-5 w-5 text-white" />
             </div>
           </div>
           <p className="text-3xl font-bold" style={{ color: cardText }}>{serviceStatus.healthy}</p>
@@ -360,12 +325,20 @@ const SystemHealth: React.FC = () => {
                 label={metric.name}
                 value={metric.value}
                 unit={metric.unit}
-                status={metric.status}
                 bgColor={getStatusAccentColor(metric.status)}
+                onClick={() => setSelectedMetric(metric.id)}
+                selected={selectedMetric === metric.id}
               />
             );
           })}
         </div>
+        {selectedMetric && (
+          <div className="mt-4 rounded p-4" style={{ backgroundColor: accentColors[0], color: cardText }}>
+            <h3 className="font-semibold">Selected Metric</h3>
+            <p className="mt-1">{metrics.find((m) => m.id === selectedMetric)?.name}</p>
+            <p className="text-sm mt-1" style={{ color: "rgba(7,24,39,0.6)" }}>{metrics.find((m) => m.id === selectedMetric)?.description}</p>
+          </div>
+        )}
       </div>
 
       {/* System Alerts */}

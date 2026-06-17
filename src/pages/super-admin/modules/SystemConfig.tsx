@@ -6,7 +6,7 @@ import {
   Timer,
   ShieldCheck,
   RotateCcw,
-  Clock3,
+  
 } from "lucide-react";
 
 type SystemConfig = {

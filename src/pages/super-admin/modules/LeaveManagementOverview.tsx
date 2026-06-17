@@ -4,7 +4,6 @@ import {
   CheckCircle,
   XCircle,
   Users,
-  TrendingUp,
   MessageSquare,
   Search,
   Plane,

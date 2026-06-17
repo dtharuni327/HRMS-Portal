@@ -238,7 +238,6 @@ const TasksPage: React.FC = () => {
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.04 }}
-              whileHover={{ scale: 1.03 }}
               className={`${cardBase} ${card.className} border-black/70 hover:border-black/80 p-6`}
             >
               <div className="flex items-center justify-between">
@@ -318,7 +317,6 @@ const TasksPage: React.FC = () => {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.035 }}
-                whileHover={{ y: -4, scale: 1.003 }}
                 className={`${innerCard} group relative overflow-hidden p-5`}
               >
                 <div className="absolute left-0 top-0 h-full w-1 bg-[#6356d8]" />

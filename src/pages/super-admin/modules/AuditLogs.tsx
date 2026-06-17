@@ -7,7 +7,6 @@ import {
   IndianRupee,
   Lock,
   ShieldAlert,
-  Calendar,
   Filter,
   Clock,
   CheckCircle2,
@@ -322,23 +321,6 @@ const AuditLogs: React.FC = () => {
     }
   };
 
-  const getActivityColor = (type: string) => {
-    switch (type) {
-      case "login":
-        return "bg-blue-500/20 text-blue-300";
-      case "employee":
-        return "bg-purple-500/20 text-purple-300";
-      case "payroll":
-        return "bg-green-500/20 text-green-300";
-      case "role":
-        return "bg-orange-500/20 text-orange-300";
-      case "admin":
-        return "bg-red-500/20 text-red-300";
-      default:
-        return "bg-gray-500/20 text-gray-300";
-    }
-  };
-
   const exportCSV = () => {
     const headers = ["Timestamp", "User", "Activity Type", "Action", "Module", "Status", "IP Address"];
     const rows = filteredLogs.map((log) => [
@@ -542,7 +524,6 @@ const AuditLogs: React.FC = () => {
         {filteredLogs.length > 0 ? (
           filteredLogs.map((log) => {
             const IconComponent = getActivityIcon(log.activityType);
-            const colorClass = getActivityColor(log.activityType);
 
             return (
                     <div

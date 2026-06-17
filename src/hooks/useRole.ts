@@ -8,7 +8,8 @@ export const useRole = () => {
   };
 
   const hasAnyRole = (roles: string[]) => {
-    return roles.includes(user?.role);
+    if (!user?.role) return false;
+    return roles.includes(user.role);
   };
 
   const isAdmin = hasRole('admin');

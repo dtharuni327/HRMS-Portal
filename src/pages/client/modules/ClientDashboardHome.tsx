@@ -1,3 +1,4 @@
+
 import {
   FolderKanban,
   Users,
@@ -61,29 +62,38 @@ export default function ClientHome() {
 
       {/* KPI Cards */}
 
+      {/* palette: lavender,mint green,warm cream, ice blue,soft sage,soft pink,light beige,lilac frost,royal navy,ivory sand */}
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         <DashboardCard
           title="Active Projects"
           value="3"
           icon={<FolderKanban size={22} />}
+          bg="#C3A6FF" /* lavender */
+          iconBg="#8B63FF"
         />
 
         <DashboardCard
           title="Team Members"
           value="8"
           icon={<Users size={22} />}
+          bg="#BFF3D4" /* mint green */
+          iconBg="#4CD89A"
         />
 
         <DashboardCard
           title="Open Tasks"
           value="14"
           icon={<CheckCircle2 size={22} />}
+          bg="#FFD6E8" /* soft pink */
+          iconBg="#FF9CC7"
         />
 
         <DashboardCard
           title="Completion"
           value="78%"
           icon={<TrendingUp size={22} />}
+          bg="#D7F0FF" /* ice blue */
+          iconBg="#6EC8FF"
         />
       </div>
 
@@ -92,7 +102,7 @@ export default function ClientHome() {
       <div className="grid gap-6 xl:grid-cols-2">
         {/* Project Snapshot */}
 
-        <div className="rounded-[28px] bg-white/95 p-6 shadow-xl">
+        <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#EADCFD' }}>
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-[4px] text-sky-600">
@@ -135,7 +145,7 @@ export default function ClientHome() {
 
         {/* Financial Snapshot */}
 
-        <div className="rounded-[28px] bg-white/95 p-6 shadow-xl">
+        <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#FBF6EE' }}>
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-[4px] text-pink-500">
@@ -179,7 +189,7 @@ export default function ClientHome() {
       <div className="grid gap-6 xl:grid-cols-2">
         {/* Activity */}
 
-        <div className="rounded-[28px] bg-white/95 p-6 shadow-xl">
+        <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#F5EFDB' }}>
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-[4px] text-green-600">
@@ -208,7 +218,7 @@ export default function ClientHome() {
 
         {/* Upcoming */}
 
-        <div className="rounded-[28px] bg-white/95 p-6 shadow-xl">
+        <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#F5E9D7' }}>
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-[4px] text-orange-500">
@@ -238,7 +248,7 @@ export default function ClientHome() {
 
       {/* Documents */}
 
-      <div className="rounded-[28px] bg-white/95 p-6 shadow-xl">
+      <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#FFFFFF' }}>
         <div className="mb-6 flex items-center justify-between">
           <div>
             <p className="text-xs uppercase tracking-[4px] text-cyan-600">
@@ -284,21 +294,25 @@ function DashboardCard({
   title,
   value,
   icon,
-}: DashboardCardProps) {
+  bg,
+  iconBg,
+}: DashboardCardProps & { bg?: string; iconBg?: string }) {
+  const textDark = (bg ?? '#FFFFFF') !== '#07123A';
+
   return (
-    <div className="rounded-[24px] bg-white p-6 shadow-xl">
+    <div className="rounded-[24px] p-6 shadow-xl" style={{ backgroundColor: bg ?? '#FFFFFF' }}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-500">
+          <p className={`text-sm ${textDark ? 'text-slate-700' : 'text-white/90'}`}>
             {title}
           </p>
 
-          <h3 className="mt-2 text-4xl font-bold text-slate-900">
+          <h3 className={`mt-2 text-4xl font-bold ${textDark ? 'text-slate-900' : 'text-white'}`}>
             {value}
           </h3>
         </div>
 
-        <div className="rounded-xl bg-indigo-100 p-3 text-indigo-600">
+        <div className="rounded-xl p-3" style={{ backgroundColor: iconBg ?? '#EEF2FF', color: '#ffffff' }}>
           {icon}
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Department } from "../../types/superAdmin.types";
+import type { Department, Status } from "../../types/superAdmin.types";
 
 type Props = {
   initialData?: Partial<Department>;
@@ -7,10 +7,14 @@ type Props = {
 };
 
 const DepartmentForm = ({ initialData, onSubmit }: Props) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    head: string;
+    status: Status;
+  }>({
     name: initialData?.name || "",
     head: initialData?.head || "",
-    status: initialData?.status || "active",
+    status: (initialData?.status as Status) || "active",
   });
 
   return (
@@ -38,7 +42,7 @@ const DepartmentForm = ({ initialData, onSubmit }: Props) => {
       <select
         className="rounded-lg border px-3 py-2"
         value={formData.status}
-        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+        onChange={(e) => setFormData({ ...formData, status: e.target.value as Status })}
       >
         <option value="active">Active</option>
         <option value="inactive">Inactive</option>

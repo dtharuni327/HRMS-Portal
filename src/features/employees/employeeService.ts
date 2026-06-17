@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { Employee, CreateEmployeeRequest } from './employeeTypes';
+import type { Employee, CreateEmployeeRequest } from './employeeTypes';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000/api';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || 'http://localhost:3000/api';
 
 export const getEmployees = async () => {
   const response = await axios.get(`${API_BASE_URL}/employees`);
