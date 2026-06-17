@@ -36,6 +36,9 @@ export const updateEmployee = async (req: AuthRequest, res: Response) => {
   } catch (err: any) {
     const spErr = SP_ERROR_MAP[err?.number]; // SP signals errors via error number
     if (spErr) return res.status(spErr.status).json({ message: spErr.message });
+    if (err?.number === 50000 && err?.message) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: err.message });
+    }
     console.error("updateEmployee error:", err);
     return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Server Error" });
   }

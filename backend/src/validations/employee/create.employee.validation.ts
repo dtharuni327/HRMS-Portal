@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { EMPLOYEE_STATUS, EMPLOYMENT_TYPE, WORK_MODE } from "../../constants/employee.constants";
+import { EMPLOYEE_STATUS, EMPLOYMENT_TYPE, WORK_MODE, GENDER } from "../../constants/employee.constants";
 
 const employeeStatusValues = Object.values(EMPLOYEE_STATUS) as [string, ...string[]];
 const employmentTypeValues = Object.values(EMPLOYMENT_TYPE) as [string, ...string[]];
 const workModeValues = Object.values(WORK_MODE) as [string, ...string[]];
+const genderValues = Object.values(GENDER) as [string, ...string[]];
 
 export const createEmployeeSchema = z
   .object({
@@ -25,6 +26,12 @@ export const createEmployeeSchema = z
       .regex(/^[0-9]{10}$/, "Invalid emergency contact number")
       .nullable()
       .optional(),
+
+    DOB: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "DOB must be YYYY-MM-DD"),
+
+    Gender: z.enum(genderValues as [string, ...string[]]),
 
     RoleID: z.number().int().positive("RoleID must be positive"),
     Department_id: z.number().int().positive("Department_id must be positive"),
@@ -76,6 +83,35 @@ export const createEmployeeSchema = z
         path: ["joining_date"],
         message: "Joining date cannot be a future date",
       });
+    }
+
+    const parsedDob = new Date(data.DOB);
+
+    if (isNaN(parsedDob.getTime())) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["DOB"],
+        message: "Invalid DOB",
+      });
+    } else {
+      if (parsedDob > today) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["DOB"],
+          message: "DOB cannot be a future date",
+        });
+      }
+
+      const minAgeDate = new Date(today);
+      minAgeDate.setFullYear(minAgeDate.getFullYear() - 18);
+
+      if (parsedDob > minAgeDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["DOB"],
+          message: "Employee must be at least 18 years old",
+        });
+      }
     }
 
     if (data.emergency_contact && data.phone === data.emergency_contact) { // skipped when field is absent

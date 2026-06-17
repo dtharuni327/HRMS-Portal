@@ -18,6 +18,12 @@ export const WORK_MODE = {
   HYBRID: "HYBRID",
 } as const;
 
+export const GENDER = {
+  MALE: "MALE",
+  FEMALE: "FEMALE",
+  OTHER: "OTHER",
+} as const;
+
 export const EMPLOYEE_SP = {
   GET_ALL: "sp_GetEmployeesByFilter",
   GET_BY_ID: "sp_GetEmployeeById",

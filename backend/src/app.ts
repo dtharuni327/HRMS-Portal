@@ -12,6 +12,20 @@ import {
   utilityRouter,
   wfhRouter,
 } from "./sql/api";
+import announcementRoutes from "./routes/announcement.routes";
+import adminDepartmentRoutes from "./routes/department.routes";
+import employeeDepartmentRoutes from "./routes/employeeDepartment.routes";
+import employeeRoleRoutes from "./routes/employeeRole.routes";
+import internalJobRoutes from "./routes/internalJob.routes";
+import invoiceRoutes from "./routes/invoice.routes";
+import reimbursementRoutes from "./routes/reimbursement.routes";
+import adminRoleRoutes from "./routes/role.routes";
+import salaryRoutes from "./routes/salary.routes";
+import systemConfigRoutes from "./routes/systemConfig.routes";
+import systemHealthRoutes from "./routes/systemHealth.routes";
+import taskRoutes from "./routes/task.routes";
+import taxReportsRoutes from "./routes/tax-reports.routes";
+import userRoleRoutes from "./routes/userRole.routes";
 
 dotenv.config();
 
@@ -45,6 +59,20 @@ app.use("/api/attendance", attendanceRouter);
 app.use("/api/wfh", wfhRouter);
 app.use("/api/holidays", holidayRouter);
 app.use("/api/leave", leaveRouter);
+app.use("/api/announcement", announcementRoutes);
+app.use("/api/department", adminDepartmentRoutes);
+app.use("/api/employee-department", employeeDepartmentRoutes);
+app.use("/api/employee-role", employeeRoleRoutes);
+app.use("/api/internal-job", internalJobRoutes);
+app.use("/api/invoice", invoiceRoutes);
+app.use("/api/reimbursement", reimbursementRoutes);
+app.use("/api/role", adminRoleRoutes);
+app.use("/api/salary", salaryRoutes);
+app.use("/api/system-config", systemConfigRoutes);
+app.use("/api/system-health", systemHealthRoutes);
+app.use("/api/task", taskRoutes);
+app.use("/api/tax-reports", taxReportsRoutes);
+app.use("/api/user-role", userRoleRoutes);
 app.use("/", utilityRouter);
 
 app.use((_req: Request, res: Response) => {

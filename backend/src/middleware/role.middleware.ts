@@ -17,10 +17,16 @@ export type RoleType = (typeof ROLES)[keyof typeof ROLES];
 const normalizeRole = (role: string): string =>
   role.trim().toUpperCase().replace(/\s+/g, "_");
 
-export const authorize = (...roles: RoleType[]) => {
+type AllowedRoleInput = string | readonly string[];
+
+const normalizeAllowedRoles = (roles: AllowedRoleInput[]) =>
+  roles.flatMap((role) => Array.isArray(role) ? [...role] : [role]).map(normalizeRole);
+
+export const authorize = (...roles: AllowedRoleInput[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
       const userRole = normalizeRole(req.user?.role ?? "");
+      const allowedRoles = normalizeAllowedRoles(roles);
 
       if (!userRole) {
         return res.status(401).json({ message: "Authentication context missing" });
@@ -30,7 +36,7 @@ export const authorize = (...roles: RoleType[]) => {
         return next();
       }
 
-      if (!roles.map(normalizeRole).includes(userRole)) {
+      if (!allowedRoles.includes(userRole)) {
         return res.status(403).json({
           message: "Access denied. Insufficient permissions.",
         });

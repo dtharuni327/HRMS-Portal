@@ -27,6 +27,9 @@ export const createEmployee = async (req: Request, res: Response) => {
     // Check if the DB threw a known SP error before falling back to 500
     const spErr = SP_ERROR_MAP[err?.number];
     if (spErr) return res.status(spErr.status).json({ message: spErr.message });
+    if (err?.number === 50000 && err?.message) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: err.message });
+    }
     console.error("createEmployee error:", err);
     return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({ message: "Server Error" });
   }

@@ -1,9 +1,10 @@
 import { z } from "zod";
-import { EMPLOYEE_STATUS, EMPLOYMENT_TYPE, WORK_MODE } from "../../constants/employee.constants";
+import { EMPLOYEE_STATUS, EMPLOYMENT_TYPE, WORK_MODE, GENDER } from "../../constants/employee.constants";
 
 const employeeStatusValues = Object.values(EMPLOYEE_STATUS) as [string, ...string[]];
 const employmentTypeValues = Object.values(EMPLOYMENT_TYPE) as [string, ...string[]];
 const workModeValues = Object.values(WORK_MODE) as [string, ...string[]];
+const genderValues = Object.values(GENDER) as [string, ...string[]];
 
 export const updateEmployeeSchema = z // all fields optional; only provided fields are updated
   .object({
@@ -22,6 +23,13 @@ export const updateEmployeeSchema = z // all fields optional; only provided fiel
     emergency_contact: z
       .string().trim().regex(/^[0-9]{10}$/, "Emergency contact must be 10 digits")
       .optional(),
+
+    DOB: z
+      .string().trim()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "DOB must be YYYY-MM-DD")
+      .optional(),
+
+    Gender: z.enum(genderValues as [string, ...string[]]).optional(),
 
     profile_image: z
       .string().trim().url("profile_image must be a valid URL")
@@ -43,6 +51,44 @@ export const updateEmployeeSchema = z // all fields optional; only provided fiel
     client_id: z.number().int().positive("Client ID must be positive").optional(),
     role_id: z.number().int().positive("Role ID must be positive").optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((data, ctx) => {
+    if (!data.DOB) {
+      return;
+    }
+
+    const parsedDob = new Date(data.DOB);
+
+    if (isNaN(parsedDob.getTime())) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["DOB"],
+        message: "Invalid DOB",
+      });
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (parsedDob > today) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["DOB"],
+        message: "DOB cannot be a future date",
+      });
+    }
+
+    const minAgeDate = new Date(today);
+    minAgeDate.setFullYear(minAgeDate.getFullYear() - 18);
+
+    if (parsedDob > minAgeDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["DOB"],
+        message: "Employee must be at least 18 years old",
+      });
+    }
+  });
 
 export type UpdateEmployeeInput = z.infer<typeof updateEmployeeSchema>;
