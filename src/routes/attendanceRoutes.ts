@@ -2,7 +2,7 @@ import { Router } from "express";
 import { punchInController } from "../controllers/attendance/punchIn.controller";
 import { authenticate } from "../middleware/auth.middleware";
 
-import { getAttendanceSummary } from "../controllers/attendance/summary.contoller";
+import { getAttendanceSummary } from "../controllers/attendance/summary.controller.ts";
 import { updateAttendanceValidation } from '../validations/attendance/update.validation';
 import { updateAttendance } from '../controllers/attendance/update.controller';
 

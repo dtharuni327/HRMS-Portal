@@ -3,8 +3,8 @@ import cors from "cors";
 
 import attendanceRoutes from "./routes/attendanceRoutes";
 import wfhRoutes from "./routes/wfhRoutes";
-import payrollRoutes from "./routes/payrollRoutes"
-import payslipRoutes from "./routes/payslipRoutes"
+import payrollRoutes from "./routes/payrollRoutes";
+import payslipRoutes from "./routes/payslipRoutes";
 const app = express();
 
 app.use(
