@@ -1,39 +1,24 @@
+
+//npx json-server mock/users.json --port 5000
+
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Code2, Eye, EyeOff, Lock, Mail } from "lucide-react";
+
+import { Code2, Eye, EyeOff, Lock, User } from "lucide-react";
+
 import { useAuthContext } from "../../context/AuthContext";
-import { config } from "../../config/env";
-import mockUsersData from "../../../mock/users.json";
-import { hrmsApi } from "../../services/hrmsApi";
 
 export default function DeveloperHubLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [shake, setShake] = useState(false);
 
   const navigate = useNavigate();
-  const { login } = useAuthContext();
-
-  const getDashboardForRole = (role?: string) => {
-    switch (role?.trim().toUpperCase().replace(/\s+/g, "_")) {
-      case "SUPER_ADMIN":
-        return "/superadmin";
-      case "HR_ADMIN":
-        return "/hr";
-      case "MANAGER":
-        return "/manager";
-      case "FINANCE":
-        return "/finance";
-      case "CLIENT":
-        return "/client";
-      default:
-        return "/employee";
-    }
-  };
+  const { login } = useAuthContext(); // ✅ added
 
   useEffect(() => {
     if (!shake) return;
@@ -46,89 +31,81 @@ export default function DeveloperHubLogin() {
     setShake(true);
   };
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
-    e.preventDefault();
+const handleSubmit = async (
+  e: React.FormEvent<HTMLFormElement>
+) => {
+  e.preventDefault();
 
-    setError("");
+  setError("");
 
-    if (!email.trim()) {
-      triggerError("Email is required");
+  if (!username.trim()) {
+    triggerError("Username is required");
+    return;
+  }
+
+  if (!password.trim()) {
+    triggerError("Password is required");
+    return;
+  }
+
+  const enteredUsername = username.trim();
+
+  try {
+    setLoading(true);
+
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/users`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch users");
+    }
+
+    const data = await response.json();
+
+    const foundUser = data.find(
+      (user: any) =>
+        (user.username === enteredUsername || user.email === enteredUsername) &&
+        user.password === password
+    );
+
+    if (!foundUser) {
+      setLoading(false);
+      triggerError("Invalid username or password");
       return;
     }
 
-    if (!password.trim()) {
-      triggerError("Password is required");
-      return;
-    }
+    // save local user
+    localStorage.setItem(
+      "loggedUser",
+      JSON.stringify(foundUser)
+    );
 
-    const fullEmail = email.trim();
+    // fake token
+    const fakeToken = `token-${foundUser.id}-${foundUser.role}`;
 
-    try {
-      setLoading(true);
+    // zustand auth login
+    const userToLogin = {
+      ...foundUser,
+      id: foundUser.id.toString(),
+    };
 
-      try {
-        const backendUser = await hrmsApi.login({
-          username: fullEmail.includes("@")
-            ? fullEmail.split("@")[0]
-            : fullEmail,
-          password,
-        });
+    login(fakeToken, userToLogin);
 
-        localStorage.setItem("loggedUser", JSON.stringify(backendUser.user));
-        login(backendUser.token, backendUser.user);
-        setLoading(false);
-        navigate(
-          backendUser.user.dashboard || getDashboardForRole(backendUser.user.role),
-        );
-        return;
-      } catch (backendError) {
-        console.warn(
-          "Backend login failed, falling back to demo users.",
-          backendError,
-        );
-      }
+    setLoading(false);
 
-      let users = mockUsersData.users;
+    // redirect
+    navigate(foundUser.dashboard);
+  } catch (error) {
+    console.error(error);
 
-      try {
-        const response = await fetch(`${config.API_BASE_URL}/users`);
-        if (response.ok) {
-          const data = await response.json();
-          users = Array.isArray(data) ? data : data.users ?? users;
-        }
-      } catch {
-        // Keep mock users as fallback for demo/handover mode.
-      }
+    setLoading(false);
 
-      const foundUser = users.find(
-        (user) => user.email === fullEmail && user.password === password
-      );
-
-      if (!foundUser) {
-        setLoading(false);
-        triggerError("Invalid email or password");
-        return;
-      }
-
-      localStorage.setItem("loggedUser", JSON.stringify(foundUser));
-
-      const fakeToken = `token-${foundUser.id}-${foundUser.role}`;
-      const userToLogin = {
-        ...foundUser,
-        id: foundUser.id.toString(),
-      };
-
-      login(fakeToken, userToLogin);
-      setLoading(false);
-      navigate(foundUser.dashboard || getDashboardForRole(foundUser.role));
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
-      triggerError("Unable to sign in. Please verify the API or demo setup.");
-    }
-  };
+    triggerError(
+      "Server not running. Start json-server first."
+    );
+  }
+};
 
   return (
     <main className="relative min-h-screen overflow-hidden text-white">
@@ -158,7 +135,7 @@ export default function DeveloperHubLogin() {
         </h1>
 
         <p className="mt-3 text-sm text-slate-300">
-          Secure access to HR, payroll, attendance, and employee operations.
+          Secure your infrastructure and access dashboards.
         </p>
       </motion.div>
 
@@ -198,25 +175,23 @@ export default function DeveloperHubLogin() {
             {/* FORM */}
             <form onSubmit={handleSubmit} className="space-y-3.5">
 
-              {/* GMAIL */}
+              {/* USERNAME */}
               <div
                 className={`flex items-center gap-3 rounded-lg border px-4 py-2.5 transition ${
-                  email.trim()
+                  username.trim()
                     ? "border-green-400/80 bg-white/5"
-                    : error && !email.trim()
+                    : error && !username.trim()
                     ? "border-red-400/80 bg-white/5"
                     : "border-white/10 bg-white/5"
                 } focus-within:border-sky-400`}
               >
-                <Mail className="text-sky-400" size={16} />
+                <User className="text-sky-400" size={16} />
 
                 <input
                   type="text"
-                  value={email}
-                  onChange={(e) =>
-                    setEmail(e.target.value)
-                  }
-                  placeholder="Enter your work email"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your username"
                   className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
                 />
               </div>
@@ -272,7 +247,7 @@ export default function DeveloperHubLogin() {
                 disabled={loading}
                 className="w-full rounded-lg bg-sky-500 py-2.5 text-sm font-semibold text-black transition hover:bg-sky-400 disabled:opacity-70"
               >
-                {loading ? "Authenticating..." : "Login"}
+                {loading ? "Authenticating..." : "Signin"}
               </button>
 
             </form>

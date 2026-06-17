@@ -1,4 +1,5 @@
 import React from 'react';
+import { clientPalette } from '../../../utils/colorPalette';
 import {
   Clock3,
   Users,
@@ -7,37 +8,7 @@ import {
 } from "lucide-react";
 import useProjectStore from '../../../store/projectStore';
 
-type WorkLog = {
-  id: number;
-  date: string;
-  member: string;
-  hours: number;
-  activity: string;
-};
-
-const workLogs: WorkLog[] = [
-  {
-    id: 1,
-    date: "16 Jun 2026",
-    member: "John Doe",
-    hours: 8,
-    activity: "API Development",
-  },
-  {
-    id: 2,
-    date: "16 Jun 2026",
-    member: "Sarah Smith",
-    hours: 6,
-    activity: "UI Implementation",
-  },
-  {
-    id: 3,
-    date: "15 Jun 2026",
-    member: "Mike Wilson",
-    hours: 7,
-    activity: "Bug Fixes",
-  },
-];
+// work log type removed — not used in this view
 
 // Sample project-level data for client view (replace with real data/store when available)
 const projects = [
@@ -48,10 +19,9 @@ const projects = [
 
 type AttendanceProps = {
   projectsProp?: Array<{ name: string; hours: number; progress: number; lastUpdate?: string; teamMembers?: number; completedMilestones?: number; pendingMilestones?: number; openTasks?: number; lastDelivery?: string }>;
-  workLogsProp?: WorkLog[];
 };
 
-export default function AttendanceWorkSummary({ projectsProp, workLogsProp }: AttendanceProps) {
+export default function AttendanceWorkSummary({ projectsProp }: AttendanceProps) {
   // Derived totals for top cards (project-focused)
   const [selectedProject, setSelectedProject] = React.useState<string>('All projects');
 
@@ -80,14 +50,13 @@ export default function AttendanceWorkSummary({ projectsProp, workLogsProp }: At
   const teamMembers = displayedProjects.reduce((s, p) => s + (p.teamMembers || 0), 0);
   const avgUtil = Math.round(displayedProjects.reduce((s, p) => s + p.progress, 0) / Math.max(1, displayedProjects.length));
 
-  // prefer workLogsProp when provided
-  const workLogsSource = workLogsProp ?? workLogs;
+  // prefer workLogsProp when provided (not used in this view currently)
 
   return (
     <div className="space-y-6">
       {/* Hero Section */}
 
-      <div className="rounded-3xl bg-[#F6F2E8] p-8 shadow-xl">
+      <div className="rounded-3xl p-8" style={{ backgroundColor: clientPalette.warmCream, boxShadow: '0 20px 30px rgba(0,0,0,0.06)'}}>
         <p className="mb-2 text-xs uppercase tracking-[4px] text-orange-600">
           Attendance / Work Summary
         </p>
@@ -131,7 +100,7 @@ export default function AttendanceWorkSummary({ projectsProp, workLogsProp }: At
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         {/* Project Work Summary (left) */}
-        <div className="xl:col-span-2 rounded-3xl bg-white p-6 shadow-xl">
+        <div className="xl:col-span-2 rounded-3xl p-6" style={{ backgroundColor: clientPalette.lilacFrost, boxShadow: '0 20px 30px rgba(0,0,0,0.06)'}}>
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-[4px] text-sky-600">Project Work Summary</p>
@@ -196,7 +165,10 @@ export default function AttendanceWorkSummary({ projectsProp, workLogsProp }: At
                   const pending = displayedProjects.reduce((s, p) => s + (p.pendingMilestones || 0), 0);
                   const open = displayedProjects.reduce((s, p) => s + (p.openTasks || 0), 0);
                   const last = (() => {
-                    const dates = displayedProjects.map((p) => new Date(p.lastDelivery));
+                    const dates = displayedProjects
+                      .map((p) => p.lastDelivery)
+                      .filter(Boolean)
+                      .map((d) => new Date(d as string));
                     if (!dates.length) return '-';
                     const max = new Date(Math.max(...dates.map((d) => d.getTime())));
                     return max.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });

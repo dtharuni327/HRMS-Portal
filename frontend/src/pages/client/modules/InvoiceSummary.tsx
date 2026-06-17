@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { BadgeDollarSign, CalendarRange, CheckCircle2, FileText, Wallet } from 'lucide-react';
+import { clientPalette } from '../../../utils/colorPalette';
+import { FileText } from 'lucide-react';
 
 type Invoice = {
   number: string;
@@ -16,11 +17,6 @@ const initialInvoices: Invoice[] = [
   { number: 'INV-2026-003', amount: 'Rs. 1,10,000', dueDate: '02 Jul 2026', status: 'Pending', balance: 'Rs. 1,10,000' },
 ];
 
-const summaryCards = [
-  { label: 'Total Invoiced', value: 'Rs. 3,19,500', note: 'Amount raised across the current project cycle.' },
-  { label: 'Outstanding', value: 'Rs. 1,94,500', note: 'Pending amount still to be collected.' },
-  { label: 'Paid This Month', value: 'Rs. 1,25,000', note: 'Settled invoice amount for the current month.' },
-];
 
 function parseAmount(str?: string) {
   if (!str) return 0;
@@ -49,7 +45,6 @@ type Props = {
 
 const InvoiceSummary: React.FC<Props> = ({ invoices: propInvoices }) => {
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'All'|'Paid'|'Unpaid'|'Pending'|'Overdue'|'DueThisWeek'>('All');
   const [quickFilter, setQuickFilter] = useState<'All'|'Paid'|'Unpaid'|'Overdue'|'DueThisWeek'>('All');
 
   const handleDownloadPdf = (invoiceNumber?: string) => {
@@ -96,7 +91,7 @@ const InvoiceSummary: React.FC<Props> = ({ invoices: propInvoices }) => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border border-[#e5eefb] bg-[#fff9ea] p-6 shadow-[0_18px_45px_rgba(148,163,184,0.22)] lg:p-8">
+      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.warmCream, boxShadow: '0 18px 45px rgba(148,163,184,0.22)'}}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
             <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-amber-700/90">Invoice Summary</p>
@@ -126,7 +121,7 @@ const InvoiceSummary: React.FC<Props> = ({ invoices: propInvoices }) => {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1fr]">
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#edf7ff] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.iceBlue, boxShadow: '0 18px 40px rgba(148,163,184,0.18)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Invoices</p>

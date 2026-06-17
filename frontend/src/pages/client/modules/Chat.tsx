@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Bell,
-  CalendarRange,
-  CheckCircle2,
-  MessageSquareText,
-  Send,
-  ShieldCheck,
-  Users,
-} from 'lucide-react';
+import { clientPalette } from '../../../utils/colorPalette';
+import { MessageSquareText, Send, Users } from 'lucide-react';
 import { useProjectStore } from '../../../store/projectStore';
 
 const chatThreads = [
@@ -16,28 +9,25 @@ const chatThreads = [
     role: 'Delivery lead',
     status: 'Online',
     preview: 'The latest milestone update is ready for review.',
-    tone: 'bg-[#edf7ff] border-cyan-100',
+    project: '',
+    tone: 'bg-[#E8F4FB] border-cyan-100',
   },
   {
     person: 'HR/Admin',
     role: 'Support coordination',
     status: 'Available',
     preview: 'Please share the approval summary for the release window.',
-    tone: 'bg-[#fff9ea] border-amber-100',
+    project: '',
+    tone: 'bg-[#F6E9EE] border-amber-100',
   },
   {
     person: 'Development Team',
     role: 'QA & Engineering',
     status: 'Busy',
     preview: 'We are validating the latest demo build and notes.',
-    tone: 'bg-[#eefbf4] border-emerald-100',
+    project: '',
+    tone: 'bg-[#E9F6EE] border-emerald-100',
   },
-];
-
-const quickNotes = [
-  { label: 'Unread', value: '5', note: 'Messages awaiting follow-up from the delivery team.' },
-  { label: 'Today', value: '3', note: 'Active conversations scheduled for the current day.' },
-  { label: 'Escalations', value: '1', note: 'High-priority discussion flagged for client response.' },
 ];
 
 const Chat: React.FC = () => {
@@ -58,7 +48,7 @@ const Chat: React.FC = () => {
         status: 'New',
         preview: message,
         project: selectedProject,
-        tone: 'bg-[#effbf5] border-emerald-100',
+        tone: 'bg-[#F0F8F2] border-emerald-100',
       },
       ...prev,
     ]);
@@ -67,7 +57,7 @@ const Chat: React.FC = () => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border border-[#e5eefb] bg-[#fff8ef] p-6 shadow-[0_18px_45px_rgba(148,163,184,0.22)] lg:p-8">
+      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#d7e6f4', backgroundColor: '#F2EBD6', boxShadow: '0 12px 30px rgba(12,20,28,0.12)'}}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
             <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-amber-700/90">Chat / Communication</p>
@@ -75,14 +65,14 @@ const Chat: React.FC = () => {
             <p className="max-w-xl text-[15px] leading-6 text-slate-700">Connect with your project manager, assigned team members, and HR/Admin for project discussions, status updates, approvals, support requests, and important communications throughout the project lifecycle.</p>
           </div>
 
-          <div className="rounded-[24px] border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-900 shadow-inner shadow-emerald-100">
+          <div className="rounded-[24px] border border-emerald-200 px-4 py-3 text-sm text-emerald-900" style={{ backgroundColor: '#EBF7F0' }}>
             <div className="flex items-center gap-2 font-semibold"><MessageSquareText className="h-4 w-4" /> Live communication</div>
           </div>
         </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#edf7ff] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#dbeef9', backgroundColor: '#E8F4FB', boxShadow: '0 12px 28px rgba(12,20,28,0.10)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Project communication channels</p>
@@ -91,8 +81,8 @@ const Chat: React.FC = () => {
             <Users className="h-5 w-5 text-cyan-700" />
           </div>
 
-          <div className="space-y-4">
-            <div className="mb-4 rounded-[24px] border border-cyan-100 bg-white/90 p-4 shadow-sm">
+            <div className="space-y-4">
+            <div className="mb-4 rounded-[24px] border border-cyan-100" style={{ backgroundColor: '#F7FBFF' }}>
               <div className="mb-3">
                 <label className="text-[12px] font-semibold text-slate-700 mr-2">Select Project</label>
                 <select value={selectedProject} onChange={(e) => setSelectedProject(e.target.value)} className="rounded-lg border border-slate-200 bg-white px-3 py-1 text-sm outline-none">

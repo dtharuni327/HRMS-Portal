@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { clientPalette } from '../../../utils/colorPalette';
 import { useProjectStore, type Project } from '../../../store/projectStore';
 import {
   CalendarRange,
@@ -80,7 +81,7 @@ const ProjectOverview: React.FC = () => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border border-[#e5eefb] bg-[#fff9ea] p-6 shadow-[0_18px_45px_rgba(148,163,184,0.22)] lg:p-8">
+      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#d7e6f4', backgroundColor: '#F2EBD6', boxShadow: '0 12px 30px rgba(12,20,28,0.12)'}}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
             <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-sky-700/90">Project overview</p>
@@ -88,14 +89,14 @@ const ProjectOverview: React.FC = () => {
             <p className="max-w-xl text-[15px] leading-6 text-slate-700">This section highlights the current project health, including start and end dates, status, and the delivery phase each client initiative is in.</p>
           </div>
 
-          <div className="rounded-[24px] border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-900 shadow-inner shadow-emerald-100">
+          <div className="rounded-[24px] border border-emerald-200 px-4 py-3 text-sm text-emerald-900" style={{ backgroundColor: '#EBF7F0' }}>
             <div className="flex items-center gap-2 font-semibold"><Rocket className="h-4 w-4" /> {projectList.length} active projects</div>
           </div>
         </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
-        <article className="rounded-[30px] border border-[#dbeafe] bg-[#fff5f8] p-6 shadow-[0_18px_40px_rgba(15,23,42,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#d8e6f6', backgroundColor: '#F6E9EE', boxShadow: '0 12px 28px rgba(12,20,28,0.10)'}}>
           <div className="flex items-center gap-3">
             <div className="rounded-2xl border border-sky-200 bg-sky-50 p-3 text-sky-800">
               <FolderKanban className="h-5 w-5" />
@@ -114,8 +115,8 @@ const ProjectOverview: React.FC = () => {
               { label: 'Avg. Progress', value: '75%', icon: Gauge },
             ].map((item) => {
               const Icon = item.icon;
-              return (
-                <div key={item.label} className="rounded-[22px] border border-emerald-100 bg-[#effbf5] p-4 shadow-sm">
+                return (
+                <div key={item.label} className="rounded-[22px] border border-emerald-100 p-4 shadow-sm" style={{ backgroundColor: '#F0F8F2' }}>
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div className="rounded-xl border border-slate-200 bg-slate-50 p-2 text-sky-800"><Icon className="h-4 w-4" /></div>
@@ -129,7 +130,7 @@ const ProjectOverview: React.FC = () => {
           </div>
         </article>
 
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#edf7ff] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border border-[#dbeef9] bg-[#E8F4FB] p-6 shadow-[0_12px_30px_rgba(12,20,28,0.10)]">
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <p className="text-[12px] uppercase tracking-[0.26em] text-sky-700/90">Project details</p>
@@ -138,7 +139,7 @@ const ProjectOverview: React.FC = () => {
             <CalendarRange className="h-5 w-5 text-sky-700" />
           </div>
 
-          <div className="mb-5 rounded-[24px] border border-cyan-100 bg-white/90 p-4 shadow-sm">
+          <div className="mb-5 rounded-[24px] border p-4 shadow-sm" style={{ borderColor: '#c7eaf8', backgroundColor: '#F7FBFF' }}>
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
                 <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Add project</p>
@@ -183,7 +184,7 @@ const ProjectOverview: React.FC = () => {
 
           <div className="space-y-4">
             {projectList.map((project) => (
-              <article key={project.name} className={`rounded-[24px] border p-5 shadow-sm ${activeProject.name === project.name ? 'border-cyan-200 bg-[#edf7ff]' : 'border-pink-100 bg-[#fff4f8]'}`}>
+              <article key={project.name} className={`rounded-[24px] border p-5 shadow-sm`} style={{ borderColor: activeProject.name === project.name ? '#bee7ff' : '#ffdbe9', backgroundColor: activeProject.name === project.name ? clientPalette.iceBlue : clientPalette.softPink }}>
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div className="space-y-3">
                     <div>
@@ -202,7 +203,7 @@ const ProjectOverview: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="min-w-[220px] rounded-[22px] border border-cyan-100 bg-[#edf7ff] p-4 shadow-sm">
+                  <div className="min-w-[220px] rounded-[22px] border border-cyan-100 p-4 shadow-sm" style={{ backgroundColor: '#E8F4FB' }}>
                     <div className="mb-2 flex items-center justify-between text-[12px] text-slate-700">
                       <span className="uppercase tracking-[0.12em] text-[11px]">Status</span>
                       <strong className="text-slate-900">{project.status}</strong>

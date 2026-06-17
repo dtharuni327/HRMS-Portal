@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import { Mail, Phone, ShieldCheck, Sparkles, Users } from 'lucide-react';
+import { clientPalette } from '../../../utils/colorPalette';
+import { Mail, Phone, Sparkles, Users } from 'lucide-react';
 import { useProjectStore } from '../../../store/projectStore';
 
 type Member = {
-  role?: string;
+  role: string;
   name: string;
-  email?: string;
-  phone?: string;
+  email: string;
+  phone: string;
   focus?: string;
   tone?: string;
 };
@@ -38,7 +39,7 @@ const AssignedTeamMembers: React.FC = () => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border border-[#e5eefb] bg-[#fff9ea] p-6 shadow-[0_18px_45px_rgba(148,163,184,0.22)] lg:p-8">
+      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.warmCream, boxShadow: '0 18px 45px rgba(148,163,184,0.22)' }}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
             <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-amber-700/90">Assigned team members</p>
@@ -62,7 +63,7 @@ const AssignedTeamMembers: React.FC = () => {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1fr_0.9fr]">
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#edf7ff] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#dbeafe', backgroundColor: clientPalette.iceBlue, boxShadow: '0 18px 40px rgba(148,163,184,0.18)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Team roster</p>
@@ -123,7 +124,7 @@ const AssignedTeamMembers: React.FC = () => {
           )}
         </article>
 
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#fff5f8] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.softPink, boxShadow: '0 18px 40px rgba(148,163,184,0.18)'}}>
           <p className="text-[12px] uppercase tracking-[0.26em] text-pink-700/90">Project summary</p>
           <h4 className="mt-2 text-[22px] font-bold text-slate-900">{selectedProject}</h4>
 

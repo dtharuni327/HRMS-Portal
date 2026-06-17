@@ -1,14 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-  BadgeDollarSign,
-  CalendarRange,
-  CheckCircle2,
-  Clock3,
-  FileText,
-  ReceiptText,
-  ShieldCheck,
-  Wallet,
-} from 'lucide-react';
+import { BadgeDollarSign, ReceiptText, Wallet } from 'lucide-react';
 
 const payments = [
   {
@@ -18,7 +9,7 @@ const payments = [
     status: 'Confirmed',
     method: 'UPI / Razorpay',
     note: 'Milestone 2 payment received and reconciled.',
-    tone: 'bg-[#effbf5] border-emerald-100',
+    tone: 'bg-slate-100 border-slate-200',
   },
   {
     receipt: 'RCPT-2026-103',
@@ -27,7 +18,7 @@ const payments = [
     status: 'Pending',
     method: 'Bank Transfer',
     note: 'Awaiting approval from finance operations.',
-    tone: 'bg-[#fff9ea] border-amber-100',
+    tone: 'bg-slate-100 border-slate-200',
   },
   {
     receipt: 'RCPT-2026-102',
@@ -36,21 +27,15 @@ const payments = [
     status: 'Confirmed',
     method: 'Card Payment',
     note: 'Receipt shared to the client portal.',
-    tone: 'bg-[#edf7ff] border-cyan-100',
+    tone: 'bg-slate-100 border-slate-200',
   },
-];
-
-const summaryCards = [
-  { label: 'Total Paid', value: 'Rs. 95,500', note: 'Amount cleared in the current billing cycle.' },
-  { label: 'Pending', value: 'Rs. 18,500', note: 'Payment awaiting confirmation from finance.' },
-  { label: 'Last Receipt', value: 'RCPT-2026-104', note: 'Latest payment confirmation from the client portal.' },
 ];
 
 const PaymentHistory: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All'|'Confirmed'|'Pending'>('All');
   const [timeFilter, setTimeFilter] = useState<'All'|'ThisMonth'|'LastMonth'>('All');
-  const [downloads, setDownloads] = useState<Record<string, number>>({});
+  // download counts removed — not used currently
 
   const handleDownloadReceipts = () => {
     alert('Receipt download started for the selected payment records.');
@@ -126,13 +111,12 @@ const PaymentHistory: React.FC = () => {
   };
 
   const handleDownload = (receipt: string) => {
-    setDownloads((d) => ({ ...d, [receipt]: (d[receipt] || 0) + 1 }));
     alert(`Downloading PDF for ${receipt}`);
   };
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border border-[#e5eefb] bg-[#fff8ef] p-6 shadow-[0_18px_45px_rgba(148,163,184,0.22)] lg:p-8">
+      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#d1d5db', backgroundColor: '#f8fafc', boxShadow: '0 14px 30px rgba(15,23,42,0.08)'}}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
             <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-amber-700/90">Payment History</p>
@@ -140,20 +124,20 @@ const PaymentHistory: React.FC = () => {
             <p className="max-w-xl text-[15px] leading-6 text-slate-700">This view gives the client a clean payment record for web and mobile access, with real transaction details and status indicators.</p>
           </div>
 
-          <div className="rounded-[24px] border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-900 shadow-inner shadow-emerald-100">
-            <div className="flex items-center gap-2 font-semibold"><BadgeDollarSign className="h-4 w-4" /> Live payment overview</div>
+          <div className="rounded-[24px] border border-slate-200 bg-slate-100/90 px-4 py-3 text-sm text-slate-700 shadow-inner shadow-slate-100">
+            <div className="flex items-center gap-2 font-semibold"><BadgeDollarSign className="h-4 w-4 text-slate-500" /> Live payment overview</div>
           </div>
         </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#edf7ff] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#d1d5db', backgroundColor: '#f1f5f9', boxShadow: '0 14px 30px rgba(15,23,42,0.08)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
-              <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Payment records</p>
-              <h4 className="text-[22px] font-bold text-slate-900">Recent transactions</h4>
+              <p className="text-[12px] uppercase tracking-[0.26em] text-slate-500">Payment records</p>
+              <h4 className="text-[22px] font-bold text-slate-800">Recent transactions</h4>
             </div>
-            <ReceiptText className="h-5 w-5 text-cyan-700" />
+            <ReceiptText className="h-5 w-5 text-slate-400" />
           </div>
 
           <div className="mb-5 rounded-[24px] border border-cyan-100 bg-white/90 p-4 shadow-sm">
@@ -196,7 +180,7 @@ const PaymentHistory: React.FC = () => {
                     // allow timeline ordering and filteredPayments visibility
                     if (!filteredPayments.find((f) => f.receipt === item.receipt)) return null;
                     const amt = parseAmount(item.amount);
-                    const statusColor = item.status === 'Confirmed' ? 'text-emerald-700 bg-emerald-50' : item.status === 'Pending' ? 'text-amber-700 bg-amber-50' : 'text-slate-700 bg-slate-100';
+                    const statusColor = 'text-slate-700 bg-slate-100';
                     return (
                       <article key={item.receipt} className={`rounded-[24px] border p-5 shadow-sm ${item.tone}`}>
                         <div className="flex items-start justify-between gap-4">
@@ -226,24 +210,24 @@ const PaymentHistory: React.FC = () => {
           </div>
         </article>
 
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#fff5f8] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#d1d5db', backgroundColor: '#f7f7f9', boxShadow: '0 14px 30px rgba(15,23,42,0.08)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
-              <p className="text-[12px] uppercase tracking-[0.26em] text-pink-700/90">Payment summary</p>
-              <h4 className="text-[22px] font-bold text-slate-900">Financial status</h4>
+              <p className="text-[12px] uppercase tracking-[0.26em] text-slate-500">Payment summary</p>
+              <h4 className="text-[22px] font-bold text-slate-800">Financial status</h4>
             </div>
-            <Wallet className="h-5 w-5 text-pink-700" />
+            <Wallet className="h-5 w-5 text-slate-400" />
           </div>
 
           <div className="grid gap-4">
-            <article className="rounded-[24px] border border-pink-100 bg-[#fff4f8] p-4 shadow-sm">
-              <p className="text-[12px] uppercase tracking-[0.22em] text-pink-700/90">Outstanding balance</p>
+            <article className="rounded-[24px] border border-slate-200 bg-slate-50 p-4 shadow-sm">
+              <p className="text-[12px] uppercase tracking-[0.22em] text-slate-500">Outstanding balance</p>
               <p className="mt-2 text-[24px] font-black text-slate-900">{formatCurrency(totals.outstanding)}</p>
-              <p className="mt-2 text-[13px] leading-6 text-slate-700">Total pending payments awaiting confirmation.</p>
+              <p className="mt-2 text-[13px] leading-6 text-slate-600">Total pending payments awaiting confirmation.</p>
             </article>
 
-            <article className="rounded-[24px] border border-pink-100 bg-[#fff4f8] p-4 shadow-sm">
-              <p className="text-[12px] uppercase tracking-[0.22em] text-pink-700/90">Payment insights</p>
+            <article className="rounded-[24px] border border-slate-200 bg-slate-50 p-4 shadow-sm">
+              <p className="text-[12px] uppercase tracking-[0.22em] text-slate-500">Payment insights</p>
               <div className="mt-2 grid gap-2">
                 <div className="flex items-center justify-between text-sm text-slate-700"><span>Total transactions</span><span className="font-semibold text-slate-900">{payments.length}</span></div>
                 <div className="flex items-center justify-between text-sm text-slate-700"><span>Average payment</span><span className="font-semibold text-slate-900">{formatCurrency(totals.avg)}</span></div>
@@ -251,8 +235,8 @@ const PaymentHistory: React.FC = () => {
               </div>
             </article>
 
-            <article className="rounded-[24px] border border-cyan-100 bg-[#edf7ff] p-4 shadow-sm">
-              <p className="text-[12px] uppercase tracking-[0.22em] text-cyan-700/90">Payment activity</p>
+            <article className="rounded-[24px] border border-slate-200 bg-slate-50 p-4 shadow-sm">
+              <p className="text-[12px] uppercase tracking-[0.22em] text-slate-500">Payment activity</p>
               <div className="mt-3 space-y-2 text-sm text-slate-700">
                 <div className="flex items-center justify-between"><span>{totals.thisMonthKey}</span><span className="font-semibold text-slate-900">{formatCurrency(totals.monthlyTotals[totals.thisMonthKey]||0)}</span></div>
                 <div className="flex items-center justify-between"><span>{totals.lastMonthKey}</span><span className="font-semibold text-slate-900">{formatCurrency(totals.monthlyTotals[totals.lastMonthKey]||0)}</span></div>

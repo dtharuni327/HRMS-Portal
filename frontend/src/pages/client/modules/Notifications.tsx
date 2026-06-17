@@ -25,13 +25,13 @@ type Card = {
   label: string;
   count?: number;
   tone?: string;
-  callToAction?: { label: string };
+  callToAction: { label: string };
 };
 
 const defaultCards: Card[] = [
-  { label: 'Project updates', count: 3, tone: 'bg-[#edf7ff] border-cyan-100', callToAction: { label: 'View updates' } },
-  { label: 'Invoice reminders', count: 2, tone: 'bg-[#fff9ea] border-amber-100', callToAction: { label: 'Review invoices' } },
-  { label: 'Meeting alerts', count: 1, tone: 'bg-[#effbf5] border-emerald-100', callToAction: { label: 'Open calendar' } },
+  { label: 'Project updates', count: 3, tone: 'bg-slate-100 border-slate-200', callToAction: { label: 'View updates' } },
+  { label: 'Invoice reminders', count: 2, tone: 'bg-slate-100 border-slate-200', callToAction: { label: 'Review invoices' } },
+  { label: 'Meeting alerts', count: 1, tone: 'bg-slate-100 border-slate-200', callToAction: { label: 'Open calendar' } },
 ];
 
 const initialNotifications: Notification[] = [
@@ -131,29 +131,29 @@ const Notifications: React.FC<Props> = ({ notifications: propNotifications, card
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border border-[#e5eefb] bg-[#fff8ef] p-6 shadow-[0_18px_45px_rgba(148,163,184,0.22)] lg:p-8">
+      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#d1d5db', backgroundColor: '#f8fafc', boxShadow: '0 14px 30px rgba(15,23,42,0.08)'}}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-amber-700/90">Notifications</p>
-            <h3 className="text-[28px] font-black tracking-tight text-slate-900 lg:text-[32px]">Keep up with project updates, invoice reminders, meeting alerts, ticket updates, and document alerts.</h3>
-            <p className="max-w-xl text-[15px] leading-6 text-slate-700">This panel gives the client a quick, organized summary of the latest actions and important follow-ups from the project team.</p>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-slate-500">Notifications</p>
+            <h3 className="text-[28px] font-black tracking-tight text-slate-800 lg:text-[32px]">Keep up with project updates, invoice reminders, meeting alerts, ticket updates, and document alerts.</h3>
+            <p className="max-w-xl text-[15px] leading-6 text-slate-600">This panel gives the client a quick, organized summary of the latest actions and important follow-ups from the project team.</p>
           </div>
 
-            <div className="rounded-[24px] border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-900 shadow-inner shadow-emerald-100">
-            <div className="flex items-center gap-2 font-semibold"><BellRing className="h-4 w-4" /> Live alerts</div>
+            <div className="rounded-[24px] border border-slate-200 bg-slate-100/90 px-4 py-3 text-sm text-slate-700 shadow-inner shadow-slate-100">
+            <div className="flex items-center gap-2 font-semibold"><BellRing className="h-4 w-4 text-slate-500" /> Live alerts</div>
             <div className="text-xs mt-1"><span className="font-semibold text-slate-900">{counts.unread}</span> unread • <span className="font-semibold text-slate-900">{counts.total}</span> total</div>
           </div>
         </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#edf7ff] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#d1d5db', backgroundColor: '#f1f5f9', boxShadow: '0 14px 30px rgba(15,23,42,0.08)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
-              <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Alert overview</p>
-              <h4 className="text-[22px] font-bold text-slate-900">What needs attention</h4>
+              <p className="text-[12px] uppercase tracking-[0.26em] text-slate-500">Alert overview</p>
+              <h4 className="text-[22px] font-bold text-slate-800">What needs attention</h4>
             </div>
-            <AlertTriangle className="h-5 w-5 text-cyan-700" />
+            <AlertTriangle className="h-5 w-5 text-slate-400" />
           </div>
 
           <div className="grid gap-4">
@@ -174,16 +174,16 @@ const Notifications: React.FC<Props> = ({ notifications: propNotifications, card
           </div>
         </article>
 
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#fff5f8] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#d1d5db', backgroundColor: '#f7f7f9', boxShadow: '0 14px 30px rgba(15,23,42,0.08)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
-              <p className="text-[12px] uppercase tracking-[0.26em] text-pink-700/90">Recent alerts</p>
-              <h4 className="text-[22px] font-bold text-slate-900">Latest notifications</h4>
+              <p className="text-[12px] uppercase tracking-[0.26em] text-slate-500">Recent alerts</p>
+              <h4 className="text-[22px] font-bold text-slate-800">Latest notifications</h4>
             </div>
-            <BellRing className="h-5 w-5 text-pink-700" />
+            <BellRing className="h-5 w-5 text-slate-400" />
           </div>
 
-          <div className="mb-5 rounded-[24px] border border-pink-100 bg-white/90 p-4 shadow-sm">
+          <div className="mb-5 rounded-[24px] border border-slate-200 bg-white/90 p-4 shadow-sm">
             <div className="mb-3 flex items-center gap-3">
               <div className="flex gap-2 flex-wrap">
                 {['All','Unread','Invoice','Meeting','Project','Ticket','Document'].map((k) => (
@@ -212,10 +212,10 @@ const Notifications: React.FC<Props> = ({ notifications: propNotifications, card
                   <h5 className="text-sm font-semibold text-slate-700 mb-2">{section}</h5>
                   <div className="space-y-3">
                     {grouped[section].map((n) => (
-                      <article key={n.id} onClick={() => openNotification(n.id)} className={`rounded-[12px] border p-3 shadow-sm cursor-pointer ${n.unread? 'bg-white':'bg-white/80'} ${n.unread? (n.priority === 'critical' ? 'border-l-4 border-rose-500' : (n.priority === 'important' ? 'border-l-4 border-amber-500' : 'border-l-4 border-sky-500')) : ''}`}>
+                      <article key={n.id} onClick={() => openNotification(n.id)} className={`rounded-[12px] border p-3 shadow-sm cursor-pointer ${n.unread ? 'bg-slate-50' : 'bg-slate-50/90'} ${n.unread ? (n.priority === 'critical' ? 'border-l-4 border-rose-200' : (n.priority === 'important' ? 'border-l-4 border-amber-200' : 'border-l-4 border-slate-300')) : ''}`}>
                         <div className="flex items-start gap-3">
-                          <div className="mt-0.5 rounded-full p-2 shadow-sm" style={{background: n.priority === 'critical' ? '#fff1f0' : (n.priority === 'important' ? '#fff7ed' : '#f0f9ff')}}>
-                            {n.category === 'Meeting' ? <CalendarRange className="h-4 w-4 text-slate-800" /> : (n.category === 'Invoice' ? <ReceiptText className="h-4 w-4 text-slate-800" /> : (n.category === 'Document' ? <FileText className="h-4 w-4 text-slate-800" /> : <Clock3 className="h-4 w-4 text-slate-800" />))}
+                          <div className="mt-0.5 rounded-full p-2 shadow-sm" style={{background: n.priority === 'critical' ? '#f8eef2' : (n.priority === 'important' ? '#f9f5eb' : '#eef2f7')}}>
+                            {n.category === 'Meeting' ? <CalendarRange className="h-4 w-4 text-slate-700" /> : (n.category === 'Invoice' ? <ReceiptText className="h-4 w-4 text-slate-700" /> : (n.category === 'Document' ? <FileText className="h-4 w-4 text-slate-700" /> : <Clock3 className="h-4 w-4 text-slate-700" />))}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-start gap-3">
@@ -246,11 +246,11 @@ const Notifications: React.FC<Props> = ({ notifications: propNotifications, card
           </div>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-            <article className="rounded-[24px] border p-4 shadow-sm bg-white">
+            <article className="rounded-[24px] border p-4 shadow-sm bg-slate-50">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-slate-700">Alerts summary</p>
-                  <p className="mt-1 text-[14px] leading-6 text-slate-700">Quick stats to help prioritize follow-ups.</p>
+                  <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-slate-500">Alerts summary</p>
+                  <p className="mt-1 text-[14px] leading-6 text-slate-600">Quick stats to help prioritize follow-ups.</p>
                 </div>
 
                 <div className="flex gap-4 items-center">
@@ -259,12 +259,12 @@ const Notifications: React.FC<Props> = ({ notifications: propNotifications, card
                     <p className="text-xl font-extrabold text-slate-900">{counts.unread}</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-xs uppercase text-rose-600 tracking-wide">Critical</p>
-                    <p className="text-xl font-extrabold text-rose-700">{notifications.filter(n => n.priority === 'critical').length}</p>
+                    <p className="text-xs uppercase text-slate-500 tracking-wide">Critical</p>
+                    <p className="text-xl font-extrabold text-slate-900">{notifications.filter(n => n.priority === 'critical').length}</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-xs uppercase text-amber-600 tracking-wide">Important</p>
-                    <p className="text-xl font-extrabold text-amber-700">{notifications.filter(n => n.priority === 'important').length}</p>
+                    <p className="text-xs uppercase text-slate-500 tracking-wide">Important</p>
+                    <p className="text-xl font-extrabold text-slate-900">{notifications.filter(n => n.priority === 'important').length}</p>
                   </div>
                   <div className="text-center">
                     <p className="text-xs uppercase text-slate-500 tracking-wide">Info</p>

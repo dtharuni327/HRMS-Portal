@@ -6,7 +6,9 @@ const weeklyReports = [
     period: 'Week 1 (Jun 2-8)',
     status: 'Completed',
     summary: 'Requirements finalized, design review completed, and development kickoff done.',
-    tone: 'bg-[#effbf5] border-emerald-100',
+    tone: 'bg-[#F0FDF4] border-[#22C55E]',
+    badgeBg: '#DCFCE7',
+    badgeText: '#15803D',
     manager: 'Rajesh Kumar',
     lastUpdated: '2026-06-08 14:30',
     attachments: [{ type: 'text', label: 'Download Text' }, { type: 'pdf', label: 'Download PDF' }]
@@ -15,7 +17,9 @@ const weeklyReports = [
     period: 'Week 2 (Jun 9-15)',
     status: 'In Progress',
     summary: 'Core module integration is underway with QA validation in parallel.',
-    tone: 'bg-[#edf7ff] border-cyan-100',
+    tone: 'bg-[#EFF6FF] border-[#3B82F6]',
+    badgeBg: '#DBEAFE',
+    badgeText: '#1D4ED8',
     manager: 'Priya Sharma',
     lastUpdated: '2026-06-15 11:20',
     attachments: [{ type: 'text', label: 'Download Text' }, { type: 'pdf', label: 'Download PDF' }]
@@ -24,7 +28,9 @@ const weeklyReports = [
     period: 'Week 3 (Jun 16-22)',
     status: 'Planned',
     summary: 'Client feedback review, release preparation, and milestone checkpoint.',
-    tone: 'bg-[#fff9ea] border-amber-100',
+    tone: 'bg-[#FFFBEB] border-[#F59E0B]',
+    badgeBg: '#FEF3C7',
+    badgeText: '#B45309',
     manager: 'Amit Singh',
     lastUpdated: '2026-06-16 09:45',
     attachments: [{ type: 'text', label: 'Download Text' }, { type: 'pdf', label: 'Download PDF' }]
@@ -68,30 +74,31 @@ const ProjectReport: React.FC = () => {
   }, [period, search]);
 
   return (
-    <section className="space-y-6">
-      <div className="rounded-[30px] border border-[#e5eefb] bg-[#fff9ea] p-6 shadow-[0_18px_45px_rgba(148,163,184,0.22)] lg:p-8">
+    <section className="bg-[#0F172A] min-h-screen px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1200px] space-y-6">
+        <div className="rounded-[30px] border border-slate-200 bg-white p-6 lg:p-8 shadow-sm">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-amber-700/90">Project Reports</p>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-slate-500">Project Reports</p>
           </div>
 
-          <div className="rounded-[24px] border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-900 shadow-inner shadow-emerald-100">
-            <div className="flex items-center gap-2 font-semibold"><Rocket className="h-4 w-4" /> Progress reporting dashboard</div>
+          <div className="rounded-[24px] border border-[#CBD5E1] bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
+            <div className="flex items-center gap-2 font-semibold"><Rocket className="h-4 w-4 text-slate-600" /> Progress reporting dashboard</div>
           </div>
         </div>
       </div>
 
       <div className="grid gap-6">
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#edf7ff] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border border-slate-200 bg-white p-8 shadow-sm">
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
-              <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Weekly reports</p>
+              <p className="text-[12px] uppercase tracking-[0.26em] text-slate-500">Weekly reports</p>
               <h4 className="text-[22px] font-bold text-slate-900">Progress by week</h4>
             </div>
-            <ClipboardList className="h-5 w-5 text-cyan-700" />
+            <ClipboardList className="h-5 w-5 text-slate-600" />
           </div>
 
-          <div className="mb-5 rounded-[24px] border border-cyan-100 bg-white/90 p-4 shadow-sm">
+          <div className="mb-5 rounded-[24px] border border-[#CBD5E1] bg-white p-4 shadow-sm">
             <div className="grid gap-3 md:grid-cols-[1fr_180px]">
               <input value={search} onChange={(e) => setSearch(e.target.value)} className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none" placeholder="Search report content" />
               <select value={period} onChange={(e) => setPeriod(e.target.value)} className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none">
@@ -102,20 +109,20 @@ const ProjectReport: React.FC = () => {
               </select>
             </div>
             <div className="mt-3 flex flex-wrap gap-3">
-              <button type="button" onClick={handleExportReport} className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Export report</button>
+              <button type="button" onClick={handleExportReport} className="rounded-2xl bg-[#2563EB] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1D4ED8]">Export report</button>
             </div>
           </div>
 
           <div className="space-y-4">
             {filteredReports.map((item) => (
-              <article key={item.period} className={`rounded-[24px] border p-5 shadow-sm ${item.tone}`}>
+              <article key={item.period} className={`rounded-[24px] border p-8 shadow-md min-h-[140px] ${item.tone}`}>
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex-1">
-                      <p className="text-[15px] font-semibold text-slate-900">{item.period}</p>
-                      <p className="mt-1 text-[13px] leading-6 text-slate-700">{item.summary}</p>
+                      <p className="text-lg font-semibold text-slate-900">{item.period}</p>
+                      <p className="mt-1 text-[14px] leading-7 text-slate-700">{item.summary}</p>
                     </div>
-                    <span className="rounded-full border border-white/90 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-700">{item.status}</span>
+                    <span className="rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ backgroundColor: item.badgeBg, color: item.badgeText, borderColor: item.badgeBg }}>{item.status}</span>
                   </div>
 
                   <div className="flex flex-wrap gap-2 pt-3">
@@ -136,6 +143,7 @@ const ProjectReport: React.FC = () => {
           </div>
         </article>
       </div>
+    </div>
     </section>
   );
 };

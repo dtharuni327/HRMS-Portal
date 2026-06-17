@@ -9,26 +9,25 @@ interface SidebarIconProps {
   active?: boolean;
   onClick: () => void;
   isLogout?: boolean;
+  expanded?: boolean;
 }
 
-const SidebarIcon: React.FC<SidebarIconProps> = ({ icon, label, active = false, onClick, isLogout = false }) => (
+const SidebarIcon: React.FC<SidebarIconProps> = ({ icon, label, active = false, onClick, isLogout = false, expanded = true }) => (
   <button
     type="button"
     onClick={onClick}
-    className={`relative flex h-[58px] w-full items-center justify-center rounded-[1.4rem] transition-all duration-300 group-hover/sidebar:justify-start group-hover/sidebar:px-[18px] ${
+    className={`relative flex h-[58px] w-full items-center rounded-[1.4rem] transition-all duration-300 ${expanded ? 'px-3 justify-start' : 'pl-3 justify-start'} ${
       active
         ? 'bg-gradient-to-r from-[#5a4bc7] to-[#4b3f99] text-white shadow-[0_10px_30px_rgba(91,75,199,0.35)]'
         : 'text-slate-400 hover:bg-white/5 hover:text-white'
     } ${isLogout ? 'hover:text-rose-400 hover:bg-rose-500/10' : ''}`}
   >
     <div
-      className={`absolute left-1/2 flex h-12 w-12 -translate-x-1/2 items-center justify-center transition-all duration-300 group-hover/sidebar:left-[18px] group-hover/sidebar:translate-x-0 ${
-        active ? 'text-[#7dd3fc]' : 'text-slate-400 group-hover/sidebar:text-white'
-      }`}
+      className={`flex h-12 w-12 min-w-[48px] items-center justify-center transition-all duration-300 ${active ? 'text-[#7dd3fc]' : 'text-slate-400'}`}
     >
       {icon}
     </div>
-    <span className="ml-[62px] whitespace-nowrap text-[15px] font-semibold tracking-wide opacity-0 transition-all duration-300 group-hover/sidebar:opacity-100">
+    <span className={`ml-3 overflow-hidden whitespace-nowrap text-[15px] font-semibold tracking-wide transition-all duration-300 ${expanded ? 'max-w-[180px] opacity-100' : 'max-w-0 opacity-0'}`}>
       {label}
     </span>
     {active && <div className="absolute left-0 h-6 w-1 rounded-r-full bg-gradient-to-b from-[#f5d0fe] via-[#c084fc] to-[#a855f7] shadow-[0_0_12px_rgba(192,132,252,0.9)]" />}
@@ -74,41 +73,44 @@ export const FinanceSidebar: React.FC<FinanceSidebarProps> = ({
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/login', { replace: true });
   };
 
-  return (
-    <>
-      <style>{`.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }`}</style>
-      <aside
-        onMouseEnter={() => setSidebarOpen(true)}
-        onMouseLeave={() => setSidebarOpen(false)}
-        className={`group/sidebar fixed inset-y-5 left-5 z-50 overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] py-4 px-3 shadow-[0_25px_60px_rgba(0,0,0,0.45)] transition-all duration-300 ease-in-out backdrop-blur-xl ${sidebarOpen ? 'w-[250px]' : 'w-[96px]'}`}
-      >
-        <div className="relative z-10 flex h-full flex-col">
-          <nav className="hide-scrollbar flex flex-1 flex-col gap-1.5 pt-1 overflow-y-auto">
-            {menuItems.map((item) => (
-              <SidebarIcon
-                key={item.key}
-                icon={item.icon}
-                label={item.label}
-                active={activeTab === item.key}
-                onClick={() => setActiveTab(item.key)}
-              />
-            ))}
-          </nav>
+  const expanded = sidebarOpen;
 
-          <div className="mt-3 border-t border-white/10 pt-3 pb-1">
+  return (
+    <aside
+      onMouseEnter={() => setSidebarOpen(true)}
+      onMouseLeave={() => setSidebarOpen(false)}
+      className={`group/sidebar fixed left-4 top-4 z-40 hidden h-[calc(100vh-2rem)] overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] transition-[width] duration-300 xl:flex xl:flex-col ${expanded ? 'w-[260px]' : 'w-[88px]'}`}
+    >
+      <div className="flex-1 overflow-y-auto px-3 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <nav className="space-y-3">
+          {menuItems.map((item) => (
             <SidebarIcon
-              icon={<LogOut size={20} />}
-              label="SIGN OUT"
-              onClick={handleLogout}
-              isLogout
+              key={item.key}
+              icon={item.icon}
+              label={item.label}
+              active={activeTab === item.key}
+              onClick={() => setActiveTab(item.key)}
+              expanded={expanded}
             />
+          ))}
+        </nav>
+
+        <button
+          onClick={handleLogout}
+          className={`mt-4 flex h-[58px] w-full items-center rounded-[22px] transition-all duration-300 ${expanded ? 'px-3 justify-start' : 'justify-center'} text-sm font-bold uppercase tracking-wide text-sky-300 hover:bg-white/10`}
+        >
+          <div className="flex h-12 w-12 items-center justify-center">
+            <LogOut className="h-5 w-5 text-sky-300" />
           </div>
-        </div>
-      </aside>
-    </>
+          <span className={`ml-1 text-[14px] font-bold uppercase tracking-[0.08em] transition-opacity duration-200 ${expanded ? 'opacity-100' : 'opacity-0'}`}>
+            SIGN OUT
+          </span>
+        </button>
+      </div>
+    </aside>
   );
 };
 

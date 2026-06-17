@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { clientPalette } from '../../../utils/colorPalette';
 import {
   MessageCircleMore,
   Star,
@@ -81,7 +82,7 @@ const FeedbackSection: React.FC = () => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border border-[#e5eefb] bg-[#fff8ef] p-6 shadow-[0_18px_45px_rgba(148,163,184,0.22)] lg:p-8">
+      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.warmCream, boxShadow: '0 18px 45px rgba(148,163,184,0.22)'}}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
             <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-amber-700/90">Feedback Section</p>
@@ -95,7 +96,7 @@ const FeedbackSection: React.FC = () => {
       </div>
 
       <div className="grid gap-6">
-        <article className="rounded-[30px] border border-[#e5eefb] bg-[#edf7ff] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#dbeafe', backgroundColor: clientPalette.iceBlue, boxShadow: '0 18px 40px rgba(148,163,184,0.18)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Feedback Form</p>
@@ -189,7 +190,7 @@ const FeedbackSection: React.FC = () => {
         </article>
 
         {submittedFeedback.length > 0 && (
-          <article className="rounded-[30px] border border-[#e5eefb] bg-[#fff5f8] p-6 shadow-[0_18px_40px_rgba(148,163,184,0.18)]">
+          <article className="rounded-[30px] border p-6" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.softPink, boxShadow: '0 18px 40px rgba(148,163,184,0.18)'}}>
             <div className="mb-5 flex items-center justify-between gap-3">
               <div>
                 <p className="text-[12px] uppercase tracking-[0.26em] text-pink-700/90">Submitted Feedback</p>
