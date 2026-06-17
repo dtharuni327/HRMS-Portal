@@ -8,7 +8,7 @@ import LeaveApplyPage from "./modules/LeaveApplyPage";
 import ViewAllEmployeesPage from "./modules/ViewAllEmployeesPage";
 import Login from "../auth/Login";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Briefcase,
   ClipboardList,
@@ -156,6 +156,8 @@ const EmployeeDashboard: React.FC = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [activePage, setActivePage] = useState<ActivePage>("home");
 
+  const mainRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | null = null;
 
@@ -169,6 +171,28 @@ const EmployeeDashboard: React.FC = () => {
       if (interval) clearInterval(interval);
     };
   }, [isCheckedIn]);
+
+  // Scroll to top whenever the active page changes (state-based navigation)
+  useEffect(() => {
+    // scroll window
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.body.scrollTop = 0; // for Safari
+      document.documentElement.scrollTop = 0;
+    } catch (e) {
+      /* ignore */
+    }
+
+    // if the main element is a scroll container, reset it as well
+    if (mainRef.current) {
+      try {
+        // modern browsers
+        (mainRef.current as HTMLElement).scrollTo?.({ top: 0, left: 0, behavior: "auto" } as any);
+      } catch (e) {
+        (mainRef.current as HTMLElement).scrollTop = 0;
+      }
+    }
+  }, [activePage]);
 
   const handleCheckIn = () => {
     if (!isCheckedIn) {
@@ -260,6 +284,7 @@ const EmployeeDashboard: React.FC = () => {
         </aside>
 
         <main
+          ref={mainRef}
           className={`flex min-w-0 flex-1 flex-col bg-transparent transition-all duration-300 ${
             isSidebarExpanded ? "xl:ml-[292px]" : "xl:ml-[102px]"
           }`}

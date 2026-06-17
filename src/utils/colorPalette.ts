@@ -1,12 +1,12 @@
 // Reusable pastel color palette for UI consistency
 export const cardPalette = [
-  { bg: "#E9D5FF", text: "#3C096C" }, // lavender
-  { bg: "#D1FAE5", text: "#064E3B" }, // mint
-  { bg: "#FFF7ED", text: "#78350F" }, // cream
-  { bg: "#E0F2FE", text: "#075985" }, // ice blue
-  { bg: "#FCE7F3", text: "#831843" }, // soft pink
-  { bg: "#F5E6D3", text: "#64512F" }, // warm beige
-  { bg: "#EDE9FF", text: "#5B21B6" }, // soft violet
+  { bg: "#D8C9F3", text: "#3C096C" }, // muted lavender
+  { bg: "#CDECDF", text: "#09543A" }, // muted mint
+  { bg: "#F3E9D6", text: "#6B4A2A" }, // warm cream
+  { bg: "#DDEEF9", text: "#0B5A75" }, // soft ice blue
+  { bg: "#F7E6EA", text: "#7A2B45" }, // muted pink
+  { bg: "#EFE3D2", text: "#5A472F" }, // warm beige
+  { bg: "#E8E3FB", text: "#4C1EA6" }, // soft violet
 ];
 
 export const getPaletteFor = (key: string) => {
@@ -15,14 +15,14 @@ export const getPaletteFor = (key: string) => {
 };
 
 export const clientPalette = {
-  lavender: '#C3A6FF',
-  mintGreen: '#BFF3D4',
-  warmCream: '#FFF9EA',
-  iceBlue: '#EDF7FF',
-  softSaga: '#F3EAF8',
-  softPink: '#FFF4F8',
-  lightBeige: '#F5EFDB',
-  lilacFrost: '#EADCFD',
+  lavender: '#BBA0E6',
+  mintGreen: '#B7E8D1',
+  warmCream: '#F2EBD6',
+  iceBlue: '#E8F4FB',
+  softSaga: '#E9E0F3',
+  softPink: '#F6E9EE',
+  lightBeige: '#EEE6D6',
+  lilacFrost: '#D7C8F2',
   royalNavy: '#07123A',
-  ivorySand: '#FAF7EE',
+  ivorySand: '#F7F5EE',
 };

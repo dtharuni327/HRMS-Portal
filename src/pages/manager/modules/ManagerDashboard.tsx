@@ -1,4 +1,4 @@
-import React, { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
+import React, { useState, useEffect, useRef, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../../store/authStore';
 import DashboardNavbar from '../../../components/DashboardNavbar';
@@ -111,6 +111,7 @@ const DarkHRDashboard: React.FC = () => {
     gender: 'Male'
   });
   const [activePage, setActivePage] = useState<'dashboard' | 'profile'>('dashboard');
+  const contentRef = useRef<HTMLDivElement | null>(null);
   const [employeeData] = useState({
     name: 'Rajesh Kumar',
     department: 'Operations',
@@ -793,6 +794,22 @@ const DarkHRDashboard: React.FC = () => {
     }
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (contentRef.current) {
+      try {
+        contentRef.current.scrollTo({ top: 0, left: 0 });
+      } catch (error) {
+        contentRef.current.scrollTop = 0;
+      }
+    }
+
+    try {
+      window.scrollTo({ top: 0, left: 0 });
+    } catch (error) {
+      // ignore
+    }
+  }, [activeTab, activePage]);
+
   const handleNavigateToTaskManager = () => {
     setActiveTab('TaskManager');
     navigate('/manager/task-manager');
@@ -1255,6 +1272,7 @@ ${formData.email}`
         />
 
        <div
+  ref={contentRef}
   className="
     flex-1
     overflow-x-auto

@@ -28,6 +28,14 @@ const SuperAdminDashboard = () => {
      DYNAMIC DASHBOARD DATA
   ========================= */
 
+  useEffect(() => {
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    } catch (e) {
+      /* ignore */
+    }
+  }, []);
+
   const [employeeCount, setEmployeeCount] = useState(0);
   const [departmentCount, setDepartmentCount] = useState(0);
   const [holidayCount, setHolidayCount] = useState(0);

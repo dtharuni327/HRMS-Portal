@@ -8,10 +8,8 @@ const statuses = ["Active", "Inactive"];
 
 export default function NewUser() {
   const navigate = useNavigate();
-  const [userId, setUserId] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [role, setRole] = useState(roles[3]);
   const [department, setDepartment] = useState(departments[0]);
   const [gender, setGender] = useState(genders[0]);
@@ -26,20 +24,11 @@ export default function NewUser() {
   const validate = () => {
     const nextErrors: Record<string, string> = {};
 
-    if (!userId.trim()) {
-      nextErrors.userId = "User ID is required.";
-    }
     if (!name.trim()) nextErrors.name = "User name is required.";
     if (!email.trim()) {
       nextErrors.email = "Email is required.";
     } else if (!/^\S+@\S+\.\S+$/.test(email)) {
       nextErrors.email = "Email must be valid.";
-    }
-
-    if (!password.trim()) {
-      nextErrors.password = "Password is required.";
-    } else if (password.length < 6) {
-      nextErrors.password = "Password must be at least 6 characters.";
     }
 
     if (!role) nextErrors.role = "Please choose a role.";
@@ -62,10 +51,8 @@ export default function NewUser() {
     if (!validate()) return;
 
     const newUser = {
-      id: userId,
       name,
       email,
-      password,
       role,
       status,
       salaryPackage,
@@ -86,7 +73,7 @@ export default function NewUser() {
       JSON.stringify([...existingUsers, newUser])
     );
 
-    const emailMessage = `Your account has been created.\n\nID: ${userId}\nName: ${name}\nEmail: ${email}\nPassword: ${password}\nRole: ${role}\nDepartment: ${department}\nGender: ${gender}\nStatus: ${status}\nJoining Date: ${joiningDate}\nContact Number: ${contactNumber}\nOffice: ${office}\nLocation: ${location}`;
+    const emailMessage = `Your account has been created.\n\nName: ${name}\nEmail: ${email}\nRole: ${role}\nDepartment: ${department}\nGender: ${gender}\nStatus: ${status}\nJoining Date: ${joiningDate}\nContact Number: ${contactNumber}\nOffice: ${office}\nLocation: ${location}`;
 
     alert(`New user created and email sent to ${email}:\n\n${emailMessage}`);
     navigate("/superadmin/user-roles");
@@ -97,7 +84,7 @@ export default function NewUser() {
       <div>
         <h1 className="text-3xl font-bold text-white">Add New User</h1>
         <p className="mt-2 max-w-2xl text-sm text-slate-300">
-          Create a new user account with an ID, email, role and department.
+          Create a new user account with email, role and department.
           All fields marked with * are required.
         </p>
       </div>
@@ -111,21 +98,21 @@ export default function NewUser() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="mb-2 block text-sm font-semibold text-slate-700">
-                User ID *
+                User Name *
               </label>
               <input
                 type="text"
-                placeholder="Enter user ID"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
+                placeholder="Enter full name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className={`w-full rounded-xl border px-4 py-3 text-slate-700 outline-none transition ${
-                  errors.userId
+                  errors.name
                     ? "border-red-400 bg-red-50"
                     : "border-slate-300 bg-white"
                 }`}
               />
-              {errors.userId && (
-                <p className="mt-2 text-xs text-red-600">{errors.userId}</p>
+              {errors.name && (
+                <p className="mt-2 text-xs text-red-600">{errors.name}</p>
               )}
             </div>
 
@@ -166,26 +153,6 @@ export default function NewUser() {
               />
               {errors.email && (
                 <p className="mt-2 text-xs text-red-600">{errors.email}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
-                Password *
-              </label>
-              <input
-                type="password"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`w-full rounded-xl border px-4 py-3 text-slate-700 outline-none transition ${
-                  errors.password
-                    ? "border-red-400 bg-red-50"
-                    : "border-slate-300 bg-white"
-                }`}
-              />
-              {errors.password && (
-                <p className="mt-2 text-xs text-red-600">{errors.password}</p>
               )}
             </div>
 
@@ -416,21 +383,13 @@ export default function NewUser() {
         <div className="rounded-3xl bg-slate-900 p-8 text-white shadow-2xl shadow-black/20">
           <h2 className="mb-6 text-xl font-semibold">New User Summary</h2>
           <div className="space-y-4 text-sm">
-            <div>
-              <p className="text-slate-400">ID</p>
-              <p className="mt-2 text-lg font-semibold text-white">{userId || "Not set yet"}</p>
-            </div>
-            <div>
+              <div>
               <p className="text-slate-400">Name</p>
               <p className="mt-2 text-lg font-semibold text-white">{name || "Not set yet"}</p>
             </div>
             <div>
               <p className="text-slate-400">Email</p>
               <p className="mt-2 text-lg font-semibold text-white">{email || "Not set yet"}</p>
-            </div>
-            <div>
-              <p className="text-slate-400">Password</p>
-              <p className="mt-2 text-lg font-semibold text-white">{password ? "••••••••" : "Not set yet"}</p>
             </div>
             <div>
               <p className="text-slate-400">Role</p>

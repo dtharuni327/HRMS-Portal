@@ -35,7 +35,7 @@ const DocumentSharing: React.FC = () => {
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.warmCream, boxShadow: '0 18px 45px rgba(148,163,184,0.22)'}}>
+      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#d7e6f4', backgroundColor: '#F2EBD6', boxShadow: '0 12px 28px rgba(12,20,28,0.10)'}}>
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
             <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-amber-700/90">Document Sharing</p>
@@ -43,14 +43,14 @@ const DocumentSharing: React.FC = () => {
             <p className="max-w-xl text-[15px] leading-6 text-slate-700">This section keeps all shared client files organized, searchable, and easy to review from both desktop and mobile views.</p>
           </div>
 
-          <div className="rounded-[24px] border border-emerald-200 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-900 shadow-inner shadow-emerald-100">
+          <div className="rounded-[24px] border border-emerald-200 px-4 py-3 text-sm text-emerald-900" style={{ backgroundColor: '#EBF7F0' }}>
             <div className="flex items-center gap-2 font-semibold"><FileText className="h-4 w-4" /> Shared file center</div>
           </div>
         </div>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <article className="rounded-[30px] border p-6" style={{ borderColor: '#dbeafe', backgroundColor: clientPalette.iceBlue, boxShadow: '0 18px 40px rgba(148,163,184,0.18)'}}>
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#dbeef9', backgroundColor: '#E8F4FB', boxShadow: '0 12px 28px rgba(12,20,28,0.10)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <p className="text-[12px] uppercase tracking-[0.26em] text-cyan-700/90">Recent files</p>
@@ -59,7 +59,7 @@ const DocumentSharing: React.FC = () => {
             <FileText className="h-5 w-5 text-cyan-700" />
           </div>
 
-          <div className="mb-4 rounded-[24px] border border-cyan-100 bg-white/90 p-4 shadow-sm">
+          <div className="mb-4 rounded-[24px] border border-cyan-100 p-4" style={{ backgroundColor: '#F7FBFF' }}>
             <div className="mb-3 flex items-center gap-3">
               <label className="text-[12px] font-semibold text-slate-700 mr-2">Project</label>
               <select value={selectedProject} onChange={(e) => setSelectedProject(e.target.value)} className="rounded-lg border border-slate-200 bg-white px-3 py-1 text-sm outline-none">
@@ -95,9 +95,9 @@ const DocumentSharing: React.FC = () => {
             </div>
           </div>
 
-          <div className="space-y-4">
+            <div className="space-y-4">
             {filteredFiles.map((item) => (
-              <article key={item.name} className="rounded-[24px] border border-pink-100 bg-[#fff4f8] p-4 shadow-sm">
+              <article key={item.name} className="rounded-[24px] border border-pink-100 p-4" style={{ backgroundColor: '#F9EEF2' }}>
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-[15px] font-semibold text-slate-900">{item.name}</p>
@@ -120,7 +120,7 @@ const DocumentSharing: React.FC = () => {
           </div>
         </article>
 
-        <article className="rounded-[30px] border p-6" style={{ borderColor: '#e5eefb', backgroundColor: clientPalette.softPink, boxShadow: '0 18px 40px rgba(148,163,184,0.18)'}}>
+        <article className="rounded-[30px] border p-6" style={{ borderColor: '#e6dfe6', backgroundColor: '#F6E9EE', boxShadow: '0 12px 26px rgba(12,20,28,0.08)'}}>
           <div className="mb-5 flex items-center justify-between gap-3">
             <div>
               <p className="text-[12px] uppercase tracking-[0.26em] text-pink-700/90">Document summary</p>

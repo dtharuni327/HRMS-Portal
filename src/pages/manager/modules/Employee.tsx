@@ -30,10 +30,6 @@ import {
 interface EmployeeFormData {
   name: string;
 
-  username: string;
-
-  password: string;
-
   email: string;
 
   phone: string;
@@ -274,9 +270,6 @@ const EmployeesModule: FC<
     []
   );
 
-  const getDepartmentLabel = (employee: Employee) =>
-    employee.department ?? employee.dept ?? '';
-
   const roleOptions = useMemo(() => {
     if (filterDept) {
       return departmentRoles[filterDept] ?? [];
@@ -288,15 +281,13 @@ const EmployeesModule: FC<
     () =>
       employees.filter((emp) => {
         const q = staffSearch.trim().toLowerCase();
-        const departmentLabel = getDepartmentLabel(emp);
-
         if (
           q &&
           !emp.name.toLowerCase().includes(q) &&
           !(emp.email || '').toLowerCase().includes(q)
         )
           return false;
-        if (filterDept && departmentLabel !== filterDept) return false;
+        if (filterDept && emp.dept !== filterDept) return false;
         if (filterRole && emp.role !== filterRole) return false;
         if (filterStatus) {
           if (filterStatus === 'active' && deactivatedIds.includes(emp.id)) return false;
@@ -327,7 +318,7 @@ const EmployeesModule: FC<
     { label: 'Aadhaar Number', key: 'aadhaarNumber' },
     { label: 'PAN Number', key: 'panNumber' },
     { label: 'Address', key: 'address' },
-    { label: 'Department', key: 'department', fallbackKey: 'dept', value: (emp: Employee) => getDepartmentLabel(emp) },
+    { label: 'Department', key: 'department', fallbackKey: 'dept' },
     { label: 'Role', key: 'role' },
     { label: 'Designation', key: 'designation' },
     { label: 'Reporting Manager', key: 'reportingManager' },
@@ -353,7 +344,7 @@ const EmployeesModule: FC<
         emp.id,
         emp.name,
         emp.role,
-        getDepartmentLabel(emp),
+        emp.dept,
         emp.salary,
         emp.experience,
         emp.joinDate ?? '',
@@ -532,8 +523,8 @@ const EmployeesModule: FC<
               handleSaveEmployee(e);
 
               alert(
-                'Employee created successfully. Credentials sent to employee email.'
-              );
+  'Employee added successfully. Username, Password and Login Credentials have been generated and sent to the employee personal email.'
+);
             }}
           >
 
@@ -567,58 +558,12 @@ const EmployeesModule: FC<
               }
             />
 
-            <input
-              required
-              placeholder="Username"
-              className="
-  w-full
-  p-4
-  bg-white
-  border
-  border-slate-300
-  rounded-2xl
-  outline-none
-  text-slate-900
-  placeholder:text-slate-400
-  caret-slate-900
-  shadow-sm
-  focus:ring-2
-  focus:ring-violet-300
-  focus:border-violet-400
-"
-              value={
-                formData.username
-              }
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  username:
-                    e.target.value,
-                })
-              }
-            />
-
-            <input
-              required
-              type="password"
-              placeholder="Password"
-              className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
-              value={
-                formData.password
-              }
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  password:
-                    e.target.value,
-                })
-              }
-            />
-
+           
+            
             <input
               required
               type="email"
-              placeholder="Email Address"
+              placeholder="Personal Email Address"
               className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
               value={formData.email}
               onChange={(e) =>
@@ -631,18 +576,22 @@ const EmployeesModule: FC<
             />
 
             <input
-              required
-              placeholder="Phone Number"
-              className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  phone:
-                    e.target.value,
-                })
-              }
-            />
+  required
+  type="tel"
+  placeholder="Phone Number"
+  maxLength={10}
+  value={formData.phone}
+  onChange={(e) => {
+    const value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 10) {
+      setFormData({
+        ...formData,
+        phone: value,
+      });
+    }
+  }}
+  className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+/>
 
             <select
               required
@@ -674,36 +623,44 @@ const EmployeesModule: FC<
             </select>
 
             <input
-              required
-              placeholder="Aadhaar Number"
-              className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
-              value={
-                formData.aadhaarNumber
-              }
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  aadhaarNumber:
-                    e.target.value,
-                })
-              }
-            />
+  required
+  placeholder="Aadhaar Number"
+  maxLength={14}
+  value={formData.aadhaarNumber}
+  onChange={(e) => {
+    const value = e.target.value
+      .replace(/\D/g, '')
+      .slice(0, 12);
 
-            <input
-              required
-              placeholder="PAN Number"
-              className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
-              value={
-                formData.panNumber
-              }
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  panNumber:
-                    e.target.value,
-                })
-              }
-            />
+    const formatted = value
+      .replace(/(\d{4})(?=\d)/g, '$1 ')
+      .trim();
+
+    setFormData({
+      ...formData,
+      aadhaarNumber: formatted,
+    });
+  }}
+  className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+/>
+
+<input
+  required
+  placeholder="PAN Number (ABCDE1234F)"
+  maxLength={10}
+  value={formData.panNumber}
+  onChange={(e) => {
+    const value = e.target.value
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '');
+
+    setFormData({
+      ...formData,
+      panNumber: value,
+    });
+  }}
+  className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+/>
 
             <input
               required
@@ -730,9 +687,41 @@ const EmployeesModule: FC<
                 <input placeholder="Branch" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.branch} onChange={(e) => setFormData({ ...formData, branch: e.target.value })} />
                 <input placeholder="Emergency Contact Name" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.emergencyContactName} onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })} />
                 <input placeholder="Emergency Contact Phone" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.emergencyContactPhone} onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })} />
-                <input placeholder="Blood Group" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.bloodGroup} onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })} />
-                <input placeholder="Marital Status" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.maritalStatus} onChange={(e) => setFormData({ ...formData, maritalStatus: e.target.value })} />
-                <input placeholder="Nationality" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} />
+                <select
+  value={formData.bloodGroup}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      bloodGroup: e.target.value,
+    })
+  }
+  className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+>
+  <option value="">Select Blood Group</option>
+  <option value="A+">A+</option>
+  <option value="A-">A-</option>
+  <option value="B+">B+</option>
+  <option value="B-">B-</option>
+  <option value="AB+">AB+</option>
+  <option value="AB-">AB-</option>
+  <option value="O+">O+</option>
+  <option value="O-">O-</option>
+</select><select
+  value={formData.maritalStatus}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      maritalStatus: e.target.value,
+    })
+  }
+  className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+>
+  <option value="">Select Marital Status</option>
+  <option value="Single">Single</option>
+  <option value="Married">Married</option>
+  <option value="Divorced">Divorced</option>
+  <option value="Widowed">Widowed</option>
+</select><input placeholder="Nationality" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} />
                 <input placeholder="Passport Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.passportNumber} onChange={(e) => setFormData({ ...formData, passportNumber: e.target.value })} />
                 <input placeholder="UAN" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.uan} onChange={(e) => setFormData({ ...formData, uan: e.target.value })} />
                 <input placeholder="PF Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.pfNumber} onChange={(e) => setFormData({ ...formData, pfNumber: e.target.value })} />
@@ -866,37 +855,6 @@ const EmployeesModule: FC<
     })
   }
 />
-
-{/* WORK MODE */}
-<select
-  required
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
-  value={formData.workMode}
-  onChange={(e) =>
-    setFormData({
-      ...formData,
-      workMode: e.target.value as 'WFH' | 'Office' | 'Hybrid' | '',
-    })
-  }
->
-  <option value="">Select Work Mode</option>
-  <option value="WFH">WFH</option>
-  <option value="Office">Office</option>
-  <option value="Hybrid">Hybrid</option>
-</select>
-
 {/* LOCATION */}
 <input
   required
@@ -1237,7 +1195,7 @@ const EmployeesModule: FC<
 
         {/* DEPARTMENT */}
         <td className="px-8 py-6 text-slate-800 font-medium">
-          {getDepartmentLabel(emp) || '-'}
+          {emp.dept}
         </td>
 
         {/* SALARY */}

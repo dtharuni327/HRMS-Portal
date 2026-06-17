@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import React, { useEffect, useState, useRef, type ChangeEvent, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../../store/authStore';
 import DashboardNavbar from '../../../components/DashboardNavbar';
@@ -116,6 +116,7 @@ const DarkHRDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'Dashboard' | 'Employees' | 'Tasks' | 'Attendance' | 'Leave' | 'Payroll' | 'Recruitment' | 'Documents' | 'Reports' | 'ProjectEffortReport' | 'Organization'>('Dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const contentRef = useRef<HTMLDivElement | null>(null);
   const [isAddingReport, setIsAddingReport] = useState(false);
   const [isAddingPolicy, setIsAddingPolicy] = useState(false);
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null);
@@ -1107,6 +1108,22 @@ const DarkHRDashboard: React.FC = () => {
 
   const [activePage, setActivePage] = useState<'dashboard' | 'profile'>('dashboard');
 
+  useEffect(() => {
+    if (contentRef.current) {
+      try {
+        contentRef.current.scrollTo({ top: 0, left: 0 });
+      } catch (error) {
+        contentRef.current.scrollTop = 0;
+      }
+    }
+
+    try {
+      window.scrollTo({ top: 0, left: 0 });
+    } catch (error) {
+      // ignore
+    }
+  }, [activeTab, activePage]);
+
   const performanceData = [
     { dept: 'Tech', rating: 4.5 }, { dept: 'Design', rating: 4.2 }, { dept: 'HR', rating: 4.8 }, { dept: 'Admin', rating: 4.0 }
   ];
@@ -1170,7 +1187,7 @@ const DarkHRDashboard: React.FC = () => {
           }
         />
 
-        <div className="flex-1 overflow-x-visible overflow-y-auto hide-scrollbar">
+        <div ref={contentRef} className="flex-1 overflow-x-visible overflow-y-auto hide-scrollbar">
           {activeTab === 'Dashboard' && activePage === 'dashboard' && (
   <DashboardModule
     setActivePage={setActivePage}

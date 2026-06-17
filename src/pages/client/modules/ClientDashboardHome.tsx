@@ -44,7 +44,7 @@ export default function ClientHome() {
     <div className="space-y-6">
       {/* Hero */}
 
-      <div className="rounded-[32px] bg-[#F5F1E8] p-10">
+      <div className="rounded-[32px] bg-[#ECE6DA] p-10">
         <p className="mb-3 text-xs uppercase tracking-[4px] text-orange-500">
           Client Dashboard
         </p>
@@ -102,7 +102,7 @@ export default function ClientHome() {
       <div className="grid gap-6 xl:grid-cols-2">
         {/* Project Snapshot */}
 
-        <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#EADCFD' }}>
+        <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#D7C8F2' }}>
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-[4px] text-sky-600">
@@ -145,7 +145,7 @@ export default function ClientHome() {
 
         {/* Financial Snapshot */}
 
-        <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#FBF6EE' }}>
+        <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#F0E8D9' }}>
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-[4px] text-pink-500">
@@ -189,7 +189,7 @@ export default function ClientHome() {
       <div className="grid gap-6 xl:grid-cols-2">
         {/* Activity */}
 
-        <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#F5EFDB' }}>
+        <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#E9E1CC' }}>
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-[4px] text-green-600">
@@ -218,7 +218,7 @@ export default function ClientHome() {
 
         {/* Upcoming */}
 
-        <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#F5E9D7' }}>
+        <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#E9DBC6' }}>
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-[4px] text-orange-500">
@@ -248,7 +248,7 @@ export default function ClientHome() {
 
       {/* Documents */}
 
-      <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#FFFFFF' }}>
+      <div className="rounded-[28px] p-6 shadow-xl" style={{ backgroundColor: '#F7F7F8' }}>
         <div className="mb-6 flex items-center justify-between">
           <div>
             <p className="text-xs uppercase tracking-[4px] text-cyan-600">
