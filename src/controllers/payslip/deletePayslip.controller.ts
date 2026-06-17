@@ -11,6 +11,7 @@ export const deletePayslipController = async (req: Request, res: Response) => {
         message: "Payslip ID is required"
       });
     }
+    
     const result = await deletePayslipService(parseInt(payslip_id));
 
     if (!result.success) {

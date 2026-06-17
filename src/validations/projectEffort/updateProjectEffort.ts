@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 export const updateProjectEffortSchema = z.object({
   ProjectName: z
     .string()

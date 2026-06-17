@@ -4,6 +4,7 @@ export const getProjectEfforts = async () => {
   const pool = await db;
 
   const result = await pool
+  
     .request()
     .execute("sp_GetProjectEfforts");
 

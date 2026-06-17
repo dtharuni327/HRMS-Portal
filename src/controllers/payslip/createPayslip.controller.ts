@@ -24,7 +24,6 @@ export const createPayslipController = async (req: Request, res: Response) => {
       });
     }
     const result = await createPayslipService(Emp_id, Number(payroll_id));
-
     if (!result.success) {
       return res.status(result.statusCode ?? 400).json({
         success: false,

@@ -28,7 +28,8 @@ export const getAllPayslipsController = async (req: Request, res: Response) => {
       success: true,
       data: result.data ?? []
     });
-  } catch (error) {
+  } 
+  catch (error) {
     console.error("[GetAllPayslipsController] Error:", error);
     return res.status(500).json({
       success: false,

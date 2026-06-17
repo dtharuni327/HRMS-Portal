@@ -9,7 +9,7 @@ export const createProjectEffortSchema = z.object({
     .string()
     .min(1, "Project name is required")
     .max(200, "Project name cannot exceed 200 characters"),
-
+    
   WorkDate: z
     .string()
     .min(1, "Work date is required"),

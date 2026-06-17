@@ -5,6 +5,7 @@ export const createProjectEffort = async (data: any) => {
   const pool = await db;
 
   const result = await pool
+
     .request()
     .input("Emp_id", sql.VarChar(12), data.Emp_id)
     .input("ProjectName", sql.NVarChar(200), data.ProjectName)

@@ -12,6 +12,7 @@ export const getPayslipOwnController = async (req: Request, res: Response) => {
         message: "User not authenticated"
       });
     }
+    
     const monthNum = month ? Number(month) : null;
     const yearNum = year ? Number(year) : null;
     const result = await getPayslipByEmployeeService(userEmp_id, monthNum, yearNum);

@@ -8,6 +8,7 @@ export const updateProjectEffort = async (
   const pool = await db;
 
   const result = await pool
+  
     .request()
     .input("EffortId", sql.Int, effortId)
     .input("ProjectName", sql.NVarChar(200), data.ProjectName)
