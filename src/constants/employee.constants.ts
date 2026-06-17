@@ -43,9 +43,9 @@ export const EMPLOYEE_SP_ERROR = {
   NOT_FOUND: 50010,
   MANAGER_SELF_ONLY: 50011,
   ACCESS_DENIED: 50012,
-  DUPLICATE_KEY: 2627, // unique constraint violation
-  DUPLICATE_INDEX: 2601, // unique index violation
-} as const; // 50xxx = SP-thrown errors, 2xxx = native SQL constraint errors
+  DUPLICATE_KEY: 2627, 
+  DUPLICATE_INDEX: 2601,
+} as const;
 
 export const PAGINATION = {
   DEFAULT_PAGE: 1,

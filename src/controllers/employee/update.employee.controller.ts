@@ -1,15 +1,30 @@
+// update.employee.controller.ts
 import { Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware";
 import { updateEmployeeService } from "../../services/employee/update.employee.service";
 import { HTTP_STATUS, EMPLOYEE_SP_ERROR } from "../../constants/employee.constants";
 
-const SP_ERROR_MAP: Record<number, { status: number; message: string }> = {
-  [EMPLOYEE_SP_ERROR.NOT_FOUND]: { status: HTTP_STATUS.NOT_FOUND, message: "Employee not found" },
-  [EMPLOYEE_SP_ERROR.MANAGER_SELF_ONLY]: { status: HTTP_STATUS.FORBIDDEN, message: "Managers can only update their own profile" },
-  [EMPLOYEE_SP_ERROR.ACCESS_DENIED]: { status: HTTP_STATUS.FORBIDDEN, message: "Access denied" },
+// native SQL constraint errors — these have real err.number values
+const NATIVE_ERROR_MAP: Record<number, { status: number; message: string }> = {
   [EMPLOYEE_SP_ERROR.DUPLICATE_KEY]: { status: HTTP_STATUS.CONFLICT, message: "Email or phone already exists" },
   [EMPLOYEE_SP_ERROR.DUPLICATE_INDEX]: { status: HTTP_STATUS.CONFLICT, message: "Email or phone already exists" },
 };
+
+// RAISERROR always delivers err.number === 50000, so match by message text instead
+const SP_MSG_MAP: Array<{ match: string; status: number; message: string }> = [
+  { match: "Employee not found", status: HTTP_STATUS.NOT_FOUND, message: "Employee not found" },
+  { match: "You can only update your own profile", status: HTTP_STATUS.FORBIDDEN, message: "You can only update your own profile" },
+  { match: "Access denied: cannot update restricted fields", status: HTTP_STATUS.FORBIDDEN, message: "Access denied: cannot update restricted fields" },
+  { match: "Access denied", status: HTTP_STATUS.FORBIDDEN, message: "Access denied" },
+  { match: "Email already exists", status: HTTP_STATUS.CONFLICT, message: "Email already exists" },
+  { match: "Phone already exists", status: HTTP_STATUS.CONFLICT, message: "Phone already exists" },
+  { match: "Employee cannot be their own manager", status: HTTP_STATUS.BAD_REQUEST, message: "Employee cannot be their own manager" },
+  { match: "Invalid manager_id", status: HTTP_STATUS.BAD_REQUEST, message: "Invalid manager_id" },
+  { match: "Invalid role_id", status: HTTP_STATUS.BAD_REQUEST, message: "Invalid role_id" },
+  { match: "Invalid department_id", status: HTTP_STATUS.BAD_REQUEST, message: "Invalid department_id" },
+  { match: "Invalid client_id", status: HTTP_STATUS.BAD_REQUEST, message: "Invalid client_id" },
+  { match: "Invalid Gender", status: HTTP_STATUS.BAD_REQUEST, message: "Invalid Gender value" },
+];
 
 export const updateEmployee = async (req: AuthRequest, res: Response) => {
   try {
@@ -34,15 +49,13 @@ export const updateEmployee = async (req: AuthRequest, res: Response) => {
       employee,
     });
   } catch (err: any) {
-    const spErr = SP_ERROR_MAP[err?.number]; // SP signals errors via error number
-    if (spErr) return res.status(spErr.status).json({ message: spErr.message });
+    const nativeErr = NATIVE_ERROR_MAP[err?.number];
+    if (nativeErr) return res.status(nativeErr.status).json({ message: nativeErr.message });
 
-    // String-based RAISERROR('...', 16, 1) calls in the SP default to error
-    // number 50000 — surface the SP's own message as a 400 instead of a
-    // generic 500 (e.g. "Employee not found", "Invalid Gender",
-    // "Access denied: cannot update restricted fields", etc.)
     if (err?.number === 50000 && err?.message) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: err.message });
+      const matched = SP_MSG_MAP.find(({ match }) => err.message.includes(match));
+      if (matched) return res.status(matched.status).json({ message: matched.message });
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: err.message }); // unknown SP error, still a 400
     }
 
     console.error("updateEmployee error:", err);

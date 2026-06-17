@@ -1,20 +1,24 @@
+// create.employee.controller.ts
 import { Request, Response } from "express";
 import { createEmployeeService } from "../../services/employee/create.employee.service";
 import { HTTP_STATUS, EMPLOYEE_SP_ERROR } from "../../constants/employee.constants";
 
-// Maps SP error codes to HTTP responses
-const SP_ERROR_MAP: Record<number, { status: number; message: string }> = {
-  [EMPLOYEE_SP_ERROR.EMAIL_EXISTS]: { status: HTTP_STATUS.CONFLICT, message: "Email already exists" },
-  [EMPLOYEE_SP_ERROR.PHONE_EXISTS]: { status: HTTP_STATUS.CONFLICT, message: "Phone already exists" },
-  [EMPLOYEE_SP_ERROR.INVALID_ROLE]: { status: HTTP_STATUS.BAD_REQUEST, message: "Invalid RoleID" },
-  [EMPLOYEE_SP_ERROR.INVALID_DEPARTMENT]: { status: HTTP_STATUS.BAD_REQUEST, message: "Invalid Department_id" },
-  [EMPLOYEE_SP_ERROR.INVALID_DASHBOARD]: { status: HTTP_STATUS.BAD_REQUEST, message: "Invalid Dashboard_id" },
-  [EMPLOYEE_SP_ERROR.INVALID_CLIENT]: { status: HTTP_STATUS.BAD_REQUEST, message: "Invalid client_id" },
-  [EMPLOYEE_SP_ERROR.INVALID_MANAGER]: { status: HTTP_STATUS.BAD_REQUEST, message: "Invalid or unauthorized manager_id" },
-  [EMPLOYEE_SP_ERROR.SELF_MANAGER]: { status: HTTP_STATUS.BAD_REQUEST, message: "Employee cannot be their own manager" },
+// native SQL constraint errors — these have real err.number values
+const NATIVE_ERROR_MAP: Record<number, { status: number; message: string }> = {
   [EMPLOYEE_SP_ERROR.DUPLICATE_KEY]: { status: HTTP_STATUS.CONFLICT, message: "Duplicate entry detected" },
   [EMPLOYEE_SP_ERROR.DUPLICATE_INDEX]: { status: HTTP_STATUS.CONFLICT, message: "Duplicate entry detected" },
 };
+
+// RAISERROR always delivers err.number === 50000, so match by message text instead
+const SP_MSG_MAP: Array<{ match: string; status: number; message: string }> = [
+  { match: "Personal email already exists", status: HTTP_STATUS.CONFLICT, message: "Email already exists" },
+  { match: "Phone number already exists", status: HTTP_STATUS.CONFLICT, message: "Phone already exists" },
+  { match: "Invalid RoleID", status: HTTP_STATUS.BAD_REQUEST, message: "Invalid RoleID" },
+  { match: "Invalid Department_id", status: HTTP_STATUS.BAD_REQUEST, message: "Invalid Department_id" },
+  { match: "Invalid Dashboard_id", status: HTTP_STATUS.BAD_REQUEST, message: "Invalid Dashboard_id" },
+  { match: "Invalid client_id", status: HTTP_STATUS.BAD_REQUEST, message: "Invalid client_id" },
+  { match: "Invalid manager_id", status: HTTP_STATUS.BAD_REQUEST, message: "Invalid or unauthorized manager_id" },
+];
 
 export const createEmployee = async (req: Request, res: Response) => {
   try {
@@ -24,16 +28,13 @@ export const createEmployee = async (req: Request, res: Response) => {
       employee,
     });
   } catch (err: any) {
-    // Check if the DB threw a known SP error before falling back to 500
-    const spErr = SP_ERROR_MAP[err?.number];
-    if (spErr) return res.status(spErr.status).json({ message: spErr.message });
+    const nativeErr = NATIVE_ERROR_MAP[err?.number];
+    if (nativeErr) return res.status(nativeErr.status).json({ message: nativeErr.message });
 
-    // String-based RAISERROR('...', 16, 1) calls in the SP default to error
-    // number 50000 — surface the SP's own message as a 400 instead of a
-    // generic 500, since these are validation errors (invalid RoleID,
-    // Department_id, manager_id, duplicate email/phone, etc.)
     if (err?.number === 50000 && err?.message) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: err.message });
+      const matched = SP_MSG_MAP.find(({ match }) => err.message.includes(match));
+      if (matched) return res.status(matched.status).json({ message: matched.message });
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({ message: err.message }); // unknown SP error, still a 400
     }
 
     console.error("createEmployee error:", err);
