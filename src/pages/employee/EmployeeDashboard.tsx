@@ -236,11 +236,11 @@ const EmployeeDashboard: React.FC = () => {
         <aside
           onMouseEnter={() => setIsSidebarExpanded(true)}
           onMouseLeave={() => setIsSidebarExpanded(false)}
-          className={`fixed left-4 top-4 z-40 hidden h-[calc(100vh-2rem)] overflow-x-hidden whitespace-nowrap rounded-[28px] border border-white/12 bg-[#10213d]/90 text-white/75 shadow-[0_24px_70px_rgba(2,8,23,0.32)] backdrop-blur-2xl transition-[width] duration-300 xl:flex xl:flex-col ${
-            isSidebarExpanded ? "w-[260px]" : "w-[64px]"
+          className={`group/sidebar fixed inset-y-6 left-6 z-50 overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] transition-[width] duration-300 ease-in-out xl:flex xl:flex-col ${
+            isSidebarExpanded ? 'w-[260px]' : 'w-[88px]'
           }`}
         >
-          <div className="flex-1 overflow-y-auto px-3 py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex-1 overflow-y-auto px-3 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <nav className="space-y-3">
               {sidebarItems.map((item, index) => {
                 const Icon = item.icon;
@@ -257,8 +257,8 @@ const EmployeeDashboard: React.FC = () => {
                     onClick={() => setActivePage(item.page)}
                     className={`relative flex h-[58px] w-full items-center rounded-[1.4rem] transition-all duration-300 ${
                       isActive && !isLoginItem
-                        ? `${isSidebarExpanded ? 'px-3 justify-start' : 'justify-center'} bg-gradient-to-r from-[#5a4bc7] to-[#4b3f99] text-white shadow-[0_10px_30px_rgba(91,75,199,0.35)]`
-                        : `${isSidebarExpanded ? 'px-3 justify-start' : 'justify-center'} text-slate-400 hover:bg-white/5 hover:text-white`
+                        ? `${isSidebarExpanded ? 'px-3 justify-start' : 'pl-3 justify-start'} bg-gradient-to-r from-[#5a4bc7] to-[#4b3f99] text-white shadow-[0_10px_30px_rgba(91,75,199,0.35)]`
+                        : `${isSidebarExpanded ? 'px-3 justify-start' : 'pl-3 justify-start'} text-slate-400 hover:bg-white/5 hover:text-white`
                     }`}
                   >
                     <div
