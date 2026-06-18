@@ -4,7 +4,8 @@ import {
   updateSystemConfigService,
   deleteSystemConfigService,
   getAllSystemConfigService,
-  getSystemConfigByKeyService
+  getSystemConfigByKeyService,
+  getActiveSystemConfigService
 } from "../../services/systemConfig/systemConfig.service";
 import { SYSTEM_CONFIG_MESSAGES } from "../../constants/systemConfig.constants";
 
@@ -34,6 +35,18 @@ export const deleteSystemConfig = async (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (error: any) {
     return res.status(400).json({ message: error.message });
+  }
+};
+
+export const getActiveSystemConfig = async (_req: Request, res: Response) => {
+  try {
+    const config = await getActiveSystemConfigService();
+    return res.status(200).json({
+      message: SYSTEM_CONFIG_MESSAGES.FETCHED_ONE,
+      data: config
+    });
+  } catch (error: any) {
+    return res.status(404).json({ message: error.message });
   }
 };
 

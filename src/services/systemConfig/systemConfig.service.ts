@@ -38,6 +38,15 @@ export const deleteSystemConfigService = async (configKey: string, user: any) =>
   };
 };
 
+export const getActiveSystemConfigService = async () => {
+  const config = await systemConfigRepository.getActiveSystemConfig();
+  if (!config) {
+    throw new Error(SYSTEM_CONFIG_MESSAGES.NOT_FOUND);
+  }
+
+  return config;
+};
+
 export const getAllSystemConfigService = async () => {
   return await systemConfigRepository.getAllSystemConfig();
 };

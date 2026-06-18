@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import departmentRoutes from "./routes/department.routes"; 
-import roleRoutes from "./routes/role.routes";             
+import departmentRoutes from "./routes/department.routes";
+import roleRoutes from "./routes/role.routes";
 import announcementRoutes from "./routes/announcement.routes";
 import taskRoutes from "./routes/task.routes";
 import systemHealthRoutes from "./routes/systemHealth.routes";
@@ -13,6 +13,7 @@ import reimbursementRoutes from "./routes/reimbursement.routes";
 import invoiceRoutes from "./routes/invoice.routes";
 import taxReportsRoutes from "./routes/tax-reports.routes";
 import salaryRoutes from "./routes/salary.routes";
+import "./config/db";
 
 dotenv.config();
 
@@ -61,5 +62,10 @@ app.use(
     });
   }
 );
+
+const PORT = Number(process.env.PORT) || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 export default app;

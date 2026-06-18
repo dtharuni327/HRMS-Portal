@@ -18,6 +18,10 @@ This application includes the following modules:
 * Invoice Module
 * Tax Reports Module
 * Salary Management Module
+* Reimbursement Module
+* Invoice Module
+* Tax Reports Module
+* Salary Management Module
 
 **The application follows a layered architecture using:**
 
@@ -51,6 +55,7 @@ This application includes the following modules:
 
 ```text
 
+
 src/
 │
 ├── config/
@@ -73,6 +78,11 @@ src/
 │   ├── invoice/
 │   ├── tax-reports/
 │   └── salary/
+│   ├── systemHealth/
+│   ├── reimbursement/
+│   ├── invoice/
+│   ├── tax-reports/
+│   └── salary/
 │
 ├── services/
 │   ├── department/
@@ -84,6 +94,11 @@ src/
 │   ├── task/
 │   ├── internalJob/
 │   ├── systemConfiguration/
+│   ├── systemHealth/
+│   ├── reimbursement/
+│   ├── invoice/
+│   ├── tax-reports/
+│   └── salary/
 │   ├── systemHealth/
 │   ├── reimbursement/
 │   ├── invoice/
@@ -105,6 +120,11 @@ src/
 │   ├── invoice/
 │   ├── tax-reports/
 │   └── salary/
+│   ├── systemHealth/
+│   ├── reimbursement/
+│   ├── invoice/
+│   ├── tax-reports/
+│   └── salary/
 │
 ├── validations/
 │   ├── department/
@@ -116,6 +136,11 @@ src/
 │   ├── task/
 │   ├── internalJob/
 │   ├── systemConfiguration/
+│   ├── systemHealth/
+│   ├── reimbursement/
+│   ├── invoice/
+│   ├── tax-reports/
+│   └── salary/
 │   ├── systemHealth/
 │   ├── reimbursement/
 │   ├── invoice/
@@ -139,8 +164,29 @@ src/
 │   ├── invoice.routes.ts
 │   ├── tax-reports.routes.ts
 │   └── salary.routes.ts
+│   ├── systemHealth.routes.ts
+│   ├── reimbursement.routes.ts
+│   ├── invoice.routes.ts
+│   ├── tax-reports.routes.ts
+│   └── salary.routes.ts
 │
 ├── constants/
+│   ├── department.constants.ts
+│   ├── role.constants.ts
+│   ├── userRole.constants.ts
+│   ├── employeeDepartment.constants.ts
+│   ├── employeeRole.constants.ts
+│   ├── announcement.constants.ts
+│   ├── task.constants.ts
+│   ├── internalJob.constants.ts
+│   ├── systemConfig.constants.ts
+│   ├── systemHealth.constants.ts
+│   ├── reimbursement.constants.ts
+│   ├── invoice.constants.ts
+│   ├── tax-reports.constants.ts
+│   └── salary.constants.ts
+│
+├── middleware/
 │   ├── department.constants.ts
 │   ├── role.constants.ts
 │   ├── userRole.constants.ts
@@ -311,6 +357,73 @@ src/
 **Access:**
 
 * Super Admin
+
+### Reimbursement Module
+
+* Submit Reimbursement Claim
+* Get My Reimbursement Claims
+* Get All Reimbursement Claims
+* Get Reimbursement Claim Details
+* Review Reimbursement Claim
+* Process Reimbursement Payment
+* Settle Reimbursement Payment
+  
+**Access**
+
+* Employee
+* Manager
+* HR Admin
+* Finance
+* Super Admin
+
+### Invoice Module
+
+* Create Invoice
+* Get All Invoices
+* Get My Invoices
+* Get Invoice Details
+* Update Invoice
+* Update Invoice Status
+
+**Access**
+
+* Finance
+* Super Admin
+* Client
+  
+### Tax Reports Module
+
+* Generate Tax Reports
+* Get Tax Reports
+* Get Compliance Deadlines
+* Get Tax Report Details
+* Export Tax Reports
+* Update Filing Status
+
+**Access**
+
+* Finance
+* Super Admin
+* HR Admin
+  
+### Salary Management Module
+* Create Salary Structure
+* Get Salary Structures
+* Get Employee Salary Details
+* Update Salary Structure
+* Process Payroll
+* Generate Payslips
+* Get Payslips
+* Get Salary Reports
+* Manage Bonuses
+* Manage Incentives
+
+**Access**
+
+* Finance
+* Super Admin
+* HR Admin
+* Employee
 
 ### Reimbursement Module
 
@@ -724,3 +837,145 @@ GET /salary/reports/analytics
 
 
 
+
+## Reimbursement APIs
+
+Submit Reimbursement Claim
+
+POST /reimbursement/submit
+
+Get My Reimbursement Claims
+
+GET /reimbursement/my
+
+Get All Reimbursement Claims
+
+GET /reimbursement/all
+
+Get Reimbursement Claim By ID
+
+GET /reimbursement/:claimId
+
+Review Reimbursement Claim
+
+PUT /reimbursement/review/:claimId
+
+Process Reimbursement Payment
+
+PUT /reimbursement/process/:claimId
+
+Settle Reimbursement Payment
+
+PUT /reimbursement/settle/:claimId
+
+---
+
+## Invoice APIs
+
+Create Invoice
+
+POST /invoice/create
+
+Get All Invoices
+
+GET /invoice/all
+
+Get My Invoices
+
+GET /invoice/my
+
+Get Invoice By ID
+
+GET /invoice/:invoiceId
+
+Update Invoice
+
+PUT /invoice/update/:invoiceId
+
+Update Invoice Status
+
+PUT /invoice/status/:invoiceId
+
+---
+
+## Tax Reports APIs
+
+Generate Tax Report
+
+POST /tax-reports/generate
+
+Get Tax Reports
+
+GET /tax-reports
+
+Get Compliance Deadlines
+
+GET /tax-reports/deadlines
+
+Get Tax Report By ID
+
+GET /tax-reports/:reportId
+
+Export Tax Report
+
+GET /tax-reports/:reportId/export
+
+Update Filing Status
+
+PUT /tax-reports/:reportId/filing-status
+
+---
+
+## Salary Management APIs
+
+Create Salary Structure
+
+POST /salary/structure/create
+
+Get All Salary Structures
+
+GET /salary/structure/all
+
+Get Employee Salary
+
+GET /salary/structure/employee/:employeeId
+
+Get Salary Structure By ID
+
+GET /salary/structure/:salaryId
+
+Update Salary Structure
+
+PUT /salary/structure/:salaryId/update
+
+Process Payroll
+
+POST /salary/payroll/process
+
+Generate Payslip
+
+POST /salary/:salaryId/payslip/generate
+
+Get All Payslips
+
+GET /salary/payslip/all
+
+Get Payslip By ID
+
+GET /salary/payslip/:payslipId
+
+Add Bonus
+
+POST /salary/:employeeId/bonus/add
+
+Get Bonuses
+
+GET /salary/bonus/all
+
+Add Incentive
+
+POST /salary/:employeeId/incentive/add
+
+Get Salary Reports
+
+GET /salary/reports/analytics

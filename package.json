@@ -2,12 +2,12 @@
   "name": "hrms-backend",
   "version": "1.0.0",
   "description": "HRMS Portal Backend API",
-  "main": "dist/server.js",
+  "main": "dist/app.js",
   "type": "commonjs",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/app.js",
     "test": "echo 'No tests yet' && exit 0"
   },
   "keywords": [],
