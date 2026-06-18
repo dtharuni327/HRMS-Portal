@@ -12,7 +12,7 @@ interface DashboardModuleProps {
   setShowProfileModal: Dispatch<SetStateAction<boolean>>;
   handleProfileUpload: (e: ChangeEvent<HTMLInputElement>) => void;
   setActivePage: Dispatch<SetStateAction<'dashboard' | 'profile'>>;
-  setActiveTab: Dispatch<SetStateAction<'Home' | 'Approvals' | 'Regularisation' | 'Attendance' | 'AttendanceAnalytics' | 'ProjectEffortReport' | 'TeamDirectory' | 'TeamLeaveCalendar' | 'Employee' | 'TaskManager'>>;
+  setActiveTab: Dispatch<SetStateAction<'Home' | 'Approvals' | 'Regularisation' | 'Attendance' | 'AttendanceAnalytics' | 'ProjectEffortReport' | 'TeamDirectory' | 'TeamLeaveCalendar' | 'Employee' | 'TaskManager' | 'ClientUpdates'>>;
   announcements: Announcement[];
   announcementForm: { title: string; tag: string };
   setAnnouncementForm: Dispatch<SetStateAction<{ title: string; tag: string }>>;

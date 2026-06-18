@@ -289,7 +289,7 @@ const EmployeeDashboard: React.FC = () => {
             isSidebarExpanded ? "xl:ml-[292px]" : "xl:ml-[102px]"
           }`}
         >
-          <header className="sticky top-0 z-30 mx-4 w-auto rounded-[24px] border border-white/10 bg-[#172554]/95 text-white shadow-[inset_3px_0_0_rgba(34,211,238,0.75),0_16px_45px_rgba(2,8,23,0.28)] backdrop-blur-2xl">
+          <header className="sticky top-3 z-30 mx-5 w-auto rounded-[24px] border border-white/10 bg-[#172554]/95 text-white shadow-[inset_3px_0_0_rgba(34,211,238,0.75),0_16px_45px_rgba(2,8,23,0.28)] backdrop-blur-2xl sm:mx-6">
             <div className="flex items-center justify-between px-4 py-3 sm:px-5 lg:px-7">
               <div className="flex min-w-0 items-center gap-3">
                 <button

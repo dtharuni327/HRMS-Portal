@@ -271,85 +271,174 @@ const HomePage: React.FC<HomePageProps> = ({
 
   {/* Profile Modal */}
   {showProfileModal && (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-2xl rounded-[2rem] border border-white/10 bg-[#0b1020] p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-2xl rounded-[2rem] bg-white p-8 shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
         <button
           onClick={() => setShowProfileModal(false)}
-          className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition hover:bg-red-500"
+          className="absolute top-5 right-5 flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/10 text-slate-900 transition hover:bg-slate-900/20"
           type="button"
         >
-          <X size={18} className="text-white" />
+          <X size={18} />
         </button>
 
-        <div className="flex items-center gap-4">
-          {profileImage ? (
-            <img
-              src={profileImage}
-              alt="Employee Profile"
-              className="h-20 w-20 rounded-2xl border-2 border-cyan-400 object-cover shadow-lg"
-            />
-          ) : (
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#2563eb] text-3xl font-black text-white shadow-lg">
-              {employeeDetails.avatar}
-            </div>
-          )}
+        <div className="mb-8 flex items-start gap-6">
+          <div className="relative shrink-0">
+            {profileImage ? (
+              <img
+                src={profileImage}
+                alt="Employee Profile"
+                className="h-32 w-32 rounded-2xl border-4 border-slate-200 object-cover shadow-md"
+              />
+            ) : (
+              <div className="flex h-32 w-32 items-center justify-center rounded-2xl border-4 border-slate-200 bg-slate-200 text-4xl font-black text-slate-400 shadow-md">
+                {employeeDetails.avatar}
+              </div>
+            )}
 
-          <div>
-            <h2 className="text-3xl font-black text-white">
+            <input
+              id="employeeProfileUpload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const url = URL.createObjectURL(file);
+                  setProfileImage(url);
+                  localStorage.setItem('employeeProfileImage', url);
+                }
+              }}
+            />
+            <label
+              htmlFor="employeeProfileUpload"
+              className="absolute -bottom-2 -right-2 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-cyan-500 text-white shadow-lg transition hover:bg-cyan-600"
+            >
+              <span className="text-xl font-black">+</span>
+            </label>
+          </div>
+
+          <div className="flex-1">
+            <h2 className="text-3xl font-black text-slate-900">
               {employeeDetails.name}
             </h2>
-            <p className="mt-1 text-base font-bold text-cyan-400">
-              {employeeDetails.role}
-            </p>
-            <p className="mt-2 text-xs font-black uppercase tracking-widest text-slate-500">
-              {employeeDetails.employeeId}
+            <p className="mt-1 text-sm font-semibold uppercase tracking-wider text-slate-500">
+              Employee Profile Details
             </p>
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {[
-            { label: "Email", value: employeeDetails.email },
-            { label: "Phone", value: employeeDetails.phone },
-            { label: "Department", value: employeeDetails.department },
-            { label: "Experience", value: employeeDetails.experience },
-            { label: "Employee ID", value: employeeDetails.employeeId },
-            { label: "Office", value: employeeDetails.office },
-            { label: "Joining Date", value: employeeDetails.joiningDate },
-            { label: "Manager", value: employeeDetails.manager },
-            { label: "Shift", value: employeeDetails.shift },
-            { label: "Location", value: employeeDetails.location },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className="rounded-2xl border border-white/10 bg-white/5 p-4"
-            >
-              <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                {item.label}
+        <div className="grid grid-cols-2 gap-6 gap-y-8">
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Employee ID
               </p>
-              <h3 className="break-all text-sm font-bold text-white">
-                {item.value}
-              </h3>
+              <p className="mt-2 text-base font-bold text-slate-900">
+                {employeeDetails.employeeId}
+              </p>
             </div>
-          ))}
-
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
-              Access Level
-            </p>
-            <div className="inline-flex rounded-full bg-purple-500/20 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-purple-400">
-              {employeeDetails.accessLevel}
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Phone
+              </p>
+              <p className="mt-2 text-base font-bold text-slate-900">
+                {employeeDetails.phone}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                PAN Number
+              </p>
+              <p className="mt-2 text-base font-bold text-slate-900">
+                ABCDE1234F
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Department
+              </p>
+              <p className="mt-2 text-base font-bold text-slate-900">
+                {employeeDetails.department}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Designation
+              </p>
+              <p className="mt-2 text-base font-bold text-slate-900">
+                {employeeDetails.role}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Location
+              </p>
+              <p className="mt-2 text-base font-bold text-slate-900">
+                {employeeDetails.location}
+              </p>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="mb-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
-              Status
-            </p>
-            <div className="inline-flex rounded-full bg-green-500/20 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-green-400">
-              {employeeDetails.status}
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Email
+              </p>
+              <p className="mt-2 break-all text-base font-bold text-slate-900">
+                {employeeDetails.email}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Gender
+              </p>
+              <p className="mt-2 text-base font-bold text-slate-900">
+                Not specified
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Aadhaar Number
+              </p>
+              <p className="mt-2 text-base font-bold text-slate-900">
+                1234 5678 9012
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Address
+              </p>
+              <p className="mt-2 text-base font-bold text-slate-900">
+                Mumbai, Maharashtra
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Reporting Manager
+              </p>
+              <p className="mt-2 text-base font-bold text-slate-900">
+                {employeeDetails.manager}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Joining Date
+              </p>
+              <p className="mt-2 text-base font-bold text-slate-900">
+                {employeeDetails.joiningDate}
+              </p>
             </div>
           </div>
+        </div>
+
+        <div className="mt-8 flex justify-start">
+          <button
+            type="button"
+            onClick={() => setShowProfileModal(false)}
+            className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-slate-800"
+          >
+            ← Back to Dashboard
+          </button>
         </div>
       </div>
     </div>

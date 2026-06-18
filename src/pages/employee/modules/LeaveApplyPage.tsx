@@ -121,7 +121,7 @@ const LeaveApplyPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-[#081224] px-4 py-6 text-[#0f172a]">
+    <div className="min-h-screen w-full overflow-x-hidden px-4 py-6 text-[#0f172a]">
       <div className="mx-auto min-h-screen w-full space-y-6">
         <motion.div
           initial={{ opacity: 0, y: 18 }}

@@ -99,22 +99,22 @@ const InvoiceSummary: React.FC<Props> = ({ invoices: propInvoices }) => {
             <p className="max-w-xl text-[15px] leading-6 text-slate-700">This section highlights the client billing status with a simple overview of paid, unpaid, and pending invoices.</p>
           </div>
 
-            <div className="grid grid-cols-4 gap-3">
-            <div className="rounded-[12px] bg-white p-4 shadow-sm text-center min-h-[72px] flex flex-col justify-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch w-full">
+            <div className="rounded-[12px] bg-white p-4 shadow-sm flex flex-col items-center justify-center min-h-[84px] break-words">
               <p className="text-sm text-slate-400">Total</p>
-              <p className="text-2xl font-bold text-slate-900">{totals.totalCount}</p>
+              <p className="mt-1 text-2xl font-bold text-slate-900">{totals.totalCount}</p>
             </div>
-            <div className="rounded-[12px] bg-white p-4 shadow-sm text-center min-h-[72px] flex flex-col justify-center">
+            <div className="rounded-[12px] bg-white p-4 shadow-sm flex flex-col items-center justify-center min-h-[84px] break-words">
               <p className="text-sm text-slate-400">Paid</p>
-              <p className="text-2xl font-bold text-emerald-800">{formatCurrency(totals.paid)}</p>
+              <p className="mt-1 text-2xl font-bold text-emerald-800">{formatCurrency(totals.paid)}</p>
             </div>
-            <div className="rounded-[12px] bg-white p-4 shadow-sm text-center min-h-[72px] flex flex-col justify-center">
+            <div className="rounded-[12px] bg-white p-4 shadow-sm flex flex-col items-center justify-center min-h-[84px] break-words">
               <p className="text-sm text-slate-400">Unpaid</p>
-              <p className="text-2xl font-bold text-rose-700">{formatCurrency(totals.unpaid)}</p>
+              <p className="mt-1 text-2xl font-bold text-rose-700">{formatCurrency(totals.unpaid)}</p>
             </div>
-            <div className="rounded-[12px] bg-white p-4 shadow-sm text-center min-h-[72px] flex flex-col justify-center">
+            <div className="rounded-[12px] bg-white p-4 shadow-sm flex flex-col items-center justify-center min-h-[84px] break-words">
               <p className="text-sm text-slate-400">Collection Rate</p>
-              <p className="text-2xl font-bold text-slate-900">{totals.collectionRate}%</p>
+              <p className="mt-1 text-2xl font-bold text-slate-900">{totals.collectionRate}%</p>
             </div>
           </div>
         </div>

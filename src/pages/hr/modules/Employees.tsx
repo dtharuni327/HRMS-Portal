@@ -25,10 +25,14 @@ import {
   SparkCard,
   type Employee,
   type WorkMode,
-} from './hrShared.tsx';
+} from './hrShared';
 
 interface EmployeeFormData {
   name: string;
+
+  username: string;
+
+  password: string;
 
   email: string;
 
@@ -218,6 +222,12 @@ const formatDisplayDate = (value: string) => {
   if (!year || !month || !day) return value;
   return `${day}/${month}/${year}`;
 };
+
+const addEmployeeFieldClass =
+  'w-full rounded-2xl border border-slate-300 bg-white p-4 text-slate-900 outline-none placeholder:text-slate-500 caret-slate-900 focus:border-violet-400 focus:ring-2 focus:ring-violet-300 transition-all';
+
+const addEmployeeSelectClass =
+  'w-full rounded-2xl border border-slate-300 bg-white p-4 text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-300 transition-all';
 
 const EmployeesModule: FC<
   EmployeesModuleProps
@@ -531,23 +541,7 @@ const EmployeesModule: FC<
             <input
               required
               placeholder="Full Name"
-              className="
-  w-full
-  p-4
-  bg-white
-  border
-  border-slate-300
-  rounded-2xl
-  outline-none
-  text-slate-900
-  placeholder:text-slate-400
-  caret-slate-900
-  shadow-sm
-  focus:ring-2
-  focus:ring-violet-300
-  focus:border-violet-400
-  transition-all
-"
+                className={addEmployeeFieldClass}
               value={formData.name}
               onChange={(e) =>
                 setFormData({
@@ -564,7 +558,7 @@ const EmployeesModule: FC<
               required
               type="email"
               placeholder="Personal Email Address"
-              className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+              className={addEmployeeFieldClass}
               value={formData.email}
               onChange={(e) =>
                 setFormData({
@@ -590,7 +584,7 @@ const EmployeesModule: FC<
       });
     }
   }}
-  className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+  className={addEmployeeFieldClass}
 />
 
             <select
@@ -602,19 +596,7 @@ const EmployeesModule: FC<
                   gender: e.target.value,
                 })
               }
-              className="
-                p-4
-                bg-white
-                border
-                border-slate-300
-                rounded-2xl
-                outline-none
-                text-slate-900
-                focus:ring-2
-                focus:ring-violet-300
-                focus:border-violet-400
-                transition-all
-              "
+              className={addEmployeeSelectClass}
             >
               <option value="">Select Gender</option>
               <option value="Male">Male</option>
@@ -641,7 +623,7 @@ const EmployeesModule: FC<
       aadhaarNumber: formatted,
     });
   }}
-  className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+  className={addEmployeeFieldClass}
 />
 
 <input
@@ -659,13 +641,13 @@ const EmployeesModule: FC<
       panNumber: value,
     });
   }}
-  className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+  className={addEmployeeFieldClass}
 />
 
             <input
               required
               placeholder="Address"
-              className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+              className={addEmployeeFieldClass}
               value={
                 formData.address
               }
@@ -681,12 +663,12 @@ const EmployeesModule: FC<
             <div className="col-span-2 rounded-3xl border border-violet-100 bg-violet-50/80 p-4">
               <p className="mb-3 text-[11px] font-black uppercase tracking-[0.35em] text-violet-700">Bank & Compliance Details</p>
               <div className="grid grid-cols-2 gap-4">
-                <input placeholder="Bank Name" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.bankName} onChange={(e) => setFormData({ ...formData, bankName: e.target.value })} />
-                <input placeholder="Account Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.accountNumber} onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })} />
-                <input placeholder="IFSC Code" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.ifsc} onChange={(e) => setFormData({ ...formData, ifsc: e.target.value })} />
-                <input placeholder="Branch" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.branch} onChange={(e) => setFormData({ ...formData, branch: e.target.value })} />
-                <input placeholder="Emergency Contact Name" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.emergencyContactName} onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })} />
-                <input placeholder="Emergency Contact Phone" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.emergencyContactPhone} onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })} />
+                <input placeholder="Bank Name" className={addEmployeeFieldClass} value={formData.bankName} onChange={(e) => setFormData({ ...formData, bankName: e.target.value })} />
+                <input placeholder="Account Number" className={addEmployeeFieldClass} value={formData.accountNumber} onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })} />
+                <input placeholder="IFSC Code" className={addEmployeeFieldClass} value={formData.ifsc} onChange={(e) => setFormData({ ...formData, ifsc: e.target.value })} />
+                <input placeholder="Branch" className={addEmployeeFieldClass} value={formData.branch} onChange={(e) => setFormData({ ...formData, branch: e.target.value })} />
+                <input placeholder="Emergency Contact Name" className={addEmployeeFieldClass} value={formData.emergencyContactName} onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })} />
+                <input placeholder="Emergency Contact Phone" className={addEmployeeFieldClass} value={formData.emergencyContactPhone} onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })} />
                 <select
   value={formData.bloodGroup}
   onChange={(e) =>
@@ -695,7 +677,7 @@ const EmployeesModule: FC<
       bloodGroup: e.target.value,
     })
   }
-  className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+  className={addEmployeeSelectClass}
 >
   <option value="">Select Blood Group</option>
   <option value="A+">A+</option>
@@ -714,39 +696,26 @@ const EmployeesModule: FC<
       maritalStatus: e.target.value,
     })
   }
-  className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+  className={addEmployeeSelectClass}
 >
   <option value="">Select Marital Status</option>
   <option value="Single">Single</option>
   <option value="Married">Married</option>
   <option value="Divorced">Divorced</option>
   <option value="Widowed">Widowed</option>
-</select><input placeholder="Nationality" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} />
-                <input placeholder="Passport Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.passportNumber} onChange={(e) => setFormData({ ...formData, passportNumber: e.target.value })} />
-                <input placeholder="UAN" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.uan} onChange={(e) => setFormData({ ...formData, uan: e.target.value })} />
-                <input placeholder="PF Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.pfNumber} onChange={(e) => setFormData({ ...formData, pfNumber: e.target.value })} />
-                <input placeholder="ESI Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.esiNumber} onChange={(e) => setFormData({ ...formData, esiNumber: e.target.value })} />
-                <input placeholder="Tax State" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.taxState} onChange={(e) => setFormData({ ...formData, taxState: e.target.value })} />
+</select><input placeholder="Nationality" className={addEmployeeFieldClass} value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} />
+                <input placeholder="Passport Number" className={addEmployeeFieldClass} value={formData.passportNumber} onChange={(e) => setFormData({ ...formData, passportNumber: e.target.value })} />
+                <input placeholder="UAN" className={addEmployeeFieldClass} value={formData.uan} onChange={(e) => setFormData({ ...formData, uan: e.target.value })} />
+                <input placeholder="PF Number" className={addEmployeeFieldClass} value={formData.pfNumber} onChange={(e) => setFormData({ ...formData, pfNumber: e.target.value })} />
+                <input placeholder="ESI Number" className={addEmployeeFieldClass} value={formData.esiNumber} onChange={(e) => setFormData({ ...formData, esiNumber: e.target.value })} />
+                <input placeholder="Tax State" className={addEmployeeFieldClass} value={formData.taxState} onChange={(e) => setFormData({ ...formData, taxState: e.target.value })} />
               </div>
             </div>
 
             {/* DEPARTMENT */}
 <select
   required
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    placeholder:text-slate-500
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
+  className={addEmployeeSelectClass}
   value={formData.dept}
   onChange={(e) =>
     setFormData({
@@ -788,20 +757,7 @@ const EmployeesModule: FC<
 {/* ROLE */}
 <select
   required
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    placeholder:text-slate-500
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
+  className={addEmployeeSelectClass}
   value={formData.role}
   onChange={(e) =>
     setFormData({
@@ -833,20 +789,7 @@ const EmployeesModule: FC<
 <input
   required
   placeholder="Designation"
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    placeholder:text-slate-500
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
+  className={addEmployeeFieldClass}
   value={formData.designation}
   onChange={(e) =>
     setFormData({
@@ -859,20 +802,7 @@ const EmployeesModule: FC<
 <input
   required
   placeholder="Location"
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    placeholder:text-slate-500
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
+  className={addEmployeeFieldClass}
   value={formData.location}
   onChange={(e) =>
     setFormData({
@@ -886,20 +816,7 @@ const EmployeesModule: FC<
 <input
   required
   placeholder="Reporting Manager"
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    placeholder:text-slate-500
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
+  className={addEmployeeFieldClass}
   value={formData.reportingManager}
   onChange={(e) =>
     setFormData({

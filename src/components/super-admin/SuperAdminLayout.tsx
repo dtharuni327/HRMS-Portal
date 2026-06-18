@@ -1,3 +1,4 @@
+import { Menu } from "lucide-react";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
 import SuperAdminSidebar from "./SuperAdminSidebar";
@@ -30,32 +31,43 @@ const SuperAdminLayout = () => {
           isSidebarExpanded ? "ml-[292px]" : "ml-[102px]"
         }`}
       >
-        <header className="mx-0 rounded-bl-3xl border-b border-cyan-400/40 bg-[#1d2d63] px-6 py-4 text-white">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Super Admin Dashboard</h1>
-              <p className="text-sm text-gray-200">
-                Manage system configuration, users, roles, holidays and departments
-              </p>
+        <header className="mx-6 mt-4 w-auto rounded-[24px] border border-white/10 bg-[#172554]/95 text-white shadow-[inset_3px_0_0_rgba(34,211,238,0.75),0_16px_45px_rgba(2,8,23,0.28)] backdrop-blur-2xl sm:mx-8">
+          <div className="flex items-center justify-between px-4 py-3 sm:px-5 lg:px-7">
+            <div className="flex min-w-0 items-center gap-3">
+              <button
+                className="rounded-xl border border-white/15 bg-white/5 p-2 transition hover:bg-white/10 xl:hidden"
+                type="button"
+                onClick={() => setIsSidebarExpanded((prev) => !prev)}
+              >
+                <Menu className="h-4 w-4" />
+              </button>
+
+              <div className="min-w-0">
+                <h2 className="truncate text-[28px] font-bold leading-tight tracking-tight text-white">
+                  Super Admin Dashboard
+                </h2>
+
+                <p className="truncate text-[15px] text-white/68">
+                  Manage system configuration, users, roles, holidays and departments
+                </p>
+              </div>
             </div>
 
-            {/* Right-side user info (matches employee dashboard style) */}
-            <div className="flex items-center gap-4">
-              {/* vertical divider like employee header */}
-              <div className="hidden sm:block h-8 w-px rounded bg-white/10" />
-
-              <div className="hidden sm:flex sm:items-center sm:gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#2563eb] text-sm font-semibold text-white shadow">
+            <div className="ml-4 flex shrink-0 items-center gap-3">
+              <div className="flex items-center gap-2 border-l border-white/20 pl-4">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-400/25 text-[14px] font-bold text-white">
                   {initials}
                 </div>
 
-                <div className="hidden md:block">
-                  <div className="text-sm font-semibold">{currentUser.name}</div>
-                  <div className="text-xs text-white/60">{currentUser.role}</div>
+                <div className="hidden sm:block">
+                  <p className="text-[14px] font-semibold text-white">
+                    {currentUser.name}
+                  </p>
+                  <p className="text-[11px] text-white/70">{currentUser.role}</p>
                 </div>
               </div>
 
-              <div className="ml-2 rounded-md bg-white/5 px-3 py-1 text-xs font-semibold text-white/80">
+              <div className="ml-2 rounded-xl bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white">
                 HRMS
               </div>
             </div>

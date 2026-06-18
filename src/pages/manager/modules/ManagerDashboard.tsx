@@ -16,7 +16,7 @@ import TeamLeaveCalendarModule from './TeamLeaveCalendar';
 import TaskManagerModule from './TaskManager';
 import ClientUpdatesModule from './ClientUpdates';
 
-import { type Announcement, type Employee, type HRDetails, type Job, type LeaveData, type Policy, type RequestItem, type Training, type AttendanceStatus, type Payslip } from './managerShared';
+import { type Announcement, type Employee, type HRDetails, type Job, type LeaveData, type Policy, type RequestItem, type Training, type AttendanceStatus, type Payslip, type WorkMode } from './managerShared';
 
 type EmployeeFormState = {
   name: string;
@@ -41,7 +41,7 @@ type EmployeeFormState = {
   pfNumber: string;
   esiNumber: string;
   taxState: string;
-  workMode: 'WFH' | 'Office' | 'Hybrid' | '';
+  workMode: WorkMode;
   role: string;
   designation: string;
   dept: string;
@@ -1196,9 +1196,9 @@ ${formData.email}`
     <div
   className="
     flex
-    h-screen
+    min-h-screen
     w-full
-    overflow-hidden
+    overflow-visible
     font-sans
     relative
     p-5
@@ -1227,7 +1227,7 @@ ${formData.email}`
     flex-col
     relative
     z-10
-    overflow-hidden
+    overflow-visible
     px-3
     pb-6
     pt-3
@@ -1276,7 +1276,7 @@ ${formData.email}`
   className="
     flex-1
     overflow-x-auto
-    overflow-y-auto
+    overflow-visible
     hide-scrollbar
     min-w-0
     pr-2
