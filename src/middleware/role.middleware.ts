@@ -1,4 +1,5 @@
 import { Response, NextFunction } from "express";
+<<<<<<< HEAD
 import sql from "mssql";
 import { db } from "../config/db";
 import { AuthRequest } from "./auth.middleware";
@@ -78,4 +79,28 @@ export const canAccessEmployeeData = async ( // allows self-access, admins, and 
     console.error("canAccessEmployeeData error:", error);
     return res.status(500).json({ message: "Server Error" });
   }
+=======
+
+export const authorize = (roles: string[]) => {
+  return (req: any, res: Response, next: NextFunction) => {
+    if (!req.user || !req.user.role) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized"
+      });
+    }
+
+    const userRole = req.user.role.toUpperCase();
+    const allowedRoles = roles.map((role) => role.toUpperCase());
+
+    if (!allowedRoles.includes(userRole)) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied"
+      });
+    }
+
+    next();
+  };
+>>>>>>> origin/feature/department-roles
 };

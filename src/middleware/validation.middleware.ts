@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+<<<<<<< HEAD
 import { ZodSchema, ZodError } from "zod";
 import { HTTP_STATUS } from "../constants/employee.constants";
 
@@ -23,3 +24,18 @@ export const validate =
       next(err);
     }
   };
+=======
+import { validationResult } from "express-validator";
+
+export const validate = (req: Request, res: Response, next: NextFunction) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array()
+    });
+  }
+  
+  next();
+};
+>>>>>>> origin/feature/department-roles
