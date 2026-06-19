@@ -16,15 +16,19 @@ import ClientDashboard from "../pages/client/ClientDashboard";
 import FinanceDashboard from "../pages/Finance/FinanceDashboard.tsx";
  
 // Super Admin pages
-import SuperAdminDashboard from "../pages/super-admin/SuperAdminDashboard";
+import SuperAdminDashboard from "../pages/super-admin/modules/SuperAdminDashboard";
+import AttendanceOverview from "../pages/super-admin/modules/AttendanceOverview";
+import AuditLogs from "../pages/super-admin/modules/AuditLogs";
+import LeaveManagementOverview from "../pages/super-admin/modules/LeaveManagementOverview";
+import PayrollOverview from "../pages/super-admin/modules/PayrollOverview";
+import ProjectOverview from "../pages/super-admin/modules/ProjectOverview";
+import SystemHealth from "../pages/super-admin/modules/SystemHealth";
 import SystemConfig from "../pages/super-admin/SystemConfig";
 import UserRoleManagement from "../pages/super-admin/UserRoleManagement";
 import NewUser from "../pages/super-admin/NewUser";
 import HolidayConfig from "../pages/super-admin/HolidayConfig";
-import AuditLogs from "../pages/super-admin/AuditLogs";
 import DepartmentManagement from "../pages/super-admin/DepartmentManagement";
 import LeaveTypeManagement from "../pages/super-admin/LeaveTypeManagement";
-import SystemHealth from "../pages/super-admin/SystemHealth";
 import SuperAdminLayout from "../components/super-admin/SuperAdminLayout";
  
 // Other pages
@@ -177,12 +181,16 @@ const AppRoutes: React.FC = () => {
         }
       >
         <Route index element={<SuperAdminDashboard />} />
+        <Route path="attendance-overview" element={<AttendanceOverview />} />
+        <Route path="leave-management-overview" element={<LeaveManagementOverview />} />
+        <Route path="payroll-overview" element={<PayrollOverview />} />
         <Route path="system-config" element={<SystemConfig />} />
-        <Route path="users" element={<UserRoleManagement />} />
-        <Route path="users/new" element={<NewUser />} />
+        <Route path="user-roles" element={<UserRoleManagement />} />
+        <Route path="new-user" element={<NewUser />} />
         <Route path="departments" element={<DepartmentManagement />} />
         <Route path="holidays" element={<HolidayConfig />} />
         <Route path="leave-types" element={<LeaveTypeManagement />} />
+        <Route path="projects" element={<ProjectOverview />} />
         <Route path="audit-logs" element={<AuditLogs />} />
         <Route path="system-health" element={<SystemHealth />} />
       </Route>

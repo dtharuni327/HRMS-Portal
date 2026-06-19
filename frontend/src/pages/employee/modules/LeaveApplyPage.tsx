@@ -11,7 +11,6 @@ import {
   Plane,
   WalletCards,
 } from "lucide-react";
-import { hrmsApi } from "../../../services/hrmsApi";
 
 type LeaveTab = "apply" | "wfh" | "history" | "requests";
 type WfhRequestType = "day" | "permanent";
@@ -56,14 +55,12 @@ const LeaveApplyPage: React.FC = () => {
   const [fileName, setFileName] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("April 2026");
   const [submitted, setSubmitted] = useState(false);
-  const [submittingLeave, setSubmittingLeave] = useState(false);
 
   const [wfhType, setWfhType] = useState<WfhRequestType>("day");
   const [wfhStartDate, setWfhStartDate] = useState("");
   const [wfhEndDate, setWfhEndDate] = useState("");
   const [wfhReason, setWfhReason] = useState("");
   const [wfhSubmitted, setWfhSubmitted] = useState(false);
-  const [submittingWfh, setSubmittingWfh] = useState(false);
 
   const totalDays = useMemo(() => {
     if (!startDate || !endDate) return 0;
@@ -95,7 +92,7 @@ const LeaveApplyPage: React.FC = () => {
     0,
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(false);
 
@@ -105,24 +102,10 @@ const LeaveApplyPage: React.FC = () => {
     if (totalDays <= 0) return alert("End date must be after start date");
     if (!reason.trim()) return alert("Please enter reason for leave");
 
-    try {
-      setSubmittingLeave(true);
-      await hrmsApi.applyLeave({
-        leave_type: leaveType,
-        from_date: startDate,
-        to_date: endDate,
-        reason,
-      });
-      setSubmitted(true);
-    } catch (error) {
-      console.error(error);
-      alert(error instanceof Error ? error.message : "Unable to submit leave request");
-    } finally {
-      setSubmittingLeave(false);
-    }
+    setSubmitted(true);
   };
 
-  const handleWfhSubmit = async (e: React.FormEvent) => {
+  const handleWfhSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setWfhSubmitted(false);
 
@@ -134,24 +117,11 @@ const LeaveApplyPage: React.FC = () => {
 
     if (!wfhReason.trim()) return alert("Please enter reason for work from home");
 
-    try {
-      setSubmittingWfh(true);
-      await hrmsApi.createWfhRequest({
-        from_date: wfhStartDate,
-        to_date: wfhEndDate,
-        reason: wfhReason,
-      });
-      setWfhSubmitted(true);
-    } catch (error) {
-      console.error(error);
-      alert(error instanceof Error ? error.message : "Unable to submit WFH request");
-    } finally {
-      setSubmittingWfh(false);
-    }
+    setWfhSubmitted(true);
   };
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-[#081224] px-4 py-6 text-[#0f172a]">
+    <div className="min-h-screen w-full overflow-x-hidden px-4 py-6 text-[#0f172a]">
       <div className="mx-auto min-h-screen w-full space-y-6">
         <motion.div
           initial={{ opacity: 0, y: 18 }}
@@ -357,10 +327,9 @@ const LeaveApplyPage: React.FC = () => {
                 <div className="flex flex-col gap-3 pt-2 sm:flex-row">
                   <button
                     type="submit"
-                    disabled={submittingLeave}
                     className="rounded-2xl bg-[#6356d8] px-6 py-3 text-[14px] font-semibold text-white transition-all duration-200 hover:bg-[#5447ca] hover:shadow-[0_10px_20px_rgba(99,86,216,0.25)]"
                   >
-                    {submittingLeave ? "Submitting..." : "Apply Leave"}
+                    Apply Leave
                   </button>
 
                   <button
@@ -704,10 +673,9 @@ const LeaveApplyPage: React.FC = () => {
                 <div className="flex flex-col gap-3 pt-2 sm:flex-row">
                   <button
                     type="submit"
-                    disabled={submittingWfh}
                     className="rounded-2xl bg-[#6356d8] px-6 py-3 text-[14px] font-semibold text-white transition-all duration-200 hover:bg-[#5447ca] hover:shadow-[0_10px_20px_rgba(99,86,216,0.25)]"
                   >
-                    {submittingWfh ? "Submitting..." : "Submit WFH Request"}
+                    Submit WFH Request
                   </button>
 
                   <button

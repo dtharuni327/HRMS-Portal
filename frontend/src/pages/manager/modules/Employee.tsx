@@ -4,6 +4,7 @@ import {
   type FormEvent,
   type FC,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -14,11 +15,16 @@ import {
   Star,
   Download,
   Eye,
+  PencilLine,
+  UserX,
+  RotateCcw,
+  CalendarDays,
 } from 'lucide-react';
 
 import {
   SparkCard,
   type Employee,
+  type WorkMode,
 } from '../managerShared';
 
 interface EmployeeFormData {
@@ -31,6 +37,8 @@ interface EmployeeFormData {
   email: string;
 
   phone: string;
+
+  gender: string;
 
   aadhaarNumber: string;
 
@@ -71,9 +79,7 @@ interface EmployeeFormData {
 
   birthday: string;
 
-  gender: string;
-
-  workMode: 'WFH' | 'Office' | 'Hybrid' | '';
+  workMode: WorkMode;
 }
 
 interface EmployeesModuleProps {
@@ -210,6 +216,19 @@ const departmentRoles: Record<string, string[]> = {
   ],
 };
 
+const formatDisplayDate = (value: string) => {
+  if (!value) return '';
+  const [year, month, day] = value.split('-');
+  if (!year || !month || !day) return value;
+  return `${day}/${month}/${year}`;
+};
+
+const addEmployeeFieldClass =
+  'w-full rounded-2xl border border-slate-300 bg-white p-4 text-slate-900 outline-none placeholder:text-slate-500 caret-slate-900 focus:border-violet-400 focus:ring-2 focus:ring-violet-300 transition-all';
+
+const addEmployeeSelectClass =
+  'w-full rounded-2xl border border-slate-300 bg-white p-4 text-slate-900 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-300 transition-all';
+
 const EmployeesModule: FC<
   EmployeesModuleProps
 > = ({
@@ -250,6 +269,8 @@ const EmployeesModule: FC<
   const [filterDept, setFilterDept] = useState('');
   const [filterRole, setFilterRole] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const birthdayInputRef = useRef<HTMLInputElement | null>(null);
+  const joiningDateInputRef = useRef<HTMLInputElement | null>(null);
 
   // track deactivated employees locally (IDs)
   const [deactivatedIds, setDeactivatedIds] = useState<number[]>([]);
@@ -286,6 +307,35 @@ const EmployeesModule: FC<
       }),
     [employees, staffSearch, filterDept, filterRole, filterStatus, deactivatedIds]
   );
+
+  const displayEmployee =
+    isEditingProfile && editingData
+      ? editingData
+      : selectedEmployee;
+
+  type ProfileField = {
+    label: string;
+    key: keyof Employee;
+    fallbackKey?: keyof Employee;
+    type?: string;
+    value?: (emp: Employee) => string;
+  };
+
+  const profileFields: ProfileField[] = [
+    { label: 'Employee ID', key: 'employeeId', value: (emp: Employee) => emp.employeeId || `EMP-${emp.id}` },
+    { label: 'Email', key: 'email', type: 'email' },
+    { label: 'Phone', key: 'phone', type: 'tel' },
+    { label: 'Aadhaar Number', key: 'aadhaarNumber' },
+    { label: 'PAN Number', key: 'panNumber' },
+    { label: 'Address', key: 'address' },
+    { label: 'Department', key: 'department', fallbackKey: 'dept' },
+    { label: 'Role', key: 'role' },
+    { label: 'Designation', key: 'designation' },
+    { label: 'Reporting Manager', key: 'reportingManager' },
+    { label: 'Location', key: 'location' },
+    { label: 'Birthday', key: 'birthday', type: 'date' },
+    { label: 'Joining Date', key: 'joinDate', value: (emp: Employee) => emp.joinDate || '-' },
+  ] as const;
 
   const exportEmployeesCsv = () => {
 
@@ -362,6 +412,17 @@ const EmployeesModule: FC<
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 w-full min-w-0 px-6 py-6">
 
+      <div className="flex justify-end">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
+          <span className="rounded-full bg-violet-100 px-3 py-1 font-semibold text-violet-700">
+            Total Employees: {employees.length}
+          </span>
+          <span className="rounded-full bg-emerald-100 px-3 py-1 font-semibold text-emerald-700">
+            Showing: {filteredEmployees.length}
+          </span>
+        </div>
+      </div>
+
       {/* TOP BAR */}
       <SparkCard className="bg-white border-slate-200 p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between w-full">
@@ -430,7 +491,8 @@ const EmployeesModule: FC<
             </button>
           </div>
 
-          <div className="flex flex-wrap gap-3 justify-end">
+          <div className="flex flex-col items-end gap-3">
+            <div className="flex flex-wrap gap-3 justify-end">
             <button
               onClick={exportEmployeesCsv}
               className="bg-sky-100 hover:bg-sky-200 text-sky-700 px-5 py-3 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2"
@@ -446,6 +508,7 @@ const EmployeesModule: FC<
               {isAdding ? <X size={20} /> : <Plus size={20} />}
               {isAdding ? 'Cancel' : 'Add Employee'}
             </button>
+            </div>
           </div>
         </div>
       </SparkCard>
@@ -464,34 +527,21 @@ const EmployeesModule: FC<
         >
 
           <form
+            className="employee-form-grid grid grid-cols-2 gap-4"
             onSubmit={(e) => {
 
               handleSaveEmployee(e);
 
               alert(
-                'Employee created successfully. Credentials sent to employee email.'
-              );
+  'Employee added successfully. Username, Password and Login Credentials have been generated and sent to the employee personal email.'
+);
             }}
-            className="grid grid-cols-2 gap-4"
           >
 
             <input
               required
               placeholder="Full Name"
-              className="
-  p-4
-  bg-white
-  border
-  border-slate-300
-  rounded-2xl
-  outline-none
-  text-slate-900
-  placeholder:text-slate-500
-  focus:ring-2
-  focus:ring-violet-300
-  focus:border-violet-400
-  transition-all
-"
+                className={addEmployeeFieldClass}
               value={formData.name}
               onChange={(e) =>
                 setFormData({
@@ -502,56 +552,13 @@ const EmployeesModule: FC<
               }
             />
 
-            <input
-              required
-              placeholder="Username"
-              className="
-  p-4
-  bg-white
-  border
-  border-slate-300
-  rounded-2xl
-  outline-none
-  text-slate-900
-  placeholder:text-slate-500
-  focus:ring-2
-  focus:ring-violet-300
-  focus:border-violet-400
-"
-              value={
-                formData.username
-              }
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  username:
-                    e.target.value,
-                })
-              }
-            />
-
-            <input
-              required
-              type="password"
-              placeholder="Password"
-              className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
-              value={
-                formData.password
-              }
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  password:
-                    e.target.value,
-                })
-              }
-            />
-
+           
+            
             <input
               required
               type="email"
-              placeholder="Email Address"
-              className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+              placeholder="Personal Email Address"
+              className={addEmployeeFieldClass}
               value={formData.email}
               onChange={(e) =>
                 setFormData({
@@ -563,22 +570,25 @@ const EmployeesModule: FC<
             />
 
             <input
-              required
-              placeholder="Phone Number"
-              className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  phone:
-                    e.target.value,
-                })
-              }
-            />
+  required
+  type="tel"
+  placeholder="Phone Number"
+  maxLength={10}
+  value={formData.phone}
+  onChange={(e) => {
+    const value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 10) {
+      setFormData({
+        ...formData,
+        phone: value,
+      });
+    }
+  }}
+  className={addEmployeeFieldClass}
+/>
 
             <select
               required
-              className="p-4 bg-white border border-slate-300 rounded-2xl outline-none text-slate-900 focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all"
               value={formData.gender}
               onChange={(e) =>
                 setFormData({
@@ -586,48 +596,58 @@ const EmployeesModule: FC<
                   gender: e.target.value,
                 })
               }
+              className={addEmployeeSelectClass}
             >
               <option value="">Select Gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
+              <option value="Other">Other</option>
             </select>
 
             <input
-              required
-              placeholder="Aadhaar Number"
-              className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
-              value={
-                formData.aadhaarNumber
-              }
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  aadhaarNumber:
-                    e.target.value,
-                })
-              }
-            />
+  required
+  placeholder="Aadhaar Number"
+  maxLength={14}
+  value={formData.aadhaarNumber}
+  onChange={(e) => {
+    const value = e.target.value
+      .replace(/\D/g, '')
+      .slice(0, 12);
 
-            <input
-              required
-              placeholder="PAN Number"
-              className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
-              value={
-                formData.panNumber
-              }
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  panNumber:
-                    e.target.value,
-                })
-              }
-            />
+    const formatted = value
+      .replace(/(\d{4})(?=\d)/g, '$1 ')
+      .trim();
+
+    setFormData({
+      ...formData,
+      aadhaarNumber: formatted,
+    });
+  }}
+  className={addEmployeeFieldClass}
+/>
+
+<input
+  required
+  placeholder="PAN Number (ABCDE1234F)"
+  maxLength={10}
+  value={formData.panNumber}
+  onChange={(e) => {
+    const value = e.target.value
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '');
+
+    setFormData({
+      ...formData,
+      panNumber: value,
+    });
+  }}
+  className={addEmployeeFieldClass}
+/>
 
             <input
               required
               placeholder="Address"
-              className="p-4 bg-white border border-slate-200 rounded-2xl outline-none"
+              className={addEmployeeFieldClass}
               value={
                 formData.address
               }
@@ -643,40 +663,59 @@ const EmployeesModule: FC<
             <div className="col-span-2 rounded-3xl border border-violet-100 bg-violet-50/80 p-4">
               <p className="mb-3 text-[11px] font-black uppercase tracking-[0.35em] text-violet-700">Bank & Compliance Details</p>
               <div className="grid grid-cols-2 gap-4">
-                <input placeholder="Bank Name" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.bankName} onChange={(e) => setFormData({ ...formData, bankName: e.target.value })} />
-                <input placeholder="Account Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.accountNumber} onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })} />
-                <input placeholder="IFSC Code" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.ifsc} onChange={(e) => setFormData({ ...formData, ifsc: e.target.value })} />
-                <input placeholder="Branch" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.branch} onChange={(e) => setFormData({ ...formData, branch: e.target.value })} />
-                <input placeholder="Emergency Contact Name" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.emergencyContactName} onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })} />
-                <input placeholder="Emergency Contact Phone" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.emergencyContactPhone} onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })} />
-                <input placeholder="Blood Group" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.bloodGroup} onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })} />
-                <input placeholder="Marital Status" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.maritalStatus} onChange={(e) => setFormData({ ...formData, maritalStatus: e.target.value })} />
-                <input placeholder="Nationality" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} />
-                <input placeholder="Passport Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.passportNumber} onChange={(e) => setFormData({ ...formData, passportNumber: e.target.value })} />
-                <input placeholder="UAN" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.uan} onChange={(e) => setFormData({ ...formData, uan: e.target.value })} />
-                <input placeholder="PF Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.pfNumber} onChange={(e) => setFormData({ ...formData, pfNumber: e.target.value })} />
-                <input placeholder="ESI Number" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.esiNumber} onChange={(e) => setFormData({ ...formData, esiNumber: e.target.value })} />
-                <input placeholder="Tax State" className="p-4 bg-white border border-slate-200 rounded-2xl outline-none" value={formData.taxState} onChange={(e) => setFormData({ ...formData, taxState: e.target.value })} />
+                <input placeholder="Bank Name" className={addEmployeeFieldClass} value={formData.bankName} onChange={(e) => setFormData({ ...formData, bankName: e.target.value })} />
+                <input placeholder="Account Number" className={addEmployeeFieldClass} value={formData.accountNumber} onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })} />
+                <input placeholder="IFSC Code" className={addEmployeeFieldClass} value={formData.ifsc} onChange={(e) => setFormData({ ...formData, ifsc: e.target.value })} />
+                <input placeholder="Branch" className={addEmployeeFieldClass} value={formData.branch} onChange={(e) => setFormData({ ...formData, branch: e.target.value })} />
+                <input placeholder="Emergency Contact Name" className={addEmployeeFieldClass} value={formData.emergencyContactName} onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })} />
+                <input placeholder="Emergency Contact Phone" className={addEmployeeFieldClass} value={formData.emergencyContactPhone} onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })} />
+                <select
+  value={formData.bloodGroup}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      bloodGroup: e.target.value,
+    })
+  }
+  className={addEmployeeSelectClass}
+>
+  <option value="">Select Blood Group</option>
+  <option value="A+">A+</option>
+  <option value="A-">A-</option>
+  <option value="B+">B+</option>
+  <option value="B-">B-</option>
+  <option value="AB+">AB+</option>
+  <option value="AB-">AB-</option>
+  <option value="O+">O+</option>
+  <option value="O-">O-</option>
+</select><select
+  value={formData.maritalStatus}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      maritalStatus: e.target.value,
+    })
+  }
+  className={addEmployeeSelectClass}
+>
+  <option value="">Select Marital Status</option>
+  <option value="Single">Single</option>
+  <option value="Married">Married</option>
+  <option value="Divorced">Divorced</option>
+  <option value="Widowed">Widowed</option>
+</select><input placeholder="Nationality" className={addEmployeeFieldClass} value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} />
+                <input placeholder="Passport Number" className={addEmployeeFieldClass} value={formData.passportNumber} onChange={(e) => setFormData({ ...formData, passportNumber: e.target.value })} />
+                <input placeholder="UAN" className={addEmployeeFieldClass} value={formData.uan} onChange={(e) => setFormData({ ...formData, uan: e.target.value })} />
+                <input placeholder="PF Number" className={addEmployeeFieldClass} value={formData.pfNumber} onChange={(e) => setFormData({ ...formData, pfNumber: e.target.value })} />
+                <input placeholder="ESI Number" className={addEmployeeFieldClass} value={formData.esiNumber} onChange={(e) => setFormData({ ...formData, esiNumber: e.target.value })} />
+                <input placeholder="Tax State" className={addEmployeeFieldClass} value={formData.taxState} onChange={(e) => setFormData({ ...formData, taxState: e.target.value })} />
               </div>
             </div>
 
             {/* DEPARTMENT */}
 <select
   required
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    placeholder:text-slate-500
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
+  className={addEmployeeSelectClass}
   value={formData.dept}
   onChange={(e) =>
     setFormData({
@@ -718,20 +757,7 @@ const EmployeesModule: FC<
 {/* ROLE */}
 <select
   required
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    placeholder:text-slate-500
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
+  className={addEmployeeSelectClass}
   value={formData.role}
   onChange={(e) =>
     setFormData({
@@ -763,20 +789,7 @@ const EmployeesModule: FC<
 <input
   required
   placeholder="Designation"
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    placeholder:text-slate-500
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
+  className={addEmployeeFieldClass}
   value={formData.designation}
   onChange={(e) =>
     setFormData({
@@ -785,55 +798,11 @@ const EmployeesModule: FC<
     })
   }
 />
-
-{/* WORK MODE */}
-<select
-  required
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
-  value={formData.workMode}
-  onChange={(e) =>
-    setFormData({
-      ...formData,
-      workMode: e.target.value as 'WFH' | 'Office' | 'Hybrid' | '',
-    })
-  }
->
-  <option value="">Select Work Mode</option>
-  <option value="WFH">WFH</option>
-  <option value="Office">Office</option>
-  <option value="Hybrid">Hybrid</option>
-</select>
-
 {/* LOCATION */}
 <input
   required
   placeholder="Location"
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    placeholder:text-slate-500
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
+  className={addEmployeeFieldClass}
   value={formData.location}
   onChange={(e) =>
     setFormData({
@@ -847,20 +816,7 @@ const EmployeesModule: FC<
 <input
   required
   placeholder="Reporting Manager"
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    placeholder:text-slate-500
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
+  className={addEmployeeFieldClass}
   value={formData.reportingManager}
   onChange={(e) =>
     setFormData({
@@ -872,31 +828,54 @@ const EmployeesModule: FC<
 />
 
 {/* BIRTHDAY */}
-<input
-  required
-  type="date"
-  placeholder="Birthday"
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
-  value={formData.birthday}
-  onChange={(e) =>
-    setFormData({
-      ...formData,
-      birthday: e.target.value,
-    })
-  }
-/>
+<div className="relative">
+    <input
+      required
+      type="text"
+      inputMode="numeric"
+      placeholder="Birthday"
+      readOnly
+      className="
+        w-full
+        p-4
+        pr-12
+        bg-white
+        border
+        border-slate-300
+        rounded-2xl
+        outline-none
+        text-slate-900
+        placeholder:text-slate-400
+        focus:ring-2
+        focus:ring-violet-300
+        focus:border-violet-400
+        transition-all
+      "
+      value={formatDisplayDate(formData.birthday)}
+      onClick={() => birthdayInputRef.current?.showPicker?.()}
+    />
+    <button
+      type="button"
+      onClick={() => birthdayInputRef.current?.showPicker?.()}
+      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-xl bg-violet-50 p-2 text-violet-700 hover:bg-violet-100"
+      aria-label="Open birthday calendar"
+    >
+      <CalendarDays size={16} />
+    </button>
+    <input
+      ref={birthdayInputRef}
+      type="date"
+      value={formData.birthday}
+      onChange={(e) =>
+        setFormData({
+          ...formData,
+          birthday: e.target.value,
+        })
+      }
+      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+      aria-hidden="true"
+    />
+  </div>
 
 {/* EXPERIENCE */}
 <input
@@ -955,31 +934,54 @@ const EmployeesModule: FC<
 />
 
 {/* JOINING DATE */}
-<input
-  required
-  type="date"
-  className="
-    p-4
-    bg-white
-    border
-    border-slate-300
-    rounded-2xl
-    outline-none
-    text-slate-900
-    focus:ring-2
-    focus:ring-violet-300
-    focus:border-violet-400
-    transition-all
-  "
-  value={formData.joiningDate}
-  onChange={(e) =>
-    setFormData({
-      ...formData,
-      joiningDate:
-        e.target.value,
-    })
-  }
-/>
+<div className="relative">
+    <input
+      required
+      type="text"
+      inputMode="numeric"
+      placeholder="Joining Date"
+      readOnly
+      className="
+        w-full
+        p-4
+        pr-12
+        bg-white
+        border
+        border-slate-300
+        rounded-2xl
+        outline-none
+        text-slate-900
+        placeholder:text-slate-400
+        focus:ring-2
+        focus:ring-violet-300
+        focus:border-violet-400
+        transition-all
+      "
+      value={formatDisplayDate(formData.joiningDate)}
+      onClick={() => joiningDateInputRef.current?.showPicker?.()}
+    />
+    <button
+      type="button"
+      onClick={() => joiningDateInputRef.current?.showPicker?.()}
+      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-xl bg-violet-50 p-2 text-violet-700 hover:bg-violet-100"
+      aria-label="Open joining date calendar"
+    >
+      <CalendarDays size={16} />
+    </button>
+    <input
+      ref={joiningDateInputRef}
+      type="date"
+      value={formData.joiningDate}
+      onChange={(e) =>
+        setFormData({
+          ...formData,
+          joiningDate: e.target.value,
+        })
+      }
+      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+      aria-hidden="true"
+    />
+  </div>
 
 {/* SUBMIT */}
 <button
@@ -1115,7 +1117,7 @@ const EmployeesModule: FC<
 
         {/* SALARY */}
         <td className="px-8 py-6 text-emerald-600 font-bold">
-          ₹{emp.salary.toLocaleString()}
+          ₹{(emp.salary ?? 0).toLocaleString()}
         </td>
 
         {/* EXPERIENCE */}
@@ -1185,73 +1187,88 @@ const EmployeesModule: FC<
 
             {/* VIEW */}
             <button
+              type="button"
               onClick={() => {
                 setSelectedEmployee(emp);
+                setEditingData(null);
+                setIsEditingProfile(false);
                 setShowProfile(true);
               }}
+              aria-label={`View ${emp.name}`}
+              title="View"
               className="
-                px-4
-                py-2
-                bg-emerald-100
-                hover:bg-emerald-200
-                text-emerald-700
+                h-9
+                w-9
                 rounded-xl
-                text-xs
-                font-bold
+                bg-emerald-100
+                text-emerald-700
+                hover:bg-emerald-200
                 flex
                 items-center
-                gap-1
+                justify-center
               "
             >
-
-              <Eye size={14} />
-
-              View
-
+              <Eye size={16} />
             </button>
 
             {/* EDIT */}
             <button
+              type="button"
               onClick={() => {
-                setSelectedEmployee(emp);
-                setEditingData(emp);
+                const employeeForEdit = {
+                  ...emp,
+                  dept: emp.department ?? emp.dept ?? '',
+                  department: emp.department ?? emp.dept ?? '',
+                };
+
+                setSelectedEmployee(employeeForEdit);
+                setEditingData(employeeForEdit);
                 setIsEditingProfile(true);
                 setShowProfile(true);
               }}
+              aria-label={`Edit ${emp.name}`}
+              title="Edit"
               className="
-                px-4
-                py-2
-                bg-blue-100
-                hover:bg-blue-200
-                text-blue-700
+                h-9
+                w-9
                 rounded-xl
-                text-xs
-                font-bold
+                bg-blue-100
+                text-blue-700
+                hover:bg-blue-200
+                flex
+                items-center
+                justify-center
               "
             >
-              Edit
+              <PencilLine size={16} />
             </button>
 
             {/* DEACTIVATE / ACTIVATE */}
             {deactivatedIds.includes(emp.id) ? (
               <button
+                type="button"
                 onClick={() => {
                   if (!confirm(`Activate ${emp.name}?`)) return;
                   setDeactivatedIds((prev) => prev.filter((id) => id !== emp.id));
                 }}
-                className="px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-xl"
+                aria-label={`Activate ${emp.name}`}
+                title="Activate"
+                className="h-9 w-9 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-700 flex items-center justify-center"
               >
-                Activate
+                <RotateCcw size={16} />
               </button>
             ) : (
               <button
+                type="button"
                 onClick={() => {
                   if (!confirm(`Deactivate ${emp.name}?`)) return;
                   setDeactivatedIds((prev) => [...prev, emp.id]);
                 }}
-                className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-xl"
+                aria-label={`Deactivate ${emp.name}`}
+                title="Deactivate"
+                className="h-9 w-9 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 flex items-center justify-center"
               >
-                Deactivate
+                <UserX size={16} />
               </button>
             )}
 
@@ -1273,7 +1290,7 @@ const EmployeesModule: FC<
 
       {/* PROFILE MODAL */}
       {showProfile &&
-        selectedEmployee && (
+        displayEmployee && (
 
           <div
             className="
@@ -1306,10 +1323,7 @@ const EmployeesModule: FC<
                 <div>
 
                   <h2 className="text-3xl font-black text-slate-900">
-                    {isEditingProfile && editingData
-                      ? editingData.name
-                      : selectedEmployee.name
-                    }
+                    {displayEmployee.name}
                   </h2>
 
                   <p className="text-slate-500 mt-2">
@@ -1338,406 +1352,122 @@ const EmployeesModule: FC<
 
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-w-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 min-w-0">
+                {profileFields.map((field) => {
+                  const value = field.value
+                    ? field.value(displayEmployee)
+                    : (field.fallbackKey
+                        ? (displayEmployee as Employee & Record<string, unknown>)[field.fallbackKey] ?? (displayEmployee as Employee & Record<string, unknown>)[field.key] ?? '-'
+                        : (displayEmployee as Employee & Record<string, unknown>)[field.key] ?? '-');
 
-                {/* Employee ID */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Employee ID
-                  </p>
-                  <h4 className="font-bold text-slate-900 mt-2">
-                    {selectedEmployee.employeeId ||
-                      `EMP-${selectedEmployee.id}`}
-                  </h4>
+                  return (
+                    <div key={field.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+                      <p className="text-[11px] font-black uppercase tracking-[0.35em] text-slate-400">{field.label}</p>
+                      {isEditingProfile && editingData ? (
+                        <input
+                          type={field.type ?? 'text'}
+                          value={
+                            (field.fallbackKey
+                              ? (editingData as Employee & Record<string, unknown>)[field.fallbackKey] ?? (editingData as Employee & Record<string, unknown>)[field.key] ?? ''
+                              : (editingData as Employee & Record<string, unknown>)[field.key] ?? '') as string
+                          }
+                          onChange={(e) => {
+                            const nextValue = e.target.value;
+                            if (field.key === 'department') {
+                              setEditingData({
+                                ...editingData,
+                                department: nextValue,
+                                dept: nextValue,
+                              });
+                              return;
+                            }
+
+                            setEditingData({
+                              ...editingData,
+                              [field.key]: nextValue,
+                            } as Employee);
+                          }}
+                          className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
+                        />
+                      ) : (
+                        <p className="mt-2 text-sm font-semibold text-slate-900">{String(value)}</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-8 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+                <h3 className="text-xl font-black text-slate-900 mb-4">Additional Employee Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {[
+                    ['Username', displayEmployee.username || '-'],
+                    ['Gender', displayEmployee.gender || '-'],
+                    ['Bank Name', displayEmployee.bankName || '-'],
+                    ['Account Number', displayEmployee.accountNumber || '-'],
+                    ['IFSC Code', displayEmployee.ifscCode || displayEmployee.ifsc || '-'],
+                    ['Branch', displayEmployee.branch || '-'],
+                    ['Emergency Contact', displayEmployee.emergencyContactName || '-'],
+                    ['Emergency Contact Phone', displayEmployee.emergencyContactPhone || '-'],
+                    ['Blood Group', displayEmployee.bloodGroup || '-'],
+                    ['Marital Status', displayEmployee.maritalStatus || '-'],
+                    ['Nationality', displayEmployee.nationality || '-'],
+                    ['Passport Number', displayEmployee.passportNumber || '-'],
+                    ['UAN', displayEmployee.uan || '-'],
+                    ['PF Number', displayEmployee.pfNumber || '-'],
+                    ['ESI Number', displayEmployee.esiNumber || '-'],
+                    ['Tax State', displayEmployee.taxState || '-'],
+                    ['Work Mode', displayEmployee.workMode || '-'],
+                    ['Status', displayEmployee.status || '-'],
+                    ['Employment Type', displayEmployee.employmentType || '-'],
+                  ].map(([label, value]) => {
+                    const keyMap: Record<string, keyof Employee> = {
+                      Username: 'username',
+                      Gender: 'gender',
+                      'Bank Name': 'bankName',
+                      'Account Number': 'accountNumber',
+                      'IFSC Code': 'ifscCode',
+                      Branch: 'branch',
+                      'Emergency Contact': 'emergencyContactName',
+                      'Emergency Contact Phone': 'emergencyContactPhone',
+                      'Blood Group': 'bloodGroup',
+                      'Marital Status': 'maritalStatus',
+                      Nationality: 'nationality',
+                      'Passport Number': 'passportNumber',
+                      UAN: 'uan',
+                      'PF Number': 'pfNumber',
+                      'ESI Number': 'esiNumber',
+                      'Tax State': 'taxState',
+                      'Work Mode': 'workMode',
+                      Status: 'status',
+                      'Employment Type': 'employmentType',
+                    };
+
+                    const inputKey = keyMap[label as string];
+                    const currentValue = (editingData?.[inputKey] ?? displayEmployee[inputKey] ?? '') as string;
+
+                    return (
+                      <div key={label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                        <p className="text-[11px] font-black uppercase tracking-[0.35em] text-slate-400">{label}</p>
+                        {isEditingProfile && editingData ? (
+                          <input
+                            value={currentValue}
+                            onChange={(e) => {
+                              if (!editingData) return;
+                              setEditingData({
+                                ...editingData,
+                                [inputKey]: e.target.value,
+                              } as Employee);
+                            }}
+                            className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
+                          />
+                        ) : (
+                          <p className="mt-2 text-sm font-semibold text-slate-900">{String(value)}</p>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-
-                {/* Email */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Email
-                  </p>
-                  {isEditingProfile && editingData ? (
-                    <input
-                      type="email"
-                      value={editingData.email || ''}
-                      onChange={(e) =>
-                        setEditingData({
-                          ...editingData,
-                          email: e.target.value,
-                        })
-                      }
-                      className="
-                        w-full
-                        mt-2
-                        px-4
-                        py-2
-                        border
-                        border-slate-300
-                        rounded-xl
-                        text-slate-900
-                        focus:ring-2
-                        focus:ring-blue-300
-                        focus:border-blue-400
-                      "
-                    />
-                  ) : (
-                    <h4 className="font-bold text-slate-900 mt-2">
-                      {selectedEmployee.email}
-                    </h4>
-                  )}
-                </div>
-
-                {/* Phone */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Phone
-                  </p>
-                  {isEditingProfile && editingData ? (
-                    <input
-                      type="tel"
-                      value={editingData.phone || ''}
-                      onChange={(e) =>
-                        setEditingData({
-                          ...editingData,
-                          phone: e.target.value,
-                        })
-                      }
-                      className="
-                        w-full
-                        mt-2
-                        px-4
-                        py-2
-                        border
-                        border-slate-300
-                        rounded-xl
-                        text-slate-900
-                        focus:ring-2
-                        focus:ring-blue-300
-                        focus:border-blue-400
-                      "
-                    />
-                  ) : (
-                    <h4 className="font-bold text-slate-900 mt-2">
-                      {selectedEmployee.phone}
-                    </h4>
-                  )}
-                </div>
-
-                {/* Aadhaar Number */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Aadhaar Number
-                  </p>
-                  {isEditingProfile && editingData ? (
-                    <input
-                      value={editingData.aadhaarNumber || ''}
-                      onChange={(e) =>
-                        setEditingData({
-                          ...editingData,
-                          aadhaarNumber: e.target.value,
-                        })
-                      }
-                      className="
-                        w-full
-                        mt-2
-                        px-4
-                        py-2
-                        border
-                        border-slate-300
-                        rounded-xl
-                        text-slate-900
-                        focus:ring-2
-                        focus:ring-blue-300
-                        focus:border-blue-400
-                      "
-                    />
-                  ) : (
-                    <h4 className="font-bold text-slate-900 mt-2">
-                      {selectedEmployee.aadhaarNumber}
-                    </h4>
-                  )}
-                </div>
-
-                {/* PAN Number */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    PAN Number
-                  </p>
-                  {isEditingProfile && editingData ? (
-                    <input
-                      value={editingData.panNumber || ''}
-                      onChange={(e) =>
-                        setEditingData({
-                          ...editingData,
-                          panNumber: e.target.value,
-                        })
-                      }
-                      className="
-                        w-full
-                        mt-2
-                        px-4
-                        py-2
-                        border
-                        border-slate-300
-                        rounded-xl
-                        text-slate-900
-                        focus:ring-2
-                        focus:ring-blue-300
-                        focus:border-blue-400
-                      "
-                    />
-                  ) : (
-                    <h4 className="font-bold text-slate-900 mt-2">
-                      {selectedEmployee.panNumber}
-                    </h4>
-                  )}
-                </div>
-
-                {/* Address */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Address
-                  </p>
-                  {isEditingProfile && editingData ? (
-                    <input
-                      value={editingData.address || ''}
-                      onChange={(e) =>
-                        setEditingData({
-                          ...editingData,
-                          address: e.target.value,
-                        })
-                      }
-                      className="
-                        w-full
-                        mt-2
-                        px-4
-                        py-2
-                        border
-                        border-slate-300
-                        rounded-xl
-                        text-slate-900
-                        focus:ring-2
-                        focus:ring-blue-300
-                        focus:border-blue-400
-                      "
-                    />
-                  ) : (
-                    <h4 className="font-bold text-slate-900 mt-2">
-                      {selectedEmployee.address}
-                    </h4>
-                  )}
-                </div>
-
-                {/* Department */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Department
-                  </p>
-                  <h4 className="font-bold text-slate-900 mt-2">
-                    {selectedEmployee.dept}
-                  </h4>
-                </div>
-
-                {/* Gender */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Gender
-                  </p>
-                  {isEditingProfile && editingData ? (
-                    <select
-                      value={editingData.gender || ''}
-                      onChange={(e) =>
-                        setEditingData({
-                          ...editingData,
-                          gender: e.target.value,
-                        })
-                      }
-                      className="
-                        w-full
-                        mt-2
-                        px-4
-                        py-2
-                        border
-                        border-slate-300
-                        rounded-xl
-                        text-slate-900
-                        focus:ring-2
-                        focus:ring-blue-300
-                        focus:border-blue-400
-                      "
-                    >
-                      <option value="">Select Gender</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                    </select>
-                  ) : (
-                    <h4 className="font-bold text-slate-900 mt-2">
-                      {selectedEmployee.gender || '-'}
-                    </h4>
-                  )}
-                </div>
-
-                {/* Role */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Role
-                  </p>
-                  <h4 className="font-bold text-slate-900 mt-2">
-                    {selectedEmployee.role}
-                  </h4>
-                </div>
-
-                {/* Designation */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Designation
-                  </p>
-                  {isEditingProfile && editingData ? (
-                    <input
-                      value={editingData.designation || ''}
-                      onChange={(e) =>
-                        setEditingData({
-                          ...editingData,
-                          designation: e.target.value,
-                        })
-                      }
-                      className="
-                        w-full
-                        mt-2
-                        px-4
-                        py-2
-                        border
-                        border-slate-300
-                        rounded-xl
-                        text-slate-900
-                        focus:ring-2
-                        focus:ring-blue-300
-                        focus:border-blue-400
-                      "
-                    />
-                  ) : (
-                    <h4 className="font-bold text-slate-900 mt-2">
-                      {selectedEmployee.designation}
-                    </h4>
-                  )}
-                </div>
-
-                {/* Reporting Manager */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Reporting Manager
-                  </p>
-                  {isEditingProfile && editingData ? (
-                    <input
-                      value={editingData.reportingManager || ''}
-                      onChange={(e) =>
-                        setEditingData({
-                          ...editingData,
-                          reportingManager: e.target.value,
-                        })
-                      }
-                      className="
-                        w-full
-                        mt-2
-                        px-4
-                        py-2
-                        border
-                        border-slate-300
-                        rounded-xl
-                        text-slate-900
-                        focus:ring-2
-                        focus:ring-blue-300
-                        focus:border-blue-400
-                      "
-                    />
-                  ) : (
-                    <h4 className="font-bold text-slate-900 mt-2">
-                      {selectedEmployee.reportingManager}
-                    </h4>
-                  )}
-                </div>
-
-                {/* Location */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Location
-                  </p>
-                  {isEditingProfile && editingData ? (
-                    <input
-                      value={editingData.location || ''}
-                      onChange={(e) =>
-                        setEditingData({
-                          ...editingData,
-                          location: e.target.value,
-                        })
-                      }
-                      className="
-                        w-full
-                        mt-2
-                        px-4
-                        py-2
-                        border
-                        border-slate-300
-                        rounded-xl
-                        text-slate-900
-                        focus:ring-2
-                        focus:ring-blue-300
-                        focus:border-blue-400
-                      "
-                    />
-                  ) : (
-                    <h4 className="font-bold text-slate-900 mt-2">
-                      {selectedEmployee.location}
-                    </h4>
-                  )}
-                </div>
-
-                {/* Birthday */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Birthday
-                  </p>
-                  {isEditingProfile && editingData ? (
-                    <input
-                      type="date"
-                      value={editingData.birthday || ''}
-                      onChange={(e) =>
-                        setEditingData({
-                          ...editingData,
-                          birthday: e.target.value,
-                        })
-                      }
-                      className="
-                        w-full
-                        mt-2
-                        px-4
-                        py-2
-                        border
-                        border-slate-300
-                        rounded-xl
-                        text-slate-900
-                        focus:ring-2
-                        focus:ring-blue-300
-                        focus:border-blue-400
-                      "
-                    />
-                  ) : (
-                    <h4 className="font-bold text-slate-900 mt-2">
-                      {selectedEmployee.birthday || '-'}
-                    </h4>
-                  )}
-                </div>
-
-                {/* Joining Date */}
-                <div>
-                  <p className="text-sm text-slate-400 font-bold uppercase tracking-wider">
-                    Joining Date
-                  </p>
-                  <h4 className="font-bold text-slate-900 mt-2">
-                    {selectedEmployee.joinDate}
-                  </h4>
-                </div>
-
               </div>
 
               {/* FOOTER BUTTONS */}
@@ -1795,8 +1525,15 @@ const EmployeesModule: FC<
                 ) : (
                   <button
                     onClick={() => {
+                      const employeeForEdit = {
+                        ...displayEmployee,
+                        dept: displayEmployee.department ?? displayEmployee.dept ?? '',
+                        department: displayEmployee.department ?? displayEmployee.dept ?? '',
+                      };
+
                       setIsEditingProfile(true);
-                      setEditingData(selectedEmployee);
+                      setEditingData(employeeForEdit);
+                      setSelectedEmployee(employeeForEdit);
                     }}
                     className="
                       px-6

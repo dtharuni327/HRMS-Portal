@@ -82,6 +82,76 @@ const employees: Employee[] = [
     birthday: "Dec 12",
     avatar: "MS",
   },
+  {
+    id: 5,
+    name: "Priya Iyer",
+    role: "Employee",
+    designation: "Operations Manager",
+    department: "Operations",
+    email: "priya.iyer@company.com",
+    phone: "+91 92222 33344",
+    employeeId: "CMP00140",
+    location: "Pune",
+    status: "Active",
+    birthday: "Feb 01",
+    avatar: "PI",
+  },
+  {
+    id: 6,
+    name: "Ankit Rao",
+    role: "Employee",
+    designation: "Technology Lead",
+    department: "Technology",
+    email: "ankit.rao@company.com",
+    phone: "+91 93333 44455",
+    employeeId: "CMP00150",
+    location: "Bangalore",
+    status: "Active",
+    birthday: "Nov 09",
+    avatar: "AR",
+  },
+  {
+    id: 7,
+    name: "Sonal Gupta",
+    role: "Employee",
+    designation: "Management Coordinator",
+    department: "Management",
+    email: "sonal.gupta@company.com",
+    phone: "+91 94444 55566",
+    employeeId: "CMP00160",
+    location: "Delhi",
+    status: "Active",
+    birthday: "Jul 14",
+    avatar: "SG",
+  },
+  {
+    id: 8,
+    name: "Rohan Verma",
+    role: "Employee",
+    designation: "Sales Executive",
+    department: "Sales",
+    email: "rohan.verma@company.com",
+    phone: "+91 95555 66677",
+    employeeId: "CMP00170",
+    location: "Chennai",
+    status: "Active",
+    birthday: "Sep 21",
+    avatar: "RV",
+  },
+  {
+    id: 9,
+    name: "Nisha Patel",
+    role: "Employee",
+    designation: "Digital Marketing Specialist",
+    department: "Digital Marketing",
+    email: "nisha.patel@company.com",
+    phone: "+91 96666 77788",
+    employeeId: "CMP00180",
+    location: "Ahmedabad",
+    status: "Active",
+    birthday: "Mar 12",
+    avatar: "NP",
+  },
 ];
 
 const departmentColors: Record<
@@ -108,6 +178,40 @@ const departmentColors: Record<
     text: "text-[#0d6db8]",
     icon: "text-[#2563eb]",
     avatar: "bg-[#2563eb]",
+  },  Management: {
+    bg: "bg-[#f7f0ff]",
+    border: "border-[#d8c4ff]",
+    text: "text-[#5a3f9b]",
+    icon: "text-[#7158d7]",
+    avatar: "bg-[#7158d7]",
+  },
+  Technology: {
+    bg: "bg-[#eef7ff]",
+    border: "border-[#c7e2ff]",
+    text: "text-[#2068b3]",
+    icon: "text-[#1878e2]",
+    avatar: "bg-[#1878e2]",
+  },
+  Operations: {
+    bg: "bg-[#fff4e5]",
+    border: "border-[#ffddb8]",
+    text: "text-[#b35b07]",
+    icon: "text-[#d97706]",
+    avatar: "bg-[#d97706]",
+  },
+  Sales: {
+    bg: "bg-[#e9f7ff]",
+    border: "border-[#b9e1ff]",
+    text: "text-[#0f76a3]",
+    icon: "text-[#0b69b6]",
+    avatar: "bg-[#0b69b6]",
+  },
+  "Digital Marketing": {
+    bg: "bg-[#fff0f7]",
+    border: "border-[#ffd1eb]",
+    text: "text-[#9c2c6b]",
+    icon: "text-[#be2d7e]",
+    avatar: "bg-[#be2d7e]",
   },
 };
 
@@ -159,7 +263,7 @@ const ViewAllEmployeesPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#0b1830] px-4 py-6 text-[#071832] sm:px-6 lg:px-8">
+    <div className="min-h-screen w-full px-4 py-6 text-[#071832] sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-[1500px] space-y-7">
         {/* Header */}
         <motion.div

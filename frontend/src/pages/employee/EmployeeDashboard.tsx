@@ -7,9 +7,8 @@ import HomePage from "./modules/HomePage";
 import LeaveApplyPage from "./modules/LeaveApplyPage";
 import ViewAllEmployeesPage from "./modules/ViewAllEmployeesPage";
 import Login from "../auth/Login";
-import { hrmsApi } from "../../services/hrmsApi";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Briefcase,
   ClipboardList,
@@ -44,7 +43,7 @@ const sidebarItems = [
   { label: "View All Employees", icon: Users, page: "view-all-employees" as ActivePage },
   { label: "Profile", icon: User, page: "profile" as ActivePage },
   { label: "Announcements", icon: Megaphone, page: "announcements" as ActivePage },
-  { label: "Logout", icon: LogOut, page: "login" as ActivePage },
+  { label: "Signout", icon: LogOut, page: "login" as ActivePage },
 ];
 
 const attendanceData = [
@@ -57,7 +56,7 @@ const attendanceData = [
   { day: "Sun", hours: 0 },
 ];
 
-const defaultHolidays = [
+const holidays = [
   { title: "Independence Day", date: "15 Aug 2026", type: "National Holiday" },
   { title: "Ganesh Chaturthi", date: "27 Aug 2026", type: "Festival Holiday" },
   { title: "Gandhi Jayanti", date: "02 Oct 2026", type: "National Holiday" },
@@ -149,17 +148,6 @@ const getMonthDays = (year: number, month: number) => {
   return days;
 };
 
-const parseApiDate = (value?: string | null) => {
-  if (!value) {
-    return null;
-  }
-
-  const normalized = value.includes("T") ? value : value.replace(" ", "T");
-  const parsed = new Date(normalized);
-
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
-};
-
 const EmployeeDashboard: React.FC = () => {
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -167,51 +155,8 @@ const EmployeeDashboard: React.FC = () => {
   const [checkOutTime, setCheckOutTime] = useState<Date | null>(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [activePage, setActivePage] = useState<ActivePage>("home");
-  const [holidays, setHolidays] = useState(() => {
-    if (typeof window === "undefined") {
-      return defaultHolidays;
-    }
-    try {
-      const stored = window.localStorage.getItem("hrms_global_holidays");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((holiday: any) => ({
-            title: holiday.title,
-            date: holiday.date,
-            type: holiday.type || "Company Holiday",
-          }));
-        }
-      }
-    } catch {
-      // ignore invalid stored holidays
-    }
-    return defaultHolidays;
-  });
 
-  useEffect(() => {
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === "hrms_global_holidays" && event.newValue) {
-        try {
-          const parsed = JSON.parse(event.newValue);
-          if (Array.isArray(parsed)) {
-            setHolidays(
-              parsed.map((holiday: any) => ({
-                title: holiday.title,
-                date: holiday.date,
-                type: holiday.type || "Company Holiday",
-              }))
-            );
-          }
-        } catch {
-          // ignore invalid updates
-        }
-      }
-    };
-
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
+  const mainRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | null = null;
@@ -227,60 +172,39 @@ const EmployeeDashboard: React.FC = () => {
     };
   }, [isCheckedIn]);
 
-  const handleCheckIn = async () => {
-    if (isCheckedIn) {
-      return;
+  // Scroll to top whenever the active page changes (state-based navigation)
+  useEffect(() => {
+    // scroll window
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.body.scrollTop = 0; // for Safari
+      document.documentElement.scrollTop = 0;
+    } catch (e) {
+      /* ignore */
     }
 
-    const fallbackCheckIn = () => {
+    // if the main element is a scroll container, reset it as well
+    if (mainRef.current) {
+      try {
+        // modern browsers
+        (mainRef.current as HTMLElement).scrollTo?.({ top: 0, left: 0, behavior: "auto" } as any);
+      } catch (e) {
+        (mainRef.current as HTMLElement).scrollTop = 0;
+      }
+    }
+  }, [activePage]);
+
+  const handleCheckIn = () => {
+    if (!isCheckedIn) {
       setIsCheckedIn(true);
       setCheckInTime(new Date());
       setCheckOutTime(null);
       setElapsedSeconds(0);
-    };
-
-    try {
-      const locationData = await new Promise<{ latitude?: number; longitude?: number }>((resolve) => {
-        if (!navigator.geolocation) {
-          resolve({});
-          return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-          (position) =>
-            resolve({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            }),
-          () => resolve({}),
-          { enableHighAccuracy: true, timeout: 5000 }
-        );
-      });
-
-      const response = await hrmsApi.punchIn(locationData);
-      setIsCheckedIn(true);
-      setCheckInTime(parseApiDate(response?.punch_in_time) ?? new Date());
-      setCheckOutTime(null);
-      setElapsedSeconds(0);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to punch in right now.";
-      alert(`${message} Switching to local demo mode.`);
-      fallbackCheckIn();
     }
   };
 
-  const handleCheckOut = async () => {
-    if (!isCheckedIn) {
-      return;
-    }
-
-    try {
-      const response = await hrmsApi.punchOut();
-      setIsCheckedIn(false);
-      setCheckOutTime(parseApiDate(response?.punch_out_time) ?? new Date());
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to punch out right now.";
-      alert(`${message} Switching to local demo mode.`);
+  const handleCheckOut = () => {
+    if (isCheckedIn) {
       setIsCheckedIn(false);
       setCheckOutTime(new Date());
     }
@@ -312,11 +236,11 @@ const EmployeeDashboard: React.FC = () => {
         <aside
           onMouseEnter={() => setIsSidebarExpanded(true)}
           onMouseLeave={() => setIsSidebarExpanded(false)}
-          className={`fixed left-4 top-4 z-40 hidden h-[calc(100vh-2rem)] overflow-x-hidden whitespace-nowrap rounded-[28px] border border-white/12 bg-[#10213d]/90 text-white/75 shadow-[0_24px_70px_rgba(2,8,23,0.32)] backdrop-blur-2xl transition-[width] duration-300 xl:flex xl:flex-col ${
-            isSidebarExpanded ? "w-[260px]" : "w-[64px]"
+          className={`group/sidebar fixed inset-y-6 left-6 z-50 overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] transition-[width] duration-300 ease-in-out xl:flex xl:flex-col ${
+            isSidebarExpanded ? 'w-[260px]' : 'w-[88px]'
           }`}
         >
-          <div className="flex-1 overflow-y-auto px-3 py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex-1 overflow-y-auto px-3 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <nav className="space-y-3">
               {sidebarItems.map((item, index) => {
                 const Icon = item.icon;
@@ -331,37 +255,27 @@ const EmployeeDashboard: React.FC = () => {
                     transition={{ delay: index * 0.04, duration: 0.28 }}
                     type="button"
                     onClick={() => setActivePage(item.page)}
-                    className={`relative flex h-[58px] w-full items-center text-left transition-all duration-300 ${
+                    className={`relative flex h-[58px] w-full items-center rounded-[1.4rem] transition-all duration-300 ${
                       isActive && !isLoginItem
-                        ? "rounded-[22px] border border-violet-300/25 bg-violet-500/30 text-white shadow-[0_14px_30px_rgba(99,102,241,0.22)]"
-                        : isLoginItem
-                        ? "rounded-[22px] text-sky-300 hover:bg-white/10 hover:text-sky-100"
-                        : "rounded-[22px] text-white/55 hover:bg-white/10 hover:text-white"
+                        ? `${isSidebarExpanded ? 'px-3 justify-start' : 'pl-3 justify-start'} bg-gradient-to-r from-[#5a4bc7] to-[#4b3f99] text-white shadow-[0_10px_30px_rgba(91,75,199,0.35)]`
+                        : `${isSidebarExpanded ? 'px-3 justify-start' : 'pl-3 justify-start'} text-slate-400 hover:bg-white/5 hover:text-white`
                     }`}
                   >
-                    {isActive && !isLoginItem && (
-                      <div className="absolute left-0 top-1/2 h-8 w-1.5 -translate-y-1/2 rounded-r-full bg-violet-300 shadow-[0_0_14px_rgba(167,139,250,0.75)]" />
-                    )}
-
-                    <div className="flex w-[58px] min-w-[58px] justify-center">
-                      <Icon
-                        className={`h-5 w-5 ${
-                          isActive && !isLoginItem
-                            ? "text-sky-300"
-                            : isLoginItem
-                            ? "text-sky-300"
-                            : "text-white/55"
-                        }`}
-                      />
-                    </div>
-
-                    <span
-                      className={`ml-1 text-[14px] font-bold uppercase tracking-[0.08em] transition-opacity duration-200 ${
-                        isSidebarExpanded ? "opacity-100" : "opacity-0"
+                    <div
+                      className={`flex h-12 w-12 min-w-[48px] items-center justify-center transition-all duration-300 ${
+                        isActive ? 'text-[#7dd3fc]' : 'text-slate-400'
                       }`}
                     >
+                      <Icon size={20} />
+                    </div>
+
+                    <span className={`ml-3 overflow-hidden whitespace-nowrap text-[15px] font-semibold tracking-wide transition-all duration-300 ${isSidebarExpanded ? 'max-w-[180px] opacity-100' : 'max-w-0 opacity-0'}`}>
                       {item.label}
                     </span>
+
+                    {isActive && (
+                      <div className="absolute left-0 h-6 w-1 rounded-r-full bg-gradient-to-b from-[#f5d0fe] via-[#c084fc] to-[#a855f7] shadow-[0_0_12px_rgba(192,132,252,0.9)]" />
+                    )}
                   </motion.button>
                 );
               })}
@@ -370,11 +284,12 @@ const EmployeeDashboard: React.FC = () => {
         </aside>
 
         <main
+          ref={mainRef}
           className={`flex min-w-0 flex-1 flex-col bg-transparent transition-all duration-300 ${
             isSidebarExpanded ? "xl:ml-[292px]" : "xl:ml-[102px]"
           }`}
         >
-          <header className="sticky top-0 z-30 mx-4 w-auto rounded-[24px] border border-white/10 bg-[#172554]/95 text-white shadow-[inset_3px_0_0_rgba(34,211,238,0.75),0_16px_45px_rgba(2,8,23,0.28)] backdrop-blur-2xl">
+          <header className="sticky top-3 z-30 mx-5 w-auto rounded-[24px] border border-white/10 bg-[#172554]/95 text-white shadow-[inset_3px_0_0_rgba(34,211,238,0.75),0_16px_45px_rgba(2,8,23,0.28)] backdrop-blur-2xl sm:mx-6">
             <div className="flex items-center justify-between px-4 py-3 sm:px-5 lg:px-7">
               <div className="flex min-w-0 items-center gap-3">
                 <button

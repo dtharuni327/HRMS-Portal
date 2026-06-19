@@ -1,6 +1,6 @@
 import { type Dispatch, type SetStateAction, type ChangeEvent, type FC } from 'react';
 import { Users, Check, CheckCircle2, Smile, Zap, Plus, X, XCircle, Megaphone, Star } from 'lucide-react';
-import hrImage from '../../../images/image3.png';
+import hrImage from '../../../images/image.png';
 import image14 from '../../../images/image14.png';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { SparkCard, StatCard, type Announcement, type Employee, type HRDetails, type Job, type LeaveData, type Policy, type RequestItem, type Training, type AttendanceStatus, type Payslip } from '../managerShared';
@@ -12,6 +12,7 @@ interface DashboardModuleProps {
   setShowProfileModal: Dispatch<SetStateAction<boolean>>;
   handleProfileUpload: (e: ChangeEvent<HTMLInputElement>) => void;
   setActivePage: Dispatch<SetStateAction<'dashboard' | 'profile'>>;
+  setActiveTab: Dispatch<SetStateAction<'Home' | 'Approvals' | 'Regularisation' | 'Attendance' | 'AttendanceAnalytics' | 'ProjectEffortReport' | 'TeamDirectory' | 'TeamLeaveCalendar' | 'Employee' | 'TaskManager' | 'ClientUpdates'>>;
   announcements: Announcement[];
   announcementForm: { title: string; tag: string };
   setAnnouncementForm: Dispatch<SetStateAction<{ title: string; tag: string }>>;
@@ -41,6 +42,7 @@ const DashboardModule: FC<DashboardModuleProps> = ({
   setShowProfileModal,
   handleProfileUpload,
   setActivePage,
+  setActiveTab,
   announcements,
   announcementForm,
   setAnnouncementForm,
@@ -125,7 +127,7 @@ const DashboardModule: FC<DashboardModuleProps> = ({
 
   const departmentCounts = useMemo(() => {
     const counts = employees.reduce<Record<string, number>>((acc, emp) => {
-      const dept = normalizeDept(emp.dept);
+      const dept = normalizeDept(emp.department ?? emp.dept);
       acc[dept] = (acc[dept] ?? 0) + 1;
       return acc;
     }, {});
@@ -192,6 +194,16 @@ const DashboardModule: FC<DashboardModuleProps> = ({
       { status: 'Leave', count: leave }
     ];
   }, [attendanceStatus]);
+
+  const pendingWfhRequests = useMemo(
+    () => wfhRequests.filter(request => !request.status || request.status === 'Pending'),
+    [wfhRequests]
+  );
+
+  const pendingLeaveRequests = useMemo(
+    () => leaveData.filter(leave => leave.status === 'Pending'),
+    [leaveData]
+  );
 
 useEffect(() => {
 
@@ -397,97 +409,172 @@ useEffect(() => {
               </div>
             </SparkCard>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6 mt-8">
-
-  {/* TOTAL STAFF */}
-  <div className="
-    rounded-[2rem]
-    bg-[#e7e0f7]
-    border border-white/10
-    shadow-[0_16px_45px_rgba(0,0,0,0.12)]
-  ">
-    <StatCard
-      icon={<Users size={24} />}
-      value={employees.length}
-      label="Total Staff"
-      color="text-[#6356d8]"
-    />
+  
+    {/* TOTAL STAFF */}
+    <button
+      type="button"
+      onClick={() => setActiveTab('Attendance')}
+      className="
+        w-full
+        rounded-[2rem]
+        bg-[#e7e0f7]
+        border
+        border-white/10
+        shadow-[0_16px_45px_rgba(0,0,0,0.12)]
+        text-left
+        transition-all
+        duration-200
+        hover:-translate-y-0.5
+        hover:bg-[#ddd5f2]
+        focus:outline-none
+        focus:ring-2
+        focus:ring-[#6356d8]/50
+        cursor-pointer
+      "
+    >
+      <StatCard
+        icon={<Users size={24} />}
+        value={employees.length}
+        label="Total Staff"
+        color="text-[#6356d8]"
+      />
+    </button>
+  
+    {/* PRESENT TODAY */}
+    <button
+      type="button"
+      onClick={() => setActiveTab('Attendance')}
+      className="
+        w-full
+        rounded-[2rem]
+        bg-[#e9fff2]
+        border
+        border-white/10
+        shadow-[0_16px_45px_rgba(0,0,0,0.12)]
+        text-left
+        transition-all
+        duration-200
+        hover:-translate-y-0.5
+        hover:bg-[#e3fff5]
+        focus:outline-none
+        focus:ring-2
+        focus:ring-[#16a34a]/50
+        cursor-pointer
+      "
+    >
+      <StatCard
+        icon={<CheckCircle2 size={24} />}
+        value={
+          Object.values(attendanceStatus).filter(
+            s => s === 'Present'
+          ).length
+        }
+        label="Present Today"
+        color="text-[#16a34a]"
+      />
+    </button>
+  
+    {/* WORK FROM HOME */}
+    <button
+      type="button"
+      onClick={() => setActiveTab('Attendance')}
+      className="
+        w-full
+        rounded-[2rem]
+        bg-[#e6f6ff]
+        border
+        border-white/10
+        shadow-[0_16px_45px_rgba(0,0,0,0.12)]
+        text-left
+        transition-all
+        duration-200
+        hover:-translate-y-0.5
+        hover:bg-[#e0f4ff]
+        focus:outline-none
+        focus:ring-2
+        focus:ring-[#0891b2]/50
+        cursor-pointer
+      "
+    >
+      <StatCard
+        icon={<Smile size={24} />}
+        value={
+          Object.values(attendanceStatus).filter(
+            s => s === 'WFH'
+          ).length
+        }
+        label="Work From Home"
+        color="text-[#0891b2]"
+      />
+    </button>
+  
+    {/* ON LEAVE */}
+    <button
+      type="button"
+      onClick={() => setActiveTab('Attendance')}
+      className="
+        w-full
+        rounded-[2rem]
+        bg-[#ffe6ea]
+        border
+        border-white/10
+        shadow-[0_16px_45px_rgba(0,0,0,0.12)]
+        text-left
+        transition-all
+        duration-200
+        hover:-translate-y-0.5
+        hover:bg-[#ffe0e7]
+        focus:outline-none
+        focus:ring-2
+        focus:ring-[#e11d48]/50
+        cursor-pointer
+      "
+    >
+      <StatCard
+        icon={
+          <div className="h-6 w-6 rounded-full bg-rose-400/40" />
+        }
+        value={
+          Object.values(attendanceStatus).filter(
+            s => s === 'On Leave'
+          ).length
+        }
+        label="On Leave"
+        color="text-[#e11d48]"
+      />
+    </button>
+  
+    {/* WFH REQUESTS */}
+    <button
+      type="button"
+      onClick={() => setActiveTab('Approvals')}
+      className="
+        w-full
+        rounded-[2rem]
+        bg-[#fff0d8]
+        border
+        border-white/10
+        shadow-[0_16px_45px_rgba(0,0,0,0.12)]
+        text-left
+        transition-all
+        duration-200
+        hover:-translate-y-0.5
+        hover:bg-[#fff5e5]
+        focus:outline-none
+        focus:ring-2
+        focus:ring-[#d97706]/50
+        cursor-pointer
+      "
+    >
+      <StatCard
+        icon={<Zap size={24} />}
+        value={wfhRequests.length}
+        label="WFH Requests"
+        color="text-[#d97706]"
+      />
+    </button>
+  
   </div>
-
-  {/* PRESENT TODAY */}
-  <div className="
-    rounded-[2rem]
-    bg-[#e9fff2]
-    border border-white/10
-    shadow-[0_16px_45px_rgba(0,0,0,0.12)]
-  ">
-    <StatCard
-      icon={<CheckCircle2 size={24} />}
-      value={
-        Object.values(attendanceStatus).filter(
-          s => s === 'Present'
-        ).length
-      }
-      label="Present Today"
-      color="text-[#16a34a]"
-    />
-  </div>
-
-  {/* WORK FROM HOME */}
-  <div className="
-    rounded-[2rem]
-    bg-[#e6f6ff]
-    border border-white/10
-    shadow-[0_16px_45px_rgba(0,0,0,0.12)]
-  ">
-    <StatCard
-      icon={<Smile size={24} />}
-      value={
-        Object.values(attendanceStatus).filter(
-          s => s === 'WFH'
-        ).length
-      }
-      label="Work From Home"
-      color="text-[#0891b2]"
-    />
-  </div>
-
-  {/* ON LEAVE */}
-  <div className="
-    rounded-[2rem]
-    bg-[#ffe6ea]
-    border border-white/10
-    shadow-[0_16px_45px_rgba(0,0,0,0.12)]
-  ">
-    <StatCard
-      icon={
-        <div className="h-6 w-6 rounded-full bg-rose-400/40" />
-      }
-      value={
-        Object.values(attendanceStatus).filter(
-          s => s === 'On Leave'
-        ).length
-      }
-      label="On Leave"
-      color="text-[#e11d48]"
-    />
-  </div>
-
-  {/* WFH REQUESTS */}
-  <div className="
-    rounded-[2rem]
-    bg-[#fff0d8]
-    border border-white/10
-    shadow-[0_16px_45px_rgba(0,0,0,0.12)]
-  ">
-    <StatCard
-      icon={<Zap size={24} />}
-      value={wfhRequests.filter(request => request.status === 'Pending').length}
-      label="WFH Requests"
-      color="text-[#d97706]"
-    />
-  </div>
-
-</div>
 <section className="mt-8 grid grid-cols-1 gap-5 xl:grid-cols-[0.85fr_1.15fr]">
 
   {/* WORK SESSION (left column wrapper will include compact top cards below) */}
@@ -1084,169 +1171,202 @@ useEffect(() => {
  {/* ROW: WFH + LEAVE + MVP + CELEBRATIONS */}
 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 w-full">
 
-  {/* WFH REQUESTS */}
-  <SparkCard className="w-full p-6 bg-[#fff0d8] border border-amber-100 rounded-[28px] shadow-[0_16px_45px_rgba(0,0,0,0.10)]">
-
-    <h3 className="font-bold text-amber-950 text-lg mb-5">
-      WFH Requests
-    </h3>
-
-    <div className="space-y-3">
-
-      {wfhRequests.slice(0, 3).map(req => (
-
-        <div
-          key={req.id}
-          className="
-            flex
-            justify-between
-            items-center
-            p-4
-            min-h-[95px]
-            bg-white
-            rounded-2xl
-            border
-            border-amber-100
-          "
-        >
-
-          <div className="flex-1">
-
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-bold text-slate-900 break-words">
-                  {req.name}
+  <div
+      onClick={() => setActiveTab('Approvals')}
+      className="h-full w-full cursor-pointer rounded-[28px] transition-all duration-200 hover:-translate-y-0.5 focus:outline-none"
+    >
+      <SparkCard className="h-full w-full min-h-[420px] p-6 bg-[#fff0d8] border border-amber-100 rounded-[28px] shadow-[0_16px_45px_rgba(0,0,0,0.10)]">
+  
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <h3 className="font-bold text-amber-950 text-lg">
+          WFH Requests
+        </h3>
+        <span className="rounded-full bg-amber-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-amber-800">
+          {pendingWfhRequests.length} Request{pendingWfhRequests.length === 1 ? '' : 's'}
+        </span>
+      </div>
+  
+      <div className="space-y-3">
+  
+        {pendingWfhRequests.length === 0 ? (
+          <p className="rounded-2xl bg-white/80 px-4 py-4 text-xs text-slate-500 text-center border border-amber-100">
+            No pending WFH requests.
+          </p>
+        ) : (
+          pendingWfhRequests.map(req => (
+            <div
+              key={req.id}
+              className="
+                flex
+                justify-between
+                items-center
+                p-4
+                min-h-[95px]
+                bg-white
+                rounded-2xl
+                border
+                border-amber-100
+              "
+            >
+  
+            <div className="flex-1">
+  
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-bold text-slate-900 break-words">
+                    {req.name}
+                  </p>
+                  <span className={`inline-flex rounded-full px-2 py-1 text-[10px] font-black uppercase ${
+                    req.status === 'Approved'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : req.status === 'Rejected'
+                      ? 'bg-rose-100 text-rose-700'
+                      : 'bg-amber-100 text-amber-700'
+                  }`}>
+                    {req.status || 'Pending'}
+                  </span>
+                </div>
+  
+                <p className="text-[10px] text-amber-600 font-black uppercase leading-relaxed mt-2">
+                  {req.reason}
                 </p>
-                <span className={`inline-flex rounded-full px-2 py-1 text-[10px] font-black uppercase ${
-                  req.status === 'Approved'
-                    ? 'bg-emerald-100 text-emerald-700'
-                    : req.status === 'Rejected'
-                    ? 'bg-rose-100 text-rose-700'
-                    : 'bg-amber-100 text-amber-700'
-                }`}>
-                  {req.status || 'Pending'}
-                </span>
+  
+                <p className="text-[10px] text-slate-500 font-bold mt-1">
+                  {req.date}
+                </p>
+  
               </div>
-
-              <p className="text-[10px] text-amber-600 font-black uppercase leading-relaxed mt-2">
-                {req.reason}
-              </p>
-
-              <p className="text-[10px] text-slate-500 font-bold mt-1">
-                {req.date}
-              </p>
-
+  
+              <div className="flex flex-col gap-2 ml-3">
+  
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    setWfhRequests(prev =>
+                      prev.map(r =>
+                        r.id === req.id
+                          ? { ...r, status: 'Approved' }
+                          : r
+                      )
+                    );
+                  }}
+                  disabled={req.status === 'Approved' || req.status === 'Rejected'}
+                  className="p-2 rounded-xl bg-emerald-100 text-emerald-600 transition disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Check size={16} />
+                </button>
+  
+                <button
+                  onClick={e => {
+                    e.stopPropagation();
+                    setWfhRequests(prev =>
+                      prev.map(r =>
+                        r.id === req.id
+                          ? { ...r, status: 'Rejected' }
+                          : r
+                      )
+                    );
+                  }}
+                  disabled={req.status === 'Approved' || req.status === 'Rejected'}
+                  className="p-2 rounded-xl bg-rose-100 text-rose-600 transition disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <XCircle size={16} />
+                </button>
+  
+              </div>
+  
             </div>
-
-            <div className="flex flex-col gap-2 ml-3">
-
-              <button
-                onClick={() =>
-                  setWfhRequests(prev =>
-                    prev.map(r =>
-                      r.id === req.id
-                        ? { ...r, status: 'Approved' }
-                        : r
-                    )
-                  )
-                }
-                disabled={req.status === 'Approved' || req.status === 'Rejected'}
-                className="p-2 rounded-xl bg-emerald-100 text-emerald-600 transition disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <Check size={16} />
-              </button>
-
-              <button
-                onClick={() =>
-                  setWfhRequests(prev =>
-                    prev.map(r =>
-                      r.id === req.id
-                        ? { ...r, status: 'Rejected' }
-                        : r
-                    )
-                  )
-                }
-                disabled={req.status === 'Approved' || req.status === 'Rejected'}
-                className="p-2 rounded-xl bg-rose-100 text-rose-600 transition disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <XCircle size={16} />
-              </button>
-
-            </div>
-
-          </div>
-
-      ))}
-
+  
+          ))
+        )}
+  
+      </div>
+  
+      </SparkCard>
     </div>
-
-  </SparkCard>
-
-  {/* LEAVE REQUESTS */}
-  <SparkCard className="w-full p-6 bg-[#ffe6ea] border border-rose-100 rounded-[28px] shadow-[0_16px_45px_rgba(0,0,0,0.10)]">
-
-    <h3 className="font-bold text-rose-950 text-lg mb-5">
-      Leave Requests
-    </h3>
-
-    <div className="space-y-3">
-
-      {leaveData.slice(0, 3).map(leave => (
-
-        <div
-          key={leave.id}
-          className="
-            flex
-            justify-between
-            items-center
-            p-4
-            min-h-[95px]
-            bg-white
-            rounded-2xl
-            border
-            border-rose-100
-          "
-        >
-
-          <div className="flex-1">
-
-            <p className="text-sm font-bold text-slate-900 break-words">
-              {leave.employee}
-            </p>
-
-            <p className="text-[10px] text-rose-600 uppercase font-black mt-2">
-              {leave.type}
-            </p>
-
-            <p className="text-[10px] text-slate-500 font-bold mt-1">
-              {leave.days} Days
-            </p>
-
-          </div>
-
-          <span
+  
+    {/* LEAVE REQUESTS */}
+    <button
+      type="button"
+      onClick={() => setActiveTab('Approvals')}
+      className="h-full w-full rounded-[28px] text-left transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-rose-400/60 cursor-pointer"
+    >
+      <SparkCard className="h-full w-full min-h-[420px] p-6 bg-[#ffe6ea] border border-rose-100 rounded-[28px] shadow-[0_16px_45px_rgba(0,0,0,0.10)]">
+  
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <h3 className="font-bold text-rose-950 text-lg">
+            Leave Requests
+          </h3>
+          <span className="rounded-full bg-rose-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-rose-800">
+            {pendingLeaveRequests.length} Request{pendingLeaveRequests.length === 1 ? '' : 's'}
+          </span>
+        </div>
+  
+        <div className="space-y-3">
+  
+          {pendingLeaveRequests.map(leave => (
+  
+          <div
+            key={leave.id}
             className="
-              px-3
-              py-1.5
-              bg-rose-100
-              text-rose-700
-              text-[10px]
-              font-bold
-              rounded-full
-              ml-3
-              whitespace-nowrap
+              flex
+              justify-between
+              items-center
+              p-4
+              min-h-[95px]
+              bg-white
+              rounded-2xl
+              border
+              border-rose-100
             "
           >
-            {leave.status}
-          </span>
-
+  
+            <div className="flex-1">
+  
+              <p className="text-sm font-bold text-slate-900 break-words">
+                {leave.employee}
+              </p>
+  
+              <p className="text-[10px] text-rose-600 uppercase font-black mt-2">
+                {leave.type}
+              </p>
+  
+              <p className="text-[10px] text-slate-500 font-bold mt-1">
+                {leave.days} Days
+              </p>
+  
+            </div>
+  
+            <span
+              className="
+                px-3
+                py-1.5
+                bg-rose-100
+                text-rose-700
+                text-[10px]
+                font-bold
+                rounded-full
+                ml-3
+                whitespace-nowrap
+              "
+            >
+              {leave.status}
+            </span>
+  
+          </div>
+  
+        ))}
+  
+        {pendingLeaveRequests.length === 0 && (
+          <p className="rounded-2xl bg-white/80 px-4 py-4 text-xs text-slate-500 text-center border border-rose-100">
+            No pending leave requests.
+          </p>
+        )}
+  
         </div>
-
-      ))}
-
-    </div>
-
-  </SparkCard>
-
+  
+      </SparkCard>
+    </button>
+  
   {/* MVP EMPLOYEES */}
   <SparkCard className="w-full p-6 bg-[#f2e8ff] border border-violet-100 rounded-[28px] shadow-[0_16px_45px_rgba(0,0,0,0.10)]">
 

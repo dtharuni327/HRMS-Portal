@@ -1016,6 +1016,7 @@ ${formData.email}`
           {activeTab === 'Home' && activePage === 'dashboard' && (
             <DashboardModule
               setActivePage={setActivePage}
+              setActiveTab={setActiveTab}
               hrDetails={hrDetails}
               profileImage={profileImage || ''}
               employees={employees}

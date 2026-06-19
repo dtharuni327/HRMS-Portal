@@ -53,6 +53,7 @@ type EmployeeFormState = {
   experience: string;
   joiningDate: string;
   birthday: string;
+  gender: string;
 };
 
 const initialAnnouncements: (Announcement & { timestamp: number })[] = [
@@ -111,7 +112,8 @@ const DarkHRDashboard: React.FC = () => {
     salary: '',
     experience: '',
     joiningDate: '',
-    birthday: ''
+    birthday: '',
+    gender: 'Male'
   });
   const [onboardingForm, setOnboardingForm] = useState({ name: '', role: '', dept: '', startDate: '', manager: '' });
   const [isAddingOnboard, setIsAddingOnboard] = useState(false);
@@ -825,6 +827,7 @@ const DarkHRDashboard: React.FC = () => {
           {activeTab === 'Dashboard' && activePage === 'dashboard' && (
   <DashboardModule
     setActivePage={setActivePage}
+    setActiveTab={setActiveTab}
     hrDetails={hrDetails}
     profileImage={profileImage}
     showProfileModal={showProfileModal}
