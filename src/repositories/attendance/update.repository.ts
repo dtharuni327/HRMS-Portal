@@ -8,7 +8,7 @@ export class UpdateAttendanceRepository {
       .request()
       .input('Emp_id', sql.VarChar, empId)
       .input('date', sql.Date, date)
-      .execute('GetAttendanceByEmpDate');
+      .execute('sp_GetAttendanceByEmpDate');
     
     return result.recordset[0] || null;
   }
