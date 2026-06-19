@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import sql from "mssql";
@@ -123,6 +124,8 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     console.error("authenticate error:", error);
     return res.status(500).json({ message: "Authentication failed" });
 =======
+=======
+>>>>>>> origin/leave_management-API-kiruthika
 import {Request,Response,NextFunction} from "express";
 import jwt from "jsonwebtoken";
 export const authenticate = (req: any,res: Response,
@@ -142,6 +145,7 @@ export const authenticate = (req: any,res: Response,
   } catch (error) {
     return res.status(401).json({success: false,message: "Invalid token"
     });
+<<<<<<< HEAD
 >>>>>>> origin/feature/department-roles
 =======
     console.error("JWT Verification Middleware Issue:", error);
@@ -150,5 +154,7 @@ export const authenticate = (req: any,res: Response,
       error: error instanceof Error ? error.message : String(error)
     });
 >>>>>>> origin/feature/attendance-wfh
+=======
+>>>>>>> origin/leave_management-API-kiruthika
   }
 };

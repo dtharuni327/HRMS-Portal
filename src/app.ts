@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 
@@ -77,11 +78,16 @@ import salaryRoutes from "./routes/salary.routes";
 import "./config/db";
 
 dotenv.config();
+=======
+import express from "express";
+import cors from "cors";
+>>>>>>> origin/leave_management-API-kiruthika
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+<<<<<<< HEAD
 app.use(express.urlencoded({
   extended: true
 }));
@@ -160,4 +166,20 @@ app.use(
 );
 
 >>>>>>> origin/feature/attendance-wfh
+=======
+app.use(express.urlencoded({ extended: true }));
+
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "HRMS API Running Successfully"
+  });
+});
+
+/* Routes */
+import leaveRoutes from "./routes/leave.routes";
+
+app.use("/api/leave", leaveRoutes);
+
+>>>>>>> origin/leave_management-API-kiruthika
 export default app;

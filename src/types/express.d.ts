@@ -1,6 +1,7 @@
 import { JwtPayload } from "jsonwebtoken";
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin/feature/attendance-wfh
 
@@ -24,6 +25,8 @@ declare global {
 <<<<<<< HEAD
 export {};
 =======
+=======
+>>>>>>> origin/leave_management-API-kiruthika
 export interface CustomUser extends JwtPayload {Emp_id: string;
   role: string;}
 declare global {namespace Express {
@@ -31,8 +34,12 @@ declare global {namespace Express {
     }
   }
 }
+<<<<<<< HEAD
 export {};
 >>>>>>> origin/feature/department-roles
 =======
 export {};
 >>>>>>> origin/feature/attendance-wfh
+=======
+export {};
+>>>>>>> origin/leave_management-API-kiruthika

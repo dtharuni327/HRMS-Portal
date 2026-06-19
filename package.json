@@ -4,14 +4,18 @@
   "description": "HRMS Portal Backend API",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin/feature/attendance-wfh
+=======
+>>>>>>> origin/leave_management-API-kiruthika
   "main": "dist/server.js",
   "type": "commonjs",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
   "main": "dist/app.js",
@@ -23,6 +27,8 @@
 >>>>>>> origin/feature/department-roles
 =======
 >>>>>>> origin/feature/attendance-wfh
+=======
+>>>>>>> origin/leave_management-API-kiruthika
     "test": "echo 'No tests yet' && exit 0"
   },
   "keywords": [],
@@ -37,12 +43,17 @@
     "express": "^4.19.2",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin/feature/attendance-wfh
+=======
+    "express-validator": "^7.3.2",
+>>>>>>> origin/leave_management-API-kiruthika
     "jsonwebtoken": "^9.0.3",
     "mssql": "^12.5.4",
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.7",
+<<<<<<< HEAD
     "zod": "^4.4.3"
 <<<<<<< HEAD
 =======
@@ -55,6 +66,10 @@
 >>>>>>> origin/feature/department-roles
 =======
 >>>>>>> origin/feature/attendance-wfh
+=======
+    "packages": "^0.0.8",
+    "zod": "^4.4.3"
+>>>>>>> origin/leave_management-API-kiruthika
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -66,6 +81,10 @@
     "@types/node": "^25.6.0",
     "@types/nodemailer": "^8.0.0",
     "ts-node-dev": "^2.0.0",
+<<<<<<< HEAD
     "typescript": "^5.4.5"
+=======
+    "typescript": "^5.9.3"
+>>>>>>> origin/leave_management-API-kiruthika
   }
 }

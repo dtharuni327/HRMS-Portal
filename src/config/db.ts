@@ -1,6 +1,7 @@
 import sql from "mssql";
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 const requiredEnv = ["DB_SERVER", "DB_USER", "DB_PASSWORD", "DB_NAME"];
 =======
@@ -58,6 +59,8 @@ export const db: Promise<sql.ConnectionPool> = new sql.ConnectionPool(config)
     throw err;
   });
 =======
+=======
+>>>>>>> origin/leave_management-API-kiruthika
 import { env } from "./env";
 const dbConfig: sql.config = {
   user: env.DB_USER,
@@ -74,6 +77,7 @@ const dbConfig: sql.config = {
     idleTimeoutMillis: 30000
   }
 };
+<<<<<<< HEAD
 export const db = new sql.ConnectionPool(
   dbConfig
 )
@@ -108,3 +112,25 @@ db.connect()
     console.log("DB Connection Error:", err);
   });
 >>>>>>> origin/feature/attendance-wfh
+=======
+export const db =
+  new sql.ConnectionPool(
+    dbConfig
+  )
+    .connect()
+    .then(pool => {
+      console.log(
+        "SQL Server Connected"
+      );
+      return pool;
+    })
+    .catch(error => {
+      console.error(
+        "Database Connection Failed",
+        error
+      );
+      throw error;
+    });
+
+export default db;
+>>>>>>> origin/leave_management-API-kiruthika

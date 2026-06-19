@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Response, NextFunction } from "express";
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -208,4 +209,25 @@ export const canViewDashboard = async (req: AuthRequest, res: Response, next: Ne
     return res.status(500).json({ message: "Server Error" });
   }
 >>>>>>> origin/feature/attendance-wfh
+=======
+import {Request,Response,NextFunction} from "express";
+export const authorize = (
+  roles: string[]
+) => {
+  return (req: any,res: Response,next: NextFunction) => {
+    if (!req.user) {
+      return res.status(401).json({success: false,message: "Unauthorized"
+      });
+    }
+    if (
+      !roles.includes(req.user.role
+      )
+    ) {
+      return res.status(403).json({success: false,
+        message: "Access denied"
+      });
+    }
+    next();
+  };
+>>>>>>> origin/leave_management-API-kiruthika
 };

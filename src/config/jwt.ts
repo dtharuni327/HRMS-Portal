@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { env } from "./env";
+<<<<<<< HEAD
 export const generateAccessToken = (
   payload: any 
 ) => {
@@ -22,6 +23,21 @@ export const generateRefreshToken = (
     }
   );
 };
+=======
+
+export const generateAccessToken = (
+  payload: object
+): string => {
+  return jwt.sign(
+    payload,
+    env.JWT_SECRET,
+    {
+      expiresIn: env.JWT_EXPIRES_IN
+    } as jwt.SignOptions
+  );
+};
+
+>>>>>>> origin/leave_management-API-kiruthika
 export const verifyAccessToken = (
   token: string
 ) => {
@@ -29,6 +45,7 @@ export const verifyAccessToken = (
     token,
     env.JWT_SECRET
   );
+<<<<<<< HEAD
 };
 export const verifyRefreshToken = (
   token: string
@@ -37,4 +54,6 @@ export const verifyRefreshToken = (
     token,
     env.JWT_REFRESH_SECRET
   );
+=======
+>>>>>>> origin/leave_management-API-kiruthika
 };
