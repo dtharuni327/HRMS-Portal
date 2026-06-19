@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "description": "HRMS Portal Backend API",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/feature/attendance-wfh
   "main": "dist/server.js",
   "type": "commonjs",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+<<<<<<< HEAD
 =======
   "main": "dist/app.js",
   "type": "commonjs",
@@ -17,6 +21,8 @@
     "build": "tsc",
     "start": "node dist/app.js",
 >>>>>>> origin/feature/department-roles
+=======
+>>>>>>> origin/feature/attendance-wfh
     "test": "echo 'No tests yet' && exit 0"
   },
   "keywords": [],
@@ -30,11 +36,15 @@
     "dotenv": "^17.4.2",
     "express": "^4.19.2",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/feature/attendance-wfh
     "jsonwebtoken": "^9.0.3",
     "mssql": "^12.5.4",
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.7",
     "zod": "^4.4.3"
+<<<<<<< HEAD
 =======
     "express-validator": "^7.3.2",
     "joi": "^18.2.1",
@@ -43,6 +53,8 @@
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.7"
 >>>>>>> origin/feature/department-roles
+=======
+>>>>>>> origin/feature/attendance-wfh
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

@@ -1,7 +1,21 @@
 import sql from "mssql";
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 const requiredEnv = ["DB_SERVER", "DB_USER", "DB_PASSWORD", "DB_NAME"];
+=======
+
+/* =====================================================
+   ENV VALIDATION
+===================================================== */
+
+const requiredEnv = [
+  "DB_SERVER",
+  "DB_USER",
+  "DB_PASSWORD",
+  "DB_NAME"
+];
+>>>>>>> origin/feature/attendance-wfh
 
 requiredEnv.forEach((key) => {
   if (!process.env[key]) {
@@ -9,17 +23,29 @@ requiredEnv.forEach((key) => {
   }
 });
 
+<<<<<<< HEAD
+=======
+/* =====================================================
+   MSSQL CONFIG
+===================================================== */
+
+>>>>>>> origin/feature/attendance-wfh
 const config: sql.config = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   server: process.env.DB_SERVER as string,
   database: process.env.DB_NAME,
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/feature/attendance-wfh
   options: {
     encrypt: false,
     trustServerCertificate: true,
   },
 };
 
+<<<<<<< HEAD
 
 export const db: Promise<sql.ConnectionPool> = new sql.ConnectionPool(config)
   .connect()
@@ -67,3 +93,18 @@ export const db = new sql.ConnectionPool(
 });
 export default db;
 >>>>>>> origin/feature/department-roles
+=======
+/* =====================================================
+   DB CONNECTION
+===================================================== */
+
+export const db = new sql.ConnectionPool(config);
+
+db.connect()
+  .then(() => {
+    console.log("MSSQL Connected");
+  })
+  .catch((err) => {
+    console.log("DB Connection Error:", err);
+  });
+>>>>>>> origin/feature/attendance-wfh
