@@ -67,7 +67,7 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     req.user = {
       Emp_id: user.Emp_id,
       role: String(user.DashboardName).toUpperCase().trim().replace(/\s+/g, "_"),
-      Dashboard_id: user.Dashboard_id,  // ← ADD THIS LINE
+      Dashboard_id: user.Dashboard_id,  
     };
 
     next();
