@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import sql from "mssql"; // Fixed: Added back the correct string quotes
+import sql from "mssql"; 
 import { db } from "../config/db";
 
 interface CustomUser extends JwtPayload {
