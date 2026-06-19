@@ -1,0 +1,479 @@
+import { type Dispatch, type SetStateAction, type FC, useState } from 'react';
+import { MapPin, Smile, Calendar, Clock } from 'lucide-react';
+import {
+  SparkCard,
+  type Employee,
+  type AttendanceStatus
+} from '../managerShared';
+
+interface AttendanceModuleProps {
+  employees: Employee[];
+  attendanceStatus: AttendanceStatus;
+  setAttendanceStatus: Dispatch<SetStateAction<AttendanceStatus>>;
+}
+
+const AttendanceModule: FC<AttendanceModuleProps> = ({
+  employees,
+  attendanceStatus,
+  setAttendanceStatus
+}) => {
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Present' | 'WFH' | 'On Leave' | 'Late'>('All');
+
+  const punchInTimes: Record<number, string> = {
+    1: '09:05 AM',
+    2: '09:35 AM',
+    3: '09:12 AM',
+    4: '09:02 AM',
+    5: '09:25 AM',
+    6: '09:08 AM',
+    7: '09:18 AM',
+    8: '09:00 AM',
+    9: '09:45 AM',
+    10: '09:10 AM',
+    11: '09:20 AM',
+    12: '09:00 AM',
+    13: '09:30 AM',
+    14: '09:07 AM',
+    15: '09:16 AM'
+  };
+
+  const parsePunchTime = (time: string) => {
+    const match = time.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (!match) return null;
+    let hour = Number(match[1]);
+    const minute = Number(match[2]);
+    const period = match[3].toUpperCase();
+    if (period === 'PM' && hour < 12) hour += 12;
+    if (period === 'AM' && hour === 12) hour = 0;
+    return hour * 60 + minute;
+  };
+
+  const isLatePunch = (time: string) => {
+    const minutes = parsePunchTime(time);
+    return minutes !== null && minutes > 9 * 60 + 15;
+  };
+
+  const getPunchInTime = (empId: number) => punchInTimes[empId] ?? '09:15 AM';
+
+  const getEmployeeStatus = (emp: Employee) =>
+    attendanceStatus[emp.id] ?? 'On Leave';
+
+  const filteredEmployees = employees.filter((emp) =>
+    statusFilter === 'All'
+      ? true
+      : statusFilter === 'Late'
+      ? getEmployeeStatus(emp) === 'Present' && isLatePunch(getPunchInTime(emp.id))
+      : getEmployeeStatus(emp) === statusFilter
+  );
+
+  const lateArrivals = employees.filter(
+    (emp) =>
+      getEmployeeStatus(emp) === 'Present' &&
+      isLatePunch(getPunchInTime(emp.id))
+  ).length;
+
+  return (
+    <div className="space-y-6 animate-in slide-in-from-bottom-4">
+
+      {/* TOP CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+      {/* LATE ARRIVALS */}
+      <SparkCard
+        className="
+          p-4
+          text-center
+          bg-[#FEF3C7]
+          border
+          border-amber-100
+          rounded-3xl
+          shadow-sm
+        "
+      >
+
+        <div className="flex items-center justify-center mb-3">
+          <div className="p-3 rounded-2xl bg-amber-100 text-amber-700 inline-flex">
+            <Clock size={20} />
+          </div>
+        </div>
+
+        <p className="text-3xl font-black text-amber-700">
+          {lateArrivals}
+        </p>
+
+        <p className="text-xs text-slate-500 mt-1">
+          Based on punch-in time
+        </p>
+
+        <p className="text-[10px] uppercase font-bold text-slate-600 tracking-widest mt-2">
+          Late Arrivals
+        </p>
+
+        <p className="text-xs text-slate-500 mt-1">
+          Company-wide today
+        </p>
+
+      </SparkCard>
+
+      {/* PRESENT */}
+      <SparkCard
+        className="
+          p-4
+          text-center
+          bg-[#EEF4FF]
+          border
+          border-blue-100
+          rounded-3xl
+          shadow-sm
+        "
+      >
+
+        <div className="flex items-center justify-center mb-3">
+          <div className="p-3 rounded-2xl bg-blue-100 text-blue-700 inline-flex">
+            <MapPin size={20} />
+          </div>
+        </div>
+
+        <p className="text-3xl font-black text-blue-600">
+          {
+            Object.values(attendanceStatus)
+              .filter(s => s === 'Present').length
+          }
+        </p>
+
+        <p className="text-xs text-slate-500 mt-1">
+          On-site attendance
+        </p>
+
+        <p className="text-[10px] uppercase font-bold text-slate-600 tracking-widest mt-2">
+          Present
+        </p>
+
+        <p className="text-xs text-slate-500 mt-1">
+          In office today
+        </p>
+
+      </SparkCard>
+
+      {/* WFH */}
+      <SparkCard
+        className="
+          p-4
+          text-center
+          bg-[#F8F5FF]
+          border
+          border-violet-100
+          rounded-3xl
+          shadow-sm
+        "
+      >
+
+        <div className="flex items-center justify-center mb-3">
+          <div className="p-3 rounded-2xl bg-violet-100 text-violet-700 inline-flex">
+            <Smile size={20} />
+          </div>
+        </div>
+
+        <p className="text-3xl font-black text-violet-600">
+          {
+            Object.values(attendanceStatus)
+              .filter(s => s === 'WFH').length
+          }
+        </p>
+
+        <p className="text-xs text-slate-500 mt-1">
+          Remote team members
+        </p>
+
+        <p className="text-[10px] uppercase font-bold text-slate-600 tracking-widest mt-2">
+          Work From Home
+        </p>
+
+        <p className="text-xs text-slate-500 mt-1">
+          Remote working
+        </p>
+
+      </SparkCard>
+
+      {/* LEAVE */}
+      <SparkCard
+        className="
+          p-4
+          text-center
+          bg-[#FFF4F4]
+          border
+          border-rose-100
+          rounded-3xl
+          shadow-sm
+        "
+      >
+
+        <div className="flex items-center justify-center mb-3">
+          <div className="p-3 rounded-2xl bg-rose-100 text-rose-700 inline-flex">
+            <Calendar size={20} />
+          </div>
+        </div>
+
+        <p className="text-3xl font-black text-rose-500">
+          {
+            Object.values(attendanceStatus)
+              .filter(s => s === 'On Leave').length
+          }
+        </p>
+
+        <p className="text-xs text-slate-500 mt-1">
+          Team on leave today
+        </p>
+
+        <p className="text-[10px] uppercase font-bold text-slate-600 tracking-widest mt-2">
+          On Leave
+        </p>
+
+        <p className="text-xs text-slate-500 mt-1">
+          Approved leave
+        </p>
+
+      </SparkCard>
+
+    </div>
+
+    <div className="flex flex-wrap items-center gap-3">
+      {(['All', 'Present', 'WFH', 'Late', 'On Leave'] as const).map((filter) => (
+        <button
+          key={filter}
+          onClick={() => setStatusFilter(filter)}
+          className={`px-4 py-2 rounded-2xl text-sm font-semibold transition ${
+            statusFilter === filter
+              ? 'bg-slate-900 text-white'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          }`}
+        >
+          {filter}
+        </button>
+      ))}
+    </div>
+
+    {/* TABLE CARD */}
+    <SparkCard
+      className="
+        overflow-hidden
+        bg-white/90
+        backdrop-blur-xl
+        border
+        border-slate-200
+        rounded-3xl
+        shadow-xl
+      "
+    >
+
+      <div className="overflow-x-auto">
+
+        <table className="w-full text-left">
+
+          {/* TABLE HEADER */}
+          <thead
+            className="
+              bg-[#EDE9FE]
+              text-violet-700
+              text-[10px]
+              uppercase
+              font-black
+              tracking-widest
+            "
+          >
+
+            <tr>
+              <th className="px-8 py-5">Employee Name</th>
+              <th className="px-8 py-5">Department</th>
+              <th className="px-8 py-5">Status</th>
+              <th className="px-8 py-5">Check-in Time</th>
+              <th className="px-8 py-5">Location</th>
+              <th className="px-8 py-5">Actions</th>
+            </tr>
+
+          </thead>
+
+          {/* TABLE BODY */}
+          <tbody>
+
+            {filteredEmployees.map((emp, index) => (
+
+              <tr
+                key={emp.id}
+                className={`
+                  transition-all
+                  hover:bg-white/70
+                  border-b
+                  border-white/40
+                  ${
+                    isLatePunch(getPunchInTime(emp.id)) && getEmployeeStatus(emp) === 'Present'
+                      ? 'bg-amber-50'
+                      : index % 2 === 0
+                      ? 'bg-[#EEF4FF]'
+                      : 'bg-[#F8F5FF]'
+                  }
+                `}
+              >
+
+                {/* NAME */}
+                <td className="px-8 py-5">
+
+                  <div>
+
+                    <p className="font-bold text-slate-900">
+                      {emp.name}
+                    </p>
+
+                    <p className="text-[10px] text-slate-500">
+                      ID: #{emp.id}
+                    </p>
+
+                  </div>
+
+                </td>
+
+                {/* DEPARTMENT */}
+                <td className="px-8 py-5 text-slate-700 font-medium">
+                  {emp.dept}
+                </td>
+
+                {/* STATUS */}
+                <td className="px-8 py-5">
+
+                  <span
+                    className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${
+                      getEmployeeStatus(emp) === 'Present'
+                        ? 'bg-blue-100 text-blue-700'
+                        : getEmployeeStatus(emp) === 'WFH'
+                        ? 'bg-violet-100 text-violet-700'
+                        : 'bg-rose-100 text-rose-700'
+                    }`}
+                  >
+                    {getEmployeeStatus(emp)}
+                  </span>
+
+                </td>
+
+                {/* TIME */}
+                <td className="px-8 py-5 text-slate-700 font-medium">
+
+                  {getEmployeeStatus(emp) === 'Present'
+                    ? getPunchInTime(emp.id)
+                    : getEmployeeStatus(emp) === 'WFH'
+                    ? '09:15 AM'
+                    : 'N/A'}
+
+                </td>
+
+                {/* LOCATION */}
+                <td className="px-8 py-5">
+
+                  <div className="flex items-center gap-1 text-slate-600 text-xs">
+
+                    {getEmployeeStatus(emp) === 'Present' ? (
+                      <>
+                        <MapPin
+                          size={14}
+                          className="text-blue-500"
+                        />
+                        Office - Floor 4
+                      </>
+                    ) : getEmployeeStatus(emp) === 'WFH' ? (
+                      <>
+                        <Smile
+                          size={14}
+                          className="text-violet-500"
+                        />
+                        Remote
+                      </>
+                    ) : (
+                      <>
+                        <Calendar
+                          size={14}
+                          className="text-rose-500"
+                        />
+                        On Leave
+                      </>
+                    )}
+
+                  </div>
+
+                </td>
+
+                {/* ACTIONS */}
+                <td className="px-8 py-5">
+
+                  <div className="flex gap-2">
+
+                    {/* PRESENT */}
+                    <button
+                      onClick={() =>
+                        setAttendanceStatus(prev => ({
+                          ...prev,
+                          [emp.id]: 'Present'
+                        }))
+                      }
+                      className={`px-3 py-1 rounded-xl text-[10px] font-bold uppercase transition-all ${
+                        attendanceStatus[emp.id] === 'Present'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-blue-100 text-blue-700'
+                      }`}
+                    >
+                      Present
+                    </button>
+
+                    {/* WFH */}
+                    <button
+                      onClick={() =>
+                        setAttendanceStatus(prev => ({
+                          ...prev,
+                          [emp.id]: 'WFH'
+                        }))
+                      }
+                      className={`px-3 py-1 rounded-xl text-[10px] font-bold uppercase transition-all ${
+                        attendanceStatus[emp.id] === 'WFH'
+                          ? 'bg-violet-500 text-white'
+                          : 'bg-violet-100 text-violet-700'
+                      }`}
+                    >
+                      WFH
+                    </button>
+
+                    {/* LEAVE */}
+                    <button
+                      onClick={() =>
+                        setAttendanceStatus(prev => ({
+                          ...prev,
+                          [emp.id]: 'On Leave'
+                        }))
+                      }
+                      className={`px-3 py-1 rounded-xl text-[10px] font-bold uppercase transition-all ${
+                        attendanceStatus[emp.id] === 'On Leave'
+                          ? 'bg-rose-500 text-white'
+                          : 'bg-rose-100 text-rose-700'
+                      }`}
+                    >
+                      Leave
+                    </button>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            ))}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </SparkCard>
+
+  </div>
+);
+};
+
+export default AttendanceModule; 
