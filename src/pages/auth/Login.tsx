@@ -247,7 +247,7 @@ const handleSubmit = async (
                 disabled={loading}
                 className="w-full rounded-lg bg-sky-500 py-2.5 text-sm font-semibold text-black transition hover:bg-sky-400 disabled:opacity-70"
               >
-                {loading ? "Authenticating..." : "Signin"}
+                {loading ? "Authenticating..." : "Sign in"}
               </button>
 
             </form>

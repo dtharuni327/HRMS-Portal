@@ -118,26 +118,6 @@ export default function NewUser() {
 
             <div>
               <label className="mb-2 block text-sm font-semibold text-slate-700">
-                User Name *
-              </label>
-              <input
-                type="text"
-                placeholder="Enter full name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className={`w-full rounded-xl border px-4 py-3 text-slate-700 outline-none transition ${
-                  errors.name
-                    ? "border-red-400 bg-red-50"
-                    : "border-slate-300 bg-white"
-                }`}
-              />
-              {errors.name && (
-                <p className="mt-2 text-xs text-red-600">{errors.name}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-slate-700">
                 Email Address *
               </label>
               <input

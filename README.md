@@ -60,6 +60,22 @@ src/
 
 ## 🚀 Getting Started
 
+
+
+## Frontend Application (Without Backend or Mock Server)
+
+Install dependencies:
+
 ```bash
 npm install
-npm run dev
+
+## Prerequisites
+
+Before starting the frontend application, ensure that the mock API server is running.
+
+### Start Mock Server
+
+Run the following command to start the mock backend server on port 5000:
+
+```bash
+npx json-server mock/users.json --port 5000

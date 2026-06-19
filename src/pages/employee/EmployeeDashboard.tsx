@@ -9,6 +9,7 @@ import ViewAllEmployeesPage from "./modules/ViewAllEmployeesPage";
 import Login from "../auth/Login";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Briefcase,
   ClipboardList,
@@ -22,6 +23,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuthContext } from "../../context/AuthContext";
 
 type ActivePage =
   | "home"
@@ -154,7 +156,46 @@ const EmployeeDashboard: React.FC = () => {
   const [checkInTime, setCheckInTime] = useState<Date | null>(null);
   const [checkOutTime, setCheckOutTime] = useState<Date | null>(null);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-  const [activePage, setActivePage] = useState<ActivePage>("home");
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const validPages: ActivePage[] = [
+    "home",
+    "leave-apply",
+    "tasks",
+    "payroll",
+    "internal-jobs",
+    "profile",
+    "announcements",
+    "view-all-employees",
+  ];
+
+  const getPageFromSearch = (search: string): ActivePage => {
+    const params = new URLSearchParams(search);
+    const page = params.get("page") as ActivePage | null;
+
+    return page && validPages.includes(page) ? page : "home";
+  };
+
+  const [activePage, setActivePage] = useState<ActivePage>(() =>
+    getPageFromSearch(location.search)
+  );
+
+  const { logout } = useAuthContext();
+
+  const handlePageChange = (page: ActivePage) => {
+    if (page === "login") {
+      logout();
+      navigate("/login");
+      return;
+    }
+
+    const params = new URLSearchParams(location.search);
+    params.set("page", page);
+
+    navigate(`${location.pathname}?${params.toString()}`, { replace: false });
+  };
 
   const mainRef = useRef<HTMLElement | null>(null);
 
@@ -174,6 +215,8 @@ const EmployeeDashboard: React.FC = () => {
 
   // Scroll to top whenever the active page changes (state-based navigation)
   useEffect(() => {
+    setActivePage(getPageFromSearch(location.search));
+
     // scroll window
     try {
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -192,7 +235,7 @@ const EmployeeDashboard: React.FC = () => {
         (mainRef.current as HTMLElement).scrollTop = 0;
       }
     }
-  }, [activePage]);
+  }, [location.search]);
 
   const handleCheckIn = () => {
     if (!isCheckedIn) {
@@ -254,7 +297,7 @@ const EmployeeDashboard: React.FC = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.04, duration: 0.28 }}
                     type="button"
-                    onClick={() => setActivePage(item.page)}
+                    onClick={() => handlePageChange(item.page)}
                     className={`relative flex h-[58px] w-full items-center rounded-[1.4rem] transition-all duration-300 ${
                       isActive && !isLoginItem
                         ? `${isSidebarExpanded ? 'px-3 justify-start' : 'pl-3 justify-start'} bg-gradient-to-r from-[#5a4bc7] to-[#4b3f99] text-white shadow-[0_10px_30px_rgba(91,75,199,0.35)]`
