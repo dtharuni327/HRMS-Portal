@@ -1,25 +1,6 @@
-import {
-  type Dispatch,
-  type SetStateAction,
-  type FormEvent,
-  type FC,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import {type Dispatch,type SetStateAction,type FormEvent,type FC,useMemo,useRef,useState} from 'react';
 
-import {
-  Search,
-  Plus,
-  X,
-  Star,
-  Download,
-  Eye,
-  PencilLine,
-  UserX,
-  RotateCcw,
-  CalendarDays,
-} from 'lucide-react';
+import {Search,Plus,X,Star,Download,Eye,PencilLine,UserX,RotateCcw,CalendarDays,} from 'lucide-react';
 
 import {
   SparkCard,
@@ -29,23 +10,14 @@ import {
 
 interface EmployeeFormData {
   name: string;
-
   username: string;
-
   password: string;
-
   email: string;
-
   phone: string;
-
   gender: string;
-
   aadhaarNumber: string;
-
   panNumber: string;
-
   address: string;
-
   bankName: string;
   accountNumber: string;
   ifsc: string;
@@ -60,25 +32,15 @@ interface EmployeeFormData {
   pfNumber: string;
   esiNumber: string;
   taxState: string;
-
   role: string;
-
   designation: string;
-
   dept: string;
-
   location: string;
-
   reportingManager: string;
-
   salary: string;
-
   experience: string;
-
   joiningDate: string;
-
   birthday: string;
-
   workMode: WorkMode;
 }
 
@@ -223,6 +185,14 @@ const formatDisplayDate = (value: string) => {
   return `${day}/${month}/${year}`;
 };
 
+const getEmployeeDepartment = (employee: Pick<Employee, 'dept' | 'department'>) =>
+  employee.department ?? employee.dept ?? '';
+
+const getRoleOptionsForDepartment = (department: string) =>
+  department ? departmentRoles[department] ?? [] : Array.from(new Set(Object.values(departmentRoles).flat())).sort();
+
+const getDesignationForRole = (role: string) => role;
+
 const addEmployeeFieldClass =
   'w-full rounded-2xl border border-slate-300 bg-white p-4 text-slate-900 outline-none placeholder:text-slate-500 caret-slate-900 focus:border-violet-400 focus:ring-2 focus:ring-violet-300 transition-all';
 
@@ -350,7 +320,7 @@ const EmployeesModule: FC<
           !(emp.email || '').toLowerCase().includes(q)
         )
           return false;
-        if (filterDept && emp.dept !== filterDept) return false;
+        if (filterDept && getEmployeeDepartment(emp) !== filterDept) return false;
         if (filterRole && emp.role !== filterRole) return false;
         if (filterStatus) {
           if (filterStatus === 'active' && deactivatedIds.includes(emp.id)) return false;
@@ -365,6 +335,12 @@ const EmployeesModule: FC<
     isEditingProfile && editingData
       ? editingData
       : selectedEmployee;
+
+  const editingDepartment = getEmployeeDepartment(editingData ?? displayEmployee ?? { dept: '', department: '' } as Pick<Employee, 'dept' | 'department'>);
+  const editingRoleOptions = useMemo(
+    () => getRoleOptionsForDepartment(editingDepartment),
+    [editingDepartment]
+  );
 
   type ProfileField = {
     label: string;
@@ -407,7 +383,7 @@ const EmployeesModule: FC<
         emp.id,
         emp.name,
         emp.role,
-        emp.dept,
+        getEmployeeDepartment(emp),
         emp.salary,
         emp.experience,
         emp.joinDate ?? '',
@@ -478,89 +454,87 @@ const EmployeesModule: FC<
 
       {/* TOP BAR */}
       <SparkCard className="bg-white border-slate-200 p-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between w-full">
-          <div className="flex-1 min-w-0">
-            <div className="relative">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
-                size={18}
-              />
-              <input
-                value={staffSearch}
-                onChange={(e) => setStaffSearch(e.target.value)}
-                placeholder="Search employees..."
-                className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-200 rounded-3xl outline-none focus:border-violet-300 text-slate-900"
-              />
+        <div className="flex flex-col gap-4 w-full">
+          <div className="relative w-full">
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+              size={18}
+            />
+            <input
+              value={staffSearch}
+              onChange={(e) => setStaffSearch(e.target.value)}
+              placeholder="Search employees..."
+              className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-200 rounded-3xl outline-none focus:border-violet-300 text-slate-900"
+            />
+          </div>
+
+          <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between w-full">
+            <div className="flex flex-wrap items-center gap-3">
+              <select
+                value={filterDept}
+                onChange={(e) => {
+                  setFilterDept(e.target.value);
+                  setFilterRole('');
+                }}
+                className="min-w-[170px] px-4 py-3 bg-white text-slate-900 border border-slate-200 rounded-2xl"
+              >
+                <option value="">All Departments</option>
+                {departments.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={filterRole}
+                onChange={(e) => setFilterRole(e.target.value)}
+                className="min-w-[170px] px-4 py-3 bg-white text-slate-900 border border-slate-200 rounded-2xl"
+              >
+                <option value="">All Roles</option>
+                {roleOptions.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="min-w-[140px] px-4 py-3 bg-white text-slate-900 border border-slate-200 rounded-2xl"
+              >
+                <option value="">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+              <button
+                onClick={() => {
+                  setStaffSearch('');
+                  setFilterDept('');
+                  setFilterRole('');
+                  setFilterStatus('');
+                }}
+                className="px-4 py-3 rounded-2xl border border-slate-200 bg-white text-slate-900"
+              >
+                Reset
+              </button>
             </div>
-          </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <select
-              value={filterDept}
-              onChange={(e) => {
-                setFilterDept(e.target.value);
-                setFilterRole('');
-              }}
-              className="min-w-[170px] px-4 py-3 bg-white text-slate-900 border border-slate-200 rounded-2xl"
-            >
-              <option value="">All Departments</option>
-              {departments.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-            <select
-              value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value)}
-              className="min-w-[170px] px-4 py-3 bg-white text-slate-900 border border-slate-200 rounded-2xl"
-            >
-              <option value="">All Roles</option>
-              {roleOptions.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </select>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="min-w-[140px] px-4 py-3 bg-white text-slate-900 border border-slate-200 rounded-2xl"
-            >
-              <option value="">All Statuses</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-            </select>
-            <button
-              onClick={() => {
-                setStaffSearch('');
-                setFilterDept('');
-                setFilterRole('');
-                setFilterStatus('');
-              }}
-              className="px-4 py-3 rounded-2xl border border-slate-200 bg-white text-slate-900"
-            >
-              Reset
-            </button>
-          </div>
+            <div className="flex flex-wrap gap-3 xl:justify-end">
+              <button
+                onClick={exportEmployeesCsv}
+                className="bg-sky-100 hover:bg-sky-200 text-sky-700 px-5 py-3 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2"
+              >
+                <Download size={18} />
+                Export CSV
+              </button>
 
-          <div className="flex flex-col items-end gap-3">
-            <div className="flex flex-wrap gap-3 justify-end">
-            <button
-              onClick={exportEmployeesCsv}
-              className="bg-sky-100 hover:bg-sky-200 text-sky-700 px-5 py-3 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2"
-            >
-              <Download size={18} />
-              Export CSV
-            </button>
-
-            <button
-              onClick={() => setIsAdding(!isAdding)}
-              className="bg-violet-100 hover:bg-violet-200 text-violet-700 px-6 py-3 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2"
-            >
-              {isAdding ? <X size={20} /> : <Plus size={20} />}
-              {isAdding ? 'Cancel' : 'Add Employee'}
-            </button>
+              <button
+                onClick={() => setIsAdding(!isAdding)}
+                className="bg-violet-100 hover:bg-violet-200 text-violet-700 px-6 py-3 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2"
+              >
+                {isAdding ? <X size={20} /> : <Plus size={20} />}
+                {isAdding ? 'Cancel' : 'Add Employee'}
+              </button>
             </div>
           </div>
         </div>
@@ -816,6 +790,7 @@ const EmployeesModule: FC<
     setFormData({
       ...formData,
       role: e.target.value,
+      designation: getDesignationForRole(e.target.value),
     })
   }
 >
@@ -1165,7 +1140,7 @@ const EmployeesModule: FC<
 
         {/* DEPARTMENT */}
         <td className="px-8 py-6 text-slate-800 font-medium">
-          {emp.dept}
+          {getEmployeeDepartment(emp) || '-'}
         </td>
 
         {/* SALARY */}
@@ -1413,36 +1388,74 @@ const EmployeesModule: FC<
                     : (field.fallbackKey
                         ? (displayEmployee as Employee & Record<string, unknown>)[field.fallbackKey] ?? (displayEmployee as Employee & Record<string, unknown>)[field.key] ?? '-'
                         : (displayEmployee as Employee & Record<string, unknown>)[field.key] ?? '-');
+                  const editingFieldValue = editingData
+                    ? (field.fallbackKey
+                        ? (editingData as Employee & Record<string, unknown>)[field.fallbackKey] ?? (editingData as Employee & Record<string, unknown>)[field.key] ?? ''
+                        : (editingData as Employee & Record<string, unknown>)[field.key] ?? '')
+                    : '';
 
                   return (
                     <div key={field.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
                       <p className="text-[11px] font-black uppercase tracking-[0.35em] text-slate-400">{field.label}</p>
                       {isEditingProfile && editingData ? (
-                        <input
-                          type={field.type ?? 'text'}
-                          value={
-                            (field.fallbackKey
-                              ? (editingData as Employee & Record<string, unknown>)[field.fallbackKey] ?? (editingData as Employee & Record<string, unknown>)[field.key] ?? ''
-                              : (editingData as Employee & Record<string, unknown>)[field.key] ?? '') as string
-                          }
-                          onChange={(e) => {
-                            const nextValue = e.target.value;
-                            if (field.key === 'department') {
+                        field.label === 'Department' ? (
+                          <select
+                            value={editingDepartment}
+                            onChange={(e) => {
+                              const nextDepartment = e.target.value;
+                              const nextRole = editingData.role && getRoleOptionsForDepartment(nextDepartment).includes(editingData.role) ? editingData.role : '';
                               setEditingData({
                                 ...editingData,
-                                department: nextValue,
-                                dept: nextValue,
+                                department: nextDepartment,
+                                dept: nextDepartment,
+                                role: nextRole,
+                                designation: getDesignationForRole(nextRole),
                               });
-                              return;
-                            }
+                            }}
+                            className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
+                          >
+                            <option value="">Select Department</option>
+                            {departments.map((department) => (
+                              <option key={department} value={department}>
+                                {department}
+                              </option>
+                            ))}
+                          </select>
+                        ) : field.label === 'Role' ? (
+                          <select
+                            value={String(editingFieldValue)}
+                            onChange={(e) => {
+                              const nextValue = e.target.value;
+                              setEditingData({
+                                ...editingData,
+                                role: nextValue,
+                                designation: getDesignationForRole(nextValue),
+                              } as Employee);
+                            }}
+                            className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
+                          >
+                            <option value="">Select Role</option>
+                            {editingRoleOptions.map((role) => (
+                              <option key={role} value={role}>
+                                {role}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type={field.type ?? 'text'}
+                            value={String(editingFieldValue)}
+                            onChange={(e) => {
+                              const nextValue = e.target.value;
 
-                            setEditingData({
-                              ...editingData,
-                              [field.key]: nextValue,
-                            } as Employee);
-                          }}
-                          className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
-                        />
+                              setEditingData({
+                                ...editingData,
+                                [field.key]: nextValue,
+                              } as Employee);
+                            }}
+                            className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-2 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
+                          />
+                        )
                       ) : (
                         <p className="mt-2 text-sm font-semibold text-slate-900">{String(value)}</p>
                       )}
@@ -1549,7 +1562,10 @@ const EmployeesModule: FC<
                     <button
                       onClick={() => {
                         if (editingData) {
-                          const syncedEmployee = syncEmployeeStatus(editingData);
+                          const syncedEmployee = syncEmployeeStatus(
+                            editingData,
+                            (editingData.status ?? '').toString().toLowerCase() === 'inactive',
+                          );
 
                           setEmployees((prev) =>
                             prev.map((emp) =>

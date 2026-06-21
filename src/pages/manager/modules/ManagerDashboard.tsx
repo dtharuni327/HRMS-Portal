@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../../store/authStore';
 import DashboardNavbar from '../../../components/DashboardNavbar';
 import ManagerSidebar from '../../../components/manager/ManagerSidebar';
-import DashboardModule from './dashboard';
+import DashboardModule from './dashboard.tsx';
 import ProfilePage from './ProfilePage';
 import ApprovalsModule from './Approvals';
 import AttendanceModule from './Attendance';
@@ -1302,7 +1302,7 @@ ${formData.email}`
               announcements={announcements}
               showProfileModal={showProfileModal}
               setShowProfileModal={setShowProfileModal}
-              handleProfileUpload={(e) => {
+              handleProfileUpload={(e: ChangeEvent<HTMLInputElement>) => {
                 if (e.target.files?.[0]) {
                   const reader = new FileReader();
                   reader.onload = (event) => {

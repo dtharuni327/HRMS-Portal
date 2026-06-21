@@ -211,18 +211,18 @@ export const StatCard: React.FC<StatCardProps> = ({
       transition-transform
       duration-200
       ease-out
-      p-8
+      p-6
       rounded-[2.5rem]
       flex
       items-center
-      gap-6
+      gap-4
     `}
     style={style}
   >
     <div
       className={`
-        w-16
-        h-16
+        w-14
+        h-14
         rounded-3xl
         flex
         items-center
@@ -235,7 +235,7 @@ export const StatCard: React.FC<StatCardProps> = ({
     </div>
 
     <div className="text-left">
-      <h2 className="text-3xl font-black text-slate-900 tracking-tighter">
+      <h2 className="text-2xl font-black text-slate-900 tracking-tighter">
         {value}
       </h2>
 

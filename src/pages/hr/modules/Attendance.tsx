@@ -1,6 +1,10 @@
-import { type Dispatch, type SetStateAction, type FC } from 'react';
+import { type Dispatch, type SetStateAction, type FC, useState } from 'react';
 import { MapPin, Smile, Calendar, Clock } from 'lucide-react';
-import { SparkCard, type Employee, type AttendanceStatus } from './hrShared.tsx';
+import {
+  SparkCard,
+  type Employee,
+  type AttendanceStatus
+} from './hrShared';
 
 interface AttendanceModuleProps {
   employees: Employee[];
@@ -13,42 +17,103 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
   attendanceStatus,
   setAttendanceStatus
 }) => {
-  // Dynamic late arrivals: count statuses marked as 'Late'
-  const lateArrivals = Object.values(attendanceStatus).filter(s => s === 'Late').length;
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Present' | 'WFH' | 'On Leave' | 'Late'>('All');
 
-  // Totals for presentation
+  const punchInTimes: Record<number, string> = {
+    1: '09:05 AM',
+    2: '09:35 AM',
+    3: '09:12 AM',
+    4: '09:02 AM',
+    5: '09:25 AM',
+    6: '09:08 AM',
+    7: '09:18 AM',
+    8: '09:00 AM',
+    9: '09:45 AM',
+    10: '09:10 AM',
+    11: '09:20 AM',
+    12: '09:00 AM',
+    13: '09:30 AM',
+    14: '09:07 AM',
+    15: '09:16 AM'
+  };
+
+  const parsePunchTime = (time: string) => {
+    const match = time.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (!match) return null;
+    let hour = Number(match[1]);
+    const minute = Number(match[2]);
+    const period = match[3].toUpperCase();
+    if (period === 'PM' && hour < 12) hour += 12;
+    if (period === 'AM' && hour === 12) hour = 0;
+    return hour * 60 + minute;
+  };
+
+  const isLatePunch = (time: string) => {
+    const minutes = parsePunchTime(time);
+    return minutes !== null && minutes > 9 * 60 + 15;
+  };
+
+  const getPunchInTime = (empId: number) => punchInTimes[empId] ?? '09:15 AM';
+
+  const getEmployeeStatus = (emp: Employee) =>
+    attendanceStatus[emp.id] ?? 'On Leave';
+
+  const getDepartmentName = (emp: Employee) =>
+    emp.department ?? emp.dept ?? 'Unknown';
+
+  const departmentOrder = [
+    'Administration',
+    'Technology',
+    'Operations',
+    'Human Resources',
+    'Management',
+    'Finance',
+    'Sales & Marketing'
+  ];
+
+  const filteredEmployees = employees.filter((emp) =>
+    statusFilter === 'All'
+      ? true
+      : statusFilter === 'Late'
+      ? getEmployeeStatus(emp) === 'Present' && isLatePunch(getPunchInTime(emp.id))
+      : getEmployeeStatus(emp) === statusFilter
+  );
+
+  const lateArrivals = employees.filter(
+    (emp) =>
+      getEmployeeStatus(emp) === 'Present' &&
+      isLatePunch(getPunchInTime(emp.id))
+  ).length;
+
   const presentCount = Object.values(attendanceStatus).filter(s => s === 'Present').length;
   const wfhCount = Object.values(attendanceStatus).filter(s => s === 'WFH').length;
   const leaveCount = Object.values(attendanceStatus).filter(s => s === 'On Leave').length;
   const absentCount = Math.max(0, employees.length - (presentCount + wfhCount + leaveCount));
 
-  // Department-wise present counts
-  const departments = Array.from(new Set(employees.map(e => e.dept)));
-  const deptData = departments.map(dept => {
-    const empInDept = employees.filter(e => e.dept === dept);
-    const present = empInDept.filter(e => attendanceStatus[e.id] === 'Present').length;
+  const departments = Array.from(new Set([...departmentOrder, ...employees.map(getDepartmentName)]));
+  const deptData = departments.map((dept) => {
+    const empInDept = employees.filter((emp) => getDepartmentName(emp) === dept);
+    const present = empInDept.filter(emp => attendanceStatus[emp.id] === 'Present').length;
     return { dept, present, total: empInDept.length };
   });
   const maxDeptPresent = Math.max(...deptData.map(d => d.present), 1);
 
-  // 30-day trend data (fallback when no historical API): generate small variance around today's present count
-  const currentPresent = presentCount;
   const trendData = Array.from({ length: 30 }).map((_, i) => {
     const jitter = Math.round((Math.sin(i / 4) + Math.cos(i / 6)) * 1.2);
-    const val = Math.max(0, Math.min(employees.length, currentPresent + jitter));
-    return { dayIndex: i, count: val };
+    const count = Math.max(0, Math.min(employees.length, presentCount + jitter));
+    return { dayIndex: i, count };
   });
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4">
 
       {/* TOP CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
 
       {/* LATE ARRIVALS */}
       <SparkCard
         className="
-          p-6
+          p-4
           text-center
           bg-[#FEF3C7]
           border
@@ -68,6 +133,10 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
           {lateArrivals}
         </p>
 
+        <p className="text-xs text-slate-500 mt-1">
+          Based on punch-in time
+        </p>
+
         <p className="text-[10px] uppercase font-bold text-slate-600 tracking-widest mt-2">
           Late Arrivals
         </p>
@@ -81,18 +150,28 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
       {/* ABSENT */}
       <SparkCard
         className="
-          p-6
+          p-4
           text-center
-          bg-[#FDF7E8]
+          bg-[#FFF4F4]
           border
-          border-yellow-100
+          border-rose-100
           rounded-3xl
           shadow-sm
         "
       >
 
-        <p className="text-3xl font-black text-yellow-700">
+        <div className="flex items-center justify-center mb-3">
+          <div className="p-3 rounded-2xl bg-rose-100 text-rose-700 inline-flex">
+            <Calendar size={20} />
+          </div>
+        </div>
+
+        <p className="text-3xl font-black text-rose-500">
           {absentCount}
+        </p>
+
+        <p className="text-xs text-slate-500 mt-1">
+          Not present today
         </p>
 
         <p className="text-[10px] uppercase font-bold text-slate-600 tracking-widest mt-2">
@@ -100,7 +179,7 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
         </p>
 
         <p className="text-xs text-slate-500 mt-1">
-          Not present today
+          Team members away
         </p>
 
       </SparkCard>
@@ -108,7 +187,7 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
       {/* PRESENT */}
       <SparkCard
         className="
-          p-6
+          p-4
           text-center
           bg-[#EEF4FF]
           border
@@ -118,11 +197,21 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
         "
       >
 
+        <div className="flex items-center justify-center mb-3">
+          <div className="p-3 rounded-2xl bg-blue-100 text-blue-700 inline-flex">
+            <MapPin size={20} />
+          </div>
+        </div>
+
         <p className="text-3xl font-black text-blue-600">
           {
             Object.values(attendanceStatus)
               .filter(s => s === 'Present').length
           }
+        </p>
+
+        <p className="text-xs text-slate-500 mt-1">
+          On-site attendance
         </p>
 
         <p className="text-[10px] uppercase font-bold text-slate-600 tracking-widest mt-2">
@@ -138,7 +227,7 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
       {/* WFH */}
       <SparkCard
         className="
-          p-6
+          p-4
           text-center
           bg-[#F8F5FF]
           border
@@ -148,11 +237,21 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
         "
       >
 
+        <div className="flex items-center justify-center mb-3">
+          <div className="p-3 rounded-2xl bg-violet-100 text-violet-700 inline-flex">
+            <Smile size={20} />
+          </div>
+        </div>
+
         <p className="text-3xl font-black text-violet-600">
           {
             Object.values(attendanceStatus)
               .filter(s => s === 'WFH').length
           }
+        </p>
+
+        <p className="text-xs text-slate-500 mt-1">
+          Remote team members
         </p>
 
         <p className="text-[10px] uppercase font-bold text-slate-600 tracking-widest mt-2">
@@ -168,7 +267,7 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
       {/* LEAVE */}
       <SparkCard
         className="
-          p-6
+          p-4
           text-center
           bg-[#FFF4F4]
           border
@@ -178,11 +277,21 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
         "
       >
 
+        <div className="flex items-center justify-center mb-3">
+          <div className="p-3 rounded-2xl bg-rose-100 text-rose-700 inline-flex">
+            <Calendar size={20} />
+          </div>
+        </div>
+
         <p className="text-3xl font-black text-rose-500">
           {
             Object.values(attendanceStatus)
               .filter(s => s === 'On Leave').length
           }
+        </p>
+
+        <p className="text-xs text-slate-500 mt-1">
+          Team on leave today
         </p>
 
         <p className="text-[10px] uppercase font-bold text-slate-600 tracking-widest mt-2">
@@ -196,9 +305,9 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
       </SparkCard>
 
     </div>
-    {/* DEPARTMENT BREAKDOWN & 30-day TREND */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
+    {/* DEPARTMENT BREAKDOWN & 30-DAY TREND */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <SparkCard className="p-6 bg-white border border-slate-200 rounded-3xl">
         <h3 className="text-lg font-black text-slate-900 mb-4">Department-wise Present</h3>
         <div className="space-y-3">
@@ -208,7 +317,6 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
                 <p className="font-semibold text-slate-800">{d.dept}</p>
                 <p className="text-sm text-slate-500">{d.present}/{d.total}</p>
               </div>
-
               <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
                 <div
                   style={{ width: `${Math.round((d.present / maxDeptPresent) * 100)}%` }}
@@ -233,7 +341,22 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
           ))}
         </div>
       </SparkCard>
+    </div>
 
+    <div className="flex flex-wrap items-center gap-3">
+      {(['All', 'Present', 'WFH', 'Late', 'On Leave'] as const).map((filter) => (
+        <button
+          key={filter}
+          onClick={() => setStatusFilter(filter)}
+          className={`px-4 py-2 rounded-2xl text-sm font-semibold transition ${
+            statusFilter === filter
+              ? 'bg-slate-900 text-white'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          }`}
+        >
+          {filter}
+        </button>
+      ))}
     </div>
 
     {/* TABLE CARD */}
@@ -279,7 +402,7 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
           {/* TABLE BODY */}
           <tbody>
 
-            {employees.map((emp, index) => (
+            {filteredEmployees.map((emp, index) => (
 
               <tr
                 key={emp.id}
@@ -289,7 +412,9 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
                   border-b
                   border-white/40
                   ${
-                    index % 2 === 0
+                    isLatePunch(getPunchInTime(emp.id)) && getEmployeeStatus(emp) === 'Present'
+                      ? 'bg-amber-50'
+                      : index % 2 === 0
                       ? 'bg-[#EEF4FF]'
                       : 'bg-[#F8F5FF]'
                   }
@@ -315,7 +440,7 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
 
                 {/* DEPARTMENT */}
                 <td className="px-8 py-5 text-slate-700 font-medium">
-                  {emp.dept}
+                  {getDepartmentName(emp)}
                 </td>
 
                 {/* STATUS */}
@@ -323,14 +448,14 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
 
                   <span
                     className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${
-                      attendanceStatus[emp.id] === 'Present'
+                      getEmployeeStatus(emp) === 'Present'
                         ? 'bg-blue-100 text-blue-700'
-                        : attendanceStatus[emp.id] === 'WFH'
+                        : getEmployeeStatus(emp) === 'WFH'
                         ? 'bg-violet-100 text-violet-700'
                         : 'bg-rose-100 text-rose-700'
                     }`}
                   >
-                    {attendanceStatus[emp.id] ?? 'On Leave'}
+                    {getEmployeeStatus(emp)}
                   </span>
 
                 </td>
@@ -338,8 +463,9 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
                 {/* TIME */}
                 <td className="px-8 py-5 text-slate-700 font-medium">
 
-                  {attendanceStatus[emp.id] === 'Present' ||
-                  attendanceStatus[emp.id] === 'WFH'
+                  {getEmployeeStatus(emp) === 'Present'
+                    ? getPunchInTime(emp.id)
+                    : getEmployeeStatus(emp) === 'WFH'
                     ? '09:15 AM'
                     : 'N/A'}
 
@@ -350,7 +476,7 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
 
                   <div className="flex items-center gap-1 text-slate-600 text-xs">
 
-                    {attendanceStatus[emp.id] === 'Present' ? (
+                    {getEmployeeStatus(emp) === 'Present' ? (
                       <>
                         <MapPin
                           size={14}
@@ -358,7 +484,7 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
                         />
                         Office - Floor 4
                       </>
-                    ) : attendanceStatus[emp.id] === 'WFH' ? (
+                    ) : getEmployeeStatus(emp) === 'WFH' ? (
                       <>
                         <Smile
                           size={14}
@@ -435,23 +561,14 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
                     >
                       Leave
                     </button>
-
                   </div>
-
                 </td>
-
               </tr>
-
             ))}
-
           </tbody>
-
         </table>
-
       </div>
-
     </SparkCard>
-
   </div>
 );
 };

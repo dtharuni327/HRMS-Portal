@@ -61,6 +61,16 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
   const getDepartmentName = (emp: Employee) =>
     emp.department ?? emp.dept ?? 'Unknown';
 
+  const departmentOrder = [
+    'Administration',
+    'Technology',
+    'Operations',
+    'Human Resources',
+    'Management',
+    'Finance',
+    'Sales & Marketing'
+  ];
+
   const filteredEmployees = employees.filter((emp) =>
     statusFilter === 'All'
       ? true
@@ -80,9 +90,9 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
   const leaveCount = Object.values(attendanceStatus).filter(s => s === 'On Leave').length;
   const absentCount = Math.max(0, employees.length - (presentCount + wfhCount + leaveCount));
 
-  const departments = Array.from(new Set(employees.map(getDepartmentName)));
-  const deptData = departments.map(dept => {
-    const empInDept = employees.filter(emp => getDepartmentName(emp) === dept);
+  const departments = Array.from(new Set([...departmentOrder, ...employees.map(getDepartmentName)]));
+  const deptData = departments.map((dept) => {
+    const empInDept = employees.filter((emp) => getDepartmentName(emp) === dept);
     const present = empInDept.filter(emp => attendanceStatus[emp.id] === 'Present').length;
     return { dept, present, total: empInDept.length };
   });
@@ -572,4 +582,4 @@ const AttendanceModule: FC<AttendanceModuleProps> = ({
 );
 };
 
-export default AttendanceModule; 
+export default AttendanceModule;

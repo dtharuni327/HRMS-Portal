@@ -1,4 +1,4 @@
-import { type FC, useState } from 'react';
+import { type FC, type Dispatch, type SetStateAction, useState } from 'react';
 
 import { Network, Mail, Phone, Eye } from 'lucide-react';
 
@@ -9,6 +9,15 @@ import {
 
 interface TeamDirectoryModuleProps {
   employees: Employee[];
+  setEmployees?: Dispatch<SetStateAction<Employee[]>>;
+  staffSearch?: string;
+  setStaffSearch?: Dispatch<SetStateAction<string>>;
+  isAdding?: boolean;
+  setIsAdding?: Dispatch<SetStateAction<boolean>>;
+  formData?: any;
+  setFormData?: Dispatch<SetStateAction<any>>;
+  handleSaveEmployee?: (e: any) => void;
+  startEditEmployee?: (employee: Employee) => void;
 }
 
 const getSeniority = (years?: number) => {

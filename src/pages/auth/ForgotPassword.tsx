@@ -1,6 +1,4 @@
 
-//npx json-server mock/users.json --port 5000
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";

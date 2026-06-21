@@ -6,87 +6,46 @@ export type WorkMode = 'WFH' | 'Office' | 'Hybrid' | 'Onsite' | 'Remote' | '';
 
 export interface Employee {
   id: number;
-
   employeeId?: string;
-
   name: string;
-
   username?: string;
-
   password?: string;
-
   email?: string;
-
   phone?: string;
-
   aadhaarNumber?: string;
-
   panNumber?: string;
-
   address?: string;
-
   bankName?: string;
-
-  accountNumber?: string;
-
+  accountNumber?: string
   ifsc?: string;
-
   branch?: string;
-
   emergencyContactName?: string;
-
   emergencyContactPhone?: string;
-
   bloodGroup?: string;
-
   maritalStatus?: string;
-
   nationality?: string;
-
   passportNumber?: string;
-
   uan?: string;
-
   pfNumber?: string;
-
   esiNumber?: string;
-
   taxState?: string;
-
   workMode?: 'WFH' | 'Office' | 'Hybrid' | 'Onsite' | 'Remote' | '';
-
   role: string;
-
   designation?: string;
-
   dept?: string;
-
   department?: string;
-
   location?: string;
-
   reportingManager?: string;
-
   salary?: number;
-
   experience?: number;
-
   isMVP?: boolean;
-
   joinDate?: string;
-
   birthday?: string;
-
   ifscCode?: string;
-
   status?: string;
-
   employmentType?: string;
-
   performance?: string;
-
   rating?: number;
-
   gender?: string;
 }
 export interface RequestItem {
@@ -244,25 +203,25 @@ export const StatCard: React.FC<StatCardProps> = ({
 }) => (
 
   <div
-    className="
+      className="
       hover-zoom-card
       transform
       transition-transform
       duration-200
       ease-out
-      p-8
+      p-6
       rounded-[2.5rem]
       flex
       items-center
-      gap-6
+      gap-4
     "
     style={style}
   >
 
     <div
       className={`
-        w-16
-        h-16
+        w-14
+        h-14
 
         rounded-3xl
 
@@ -280,7 +239,7 @@ export const StatCard: React.FC<StatCardProps> = ({
 
     <div className="text-left">
 
-      <h2 className="text-3xl font-black text-slate-900 tracking-tighter">
+      <h2 className="text-2xl font-black text-slate-900 tracking-tighter">
         {value}
       </h2>
 

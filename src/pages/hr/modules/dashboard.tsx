@@ -1,12 +1,12 @@
 import { type Dispatch, type SetStateAction, type ChangeEvent, type FC } from 'react';
-import { Users, Check, CheckCircle2, Smile, Zap, Plus, X, XCircle, Megaphone, Star } from 'lucide-react';
+import { Users, Check, CheckCircle2, Smile, Zap, Plus, X, XCircle, Megaphone, Star, LogIn, LogOutIcon, Clock3, CalendarDays } from 'lucide-react';
+import { motion } from 'framer-motion';
 import hrImage from '../../../images/image.png';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { SparkCard, StatCard, type Announcement, type Employee, type HRDetails, type Job, type LeaveData, type Policy, type RequestItem, type Training, type AttendanceStatus, type Payslip } from './hrShared.tsx';
 import { useEffect, useMemo, useState, useRef } from 'react';
 
 type HRTab = 'Dashboard' | 'Employees' | 'Tasks' | 'Attendance' | 'Leave' | 'Payroll' | 'Recruitment' | 'Documents' | 'Reports' | 'Organization' | 'ProjectEffortReport';
-
 interface DashboardModuleProps {
   hrDetails: HRDetails;
   profileImage: string | null;
@@ -38,24 +38,9 @@ interface DashboardModuleProps {
 const nowTimestamp = Date.now();
 
 const DashboardModule: FC<DashboardModuleProps> = ({
-  hrDetails,
-  profileImage,
-  showProfileModal,
-  setShowProfileModal,
-  handleProfileUpload,
-  setActivePage,
-  setActiveTab,
-  announcements,
-  announcementForm,
-  setAnnouncementForm,
-  isAnnouncementModalOpen,
-  handleAddAnnouncement,
-  wfhRequests,
-  setWfhRequests,
-  employees,
-  attendanceStatus,
-  leaveData,
-  setIsAnnouncementModalOpen,
+  hrDetails, profileImage,showProfileModal,setShowProfileModal,handleProfileUpload,setActivePage,
+  setActiveTab,announcements,announcementForm,setAnnouncementForm,isAnnouncementModalOpen,handleAddAnnouncement,
+  wfhRequests,setWfhRequests,employees,attendanceStatus,leaveData,setIsAnnouncementModalOpen,
   getTimeAgo,
 }) => {
   const validAnnouncements = announcements.filter(a => {
@@ -152,6 +137,13 @@ const DashboardModule: FC<DashboardModuleProps> = ({
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
+  const formatDuration = (seconds: number) => formatTimer(seconds);
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 14 },
+    show: { opacity: 1, y: 0 }
+  };
+
   const requiredHours = 8;
   const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const monthName = new Date(viewYear, viewMonth).toLocaleString('default', { month: 'long' });
@@ -188,6 +180,13 @@ const DashboardModule: FC<DashboardModuleProps> = ({
 
     return days;
   }, [viewYear, viewMonth, attendanceRecords, currentTime]);
+
+  // Silence TS "declared but its value is never read" for optional calendar helpers
+  void setViewYear;
+  void setViewMonth;
+  void DAY_LABELS;
+  void monthName;
+  void monthCalendarDays;
 
   // Compute today's attendance counts from `attendanceStatus` (real-time)
   const todayAttendanceCounts = useMemo(() => {
@@ -235,13 +234,9 @@ useEffect(() => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
-        
   <div className="relative mt-16 mb-6">
-
     <div className="relative mt-4 mb-4">
-
       <div className="relative mt-6 mb-4">
-
         <SparkCard
           overflowVisible
           hoverable={false}
@@ -257,13 +252,9 @@ useEffect(() => {
             shadow-[0_18px_50px_rgba(15,23,42,0.45)]
           "
         >
-
           <div className="flex h-full items-center">
-
             <div className="relative z-30 flex-1 space-y-4">
-
               <div className="flex items-center gap-4">
-
                 {profileImage ? (
 
                   <img
@@ -279,9 +270,7 @@ useEffect(() => {
                       shadow-lg
                     "
                   />
-
                 ) : (
-
                   <div
                     className="
                       w-14
@@ -299,9 +288,7 @@ useEffect(() => {
                   >
                     {hrDetails.avatar}
                   </div>
-
                 )}
-
                 <div>
 
                   <h3 className="text-2xl font-black text-white leading-tight">
@@ -311,61 +298,42 @@ useEffect(() => {
                   <p className="text-slate-300 font-bold text-base uppercase tracking-[0.1em]">
                     {hrDetails.role}
                   </p>
-
                 </div>
-
               </div>
-
               <div className="grid grid-cols-2 gap-x-10 gap-y-2 max-w-lg">
-
                 <div className="flex flex-col">
-
                   <span className="text-slate-400 font-black uppercase text-[8px] tracking-wider">
                     Email
                   </span>
-
                   <span className="text-white text-xs opacity-90 truncate">
                     {hrDetails.email}
                   </span>
-
                 </div>
-
                 <div className="flex flex-col">
-
                   <span className="text-slate-400 font-black uppercase text-[8px] tracking-wider">
                     Phone
                   </span>
-
                   <span className="text-white text-xs opacity-90">
                     {hrDetails.phone}
                   </span>
-
                 </div>
-
                 <div className="flex flex-col">
-
                   <span className="text-slate-400 font-black uppercase text-[8px] tracking-wider">
                     Experience
                   </span>
-
                   <span className="text-white text-sm font-black">
                     {hrDetails.experience}
                   </span>
-
                 </div>
 
                 <div className="flex flex-col">
-
                   <span className="text-slate-400 font-black uppercase text-[8px] tracking-wider">
                     Department
                   </span>
-
                   <span className="text-white text-sm font-black">
                     {hrDetails.dept}
                   </span>
-
                 </div>
-
               </div>
                   <div className="mt-6">
                     <button
@@ -411,7 +379,7 @@ useEffect(() => {
                 </div>
               </div>
             </SparkCard>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6 mt-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-6 mt-8">
 
   {/* TOTAL STAFF */}
   <button
@@ -577,514 +545,330 @@ useEffect(() => {
     />
   </button>
 
-</div>
-<section className="mt-8 grid grid-cols-1 gap-5 xl:grid-cols-[0.85fr_1.15fr]">
-
-  {/* WORK SESSION (left column wrapper will include compact top cards below) */}
-  <div className="flex flex-col gap-6">
-  <article
+  {/* LEAVE REQUESTS */}
+  <button
+    type="button"
+    onClick={() => setActiveTab('Leave')}
     className="
-      hover-zoom-card
+      w-full
       rounded-[2rem]
+      bg-[#fde7ea]
       border
-      border-violet-100
-      bg-[#efe9ff]
-      p-5
-      shadow-[0_12px_30px_rgba(0,0,0,0.08)]
-      h-[470px]
-      flex
-      flex-col
-      justify-between
+      border-white/10
+      shadow-[0_16px_45px_rgba(0,0,0,0.12)]
+      text-left
+      transition-all
+      duration-200
+      hover:-translate-y-0.5
+      hover:bg-[#f9dde1]
+      focus:outline-none
+      focus:ring-2
+      focus:ring-[#f43f5e]/50
+      cursor-pointer
     "
   >
+    <StatCard
+      icon={<CalendarDays size={24} />}
+      value={pendingLeaveRequests.length}
+      label="Leave Requests"
+      color="text-[#f43f5e]"
+    />
+  </button>
 
-    {/* HEADER */}
-    <div className="flex items-start justify-between">
-
+</div>
+<section className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-12">
+  {/* Work Session */}
+  <motion.div
+    variants={itemVariants}
+    className="relative overflow-hidden rounded-[30px] border border-[#0f172a]/10 bg-[#e3dcf4] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:shadow-[0_18px_46px_rgba(15,23,42,0.14)] xl:col-span-4"
+  >
+    <div className="mb-5 flex items-center justify-between">
       <div>
-        <h2 className="text-[28px] font-black text-slate-900">
+        <h3 className="text-[19px] font-semibold text-[#151936]">
           Work Session
-        </h2>
-
-        <p className="mt-1 text-[14px] text-slate-600">
-          Track live work hours
+        </h3>
+        <p className="mt-1 text-[14px] text-[#475569]">
+          Track live work hours after check-in
         </p>
       </div>
 
-      {/* STATUS */}
       <div
-        className={`
-          rounded-full
-          px-3
-          py-1.5
-          text-[11px]
-          font-bold
-
-          ${
-            checkedIn && !checkedOut
-              ? 'bg-violet-100 text-violet-700'
-              : checkedOut
-              ? 'bg-slate-200 text-slate-300'
-              : 'bg-white text-slate-500'
-          }
-        `}
+        className={`rounded-full border border-[#0f172a]/10 px-3 py-1 text-[12px] font-semibold ${
+          checkedIn && !checkedOut
+            ? "bg-violet-100 text-violet-700"
+            : "bg-white/70 text-[#64748b]"
+        }`}
       >
-        {checkedIn && !checkedOut
-          ? 'Checked In'
-          : checkedOut
-          ? 'Checked Out'
-          : 'Not Checked'}
+        {checkedIn && !checkedOut ? "Checked In" : "Checked Out"}
       </div>
-
     </div>
 
-    {/* TIMER */}
     <div className="flex justify-center">
-
-      <div className="relative flex h-[210px] w-[210px] items-center justify-center">
-
-        {/* DASH */}
+      <div className="relative flex h-[230px] w-[230px] items-center justify-center">
         <div
-          className="absolute inset-0 rounded-full opacity-35"
+          className="absolute inset-0 rounded-full opacity-25"
           style={{
             background:
-              'repeating-conic-gradient(from 0deg, rgba(139,92,246,0.35) 0deg 2deg, transparent 2deg 8deg)'
+              "repeating-conic-gradient(from 0deg, rgba(109,96,209,0.42) 0deg 1deg, transparent 1deg 7deg)",
           }}
         />
 
-        {/* PURPLE */}
-        <div className="absolute inset-[12px] rounded-full bg-[#dacfff]" />
+        <div className="absolute inset-[12px] rounded-full bg-[#cfc6f0]" />
+        <div className="absolute inset-[20px] rounded-full border-[12px] border-[#b4a8ec]" />
 
-        {/* BORDER */}
-        <div className="absolute inset-[20px] rounded-full border-[8px] border-[#bcaaf8]" />
+        <div className="absolute inset-[40px] overflow-hidden rounded-full bg-white shadow-[inset_0_8px_20px_rgba(79,70,229,0.08)]">
+          <div className="flex h-full w-full items-center justify-center px-3">
+            <div className="w-full text-center">
+              <p className="text-[28px] font-semibold tracking-tight text-[#111827]">
+                {formatDuration(seconds)}
+              </p>
 
-        {/* WHITE */}
-        <div className="absolute inset-[32px] rounded-full bg-white">
+              <p className="mt-1 text-[10px] font-medium text-[#64748b]">
+                Running Timer
+              </p>
 
-          <div className="flex h-full w-full flex-col items-center justify-center px-4 box-border max-w-[220px] mx-auto">
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <div className="rounded-xl bg-[#f4f1ff] px-2 py-2">
+                  <p className="text-[9px] font-semibold text-[#64748b]">
+                    Check In
+                  </p>
+                  <p className="mt-1 whitespace-nowrap text-[11px] font-bold text-[#111827]">
+                    {checkInTime
+                      ? checkInTime.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "--:--"}
+                  </p>
+                </div>
 
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">Total Hours</p>
-
-            <h1 className="text-[28px] md:text-[34px] font-extrabold tracking-tight text-slate-900 leading-none mt-2">
-              {formatTimer(seconds)}
-            </h1>
-
-            <p className="mt-1 text-xs text-slate-500">{checkedIn && !checkedOut ? 'Running' : checkedOut ? 'Checked Out' : 'Not Running'}</p>
-
-            {/* ACTIONS (moved below circle): centered pill buttons with slight float */}
-
+                <div className="rounded-xl bg-[#f4f1ff] px-2 py-2">
+                  <p className="text-[9px] font-semibold text-[#64748b]">
+                    Check Out
+                  </p>
+                  <p className="mt-1 whitespace-nowrap text-[11px] font-bold text-[#111827]">
+                    {checkOutTime
+                      ? checkOutTime.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "--:--"}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-
         </div>
+      </div> </div>
 
-      </div>
-
-    </div>
-
-    {/* centered large action area below the circle */}
-    <div className="mt-6 flex flex-col items-center gap-4 w-full">
-      <div className="flex items-center justify-center gap-6 text-sm text-slate-700">
-        <div className="flex items-center gap-3">
-          <svg className="w-5 h-5 text-emerald-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#10b981" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 11a2 2 0 100-4 2 2 0 000 4z" fill="#10b981"/></svg>
-          <div className="text-xs text-slate-500">Check In</div>
-          <div className="text-sm font-bold text-slate-900">{checkInTime ? formatPunchTime(checkInTime) : '--:--'}</div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <svg className="w-5 h-5 text-slate-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 7l-5 5 5 5" stroke="#9ca3af" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          <div className="text-xs text-slate-500">Check Out</div>
-          <div className="text-sm font-bold text-slate-900">{checkOutTime ? formatPunchTime(checkOutTime) : '--:--'}</div>
-        </div>
-      </div>
-
-      <div className="w-full max-w-[380px] grid grid-cols-2 gap-4">
-        <button
-          onClick={() => {
-            const now = new Date();
-
-            setCheckedIn(true);
-            setCheckedOut(false);
-            setSeconds(0);
-            setCheckInTime(now);
-            checkInRef.current = now.getTime();
-            if (timerRef.current) {
-              clearInterval(timerRef.current);
-              timerRef.current = null;
+    <div className="mt-6 flex gap-3">
+      <button
+        onClick={() => {
+          const now = new Date();
+          setCheckedIn(true);
+          setCheckedOut(false);
+          setSeconds(0);
+          setCheckInTime(now);
+          checkInRef.current = now.getTime();
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+          setSeconds(0);
+          timerRef.current = window.setInterval(() => {
+            if (checkInRef.current) {
+              const secs = Math.floor((Date.now() - checkInRef.current) / 1000);
+              setSeconds(secs);
             }
-            setSeconds(0);
-            timerRef.current = window.setInterval(() => {
-              if (checkInRef.current) {
-                const secs = Math.floor((Date.now() - checkInRef.current) / 1000);
-                setSeconds(secs);
-                // eslint-disable-next-line no-console
-                console.log('work-timer tick', secs);
-              }
-            }, 1000);
-            // eslint-disable-next-line no-console
-            console.log('work-timer started', checkInRef.current);
-            setCheckOutTime(null);
+          }, 1000);
+          setCheckOutTime(null);
+          setAttendanceRecords(prev => ({
+            ...prev,
+            [todayKey]: { in: formatPunchTime(now), status: 'Partial' }
+          }));
+        }}
+        disabled={checkedIn && !checkedOut}
+        className="flex flex-1 items-center justify-center gap-2 rounded-[16px] border border-[#0f172a]/10 bg-[#6356d8] px-4 py-3 text-[14px] font-semibold text-white transition-all duration-200 hover:bg-[#5447ca] hover:shadow-[0_10px_20px_rgba(99,86,216,0.25)] disabled:cursor-not-allowed disabled:opacity-50"
+        type="button"
+      >
+        <LogIn className="h-4 w-4" />
+        Check In
+      </button>
 
-            setAttendanceRecords(prev => ({
-              ...prev,
-              [todayKey]: { in: formatPunchTime(now), status: 'Partial' }
-            }));
-          }}
-          disabled={checkedIn && !checkedOut}
-          className="w-full bg-violet-600 text-white py-3 rounded-2xl font-bold shadow-lg hover:opacity-95 disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 17l5-5-5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          <span>Check In</span>
-        </button>
-
-        <button
-          onClick={() => {
-            if (!checkInTime) return;
-
-            const now = new Date();
-
-            if (timerRef.current) {
-              clearInterval(timerRef.current);
-              timerRef.current = null;
+      <button
+        onClick={() => {
+          if (!checkInTime) return;
+          const now = new Date();
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+          const startMs = checkInRef.current ?? checkInTime.getTime();
+          setSeconds(Math.floor((now.getTime() - startMs) / 1000));
+          checkInRef.current = null;
+          const duration =
+            Math.round(
+              ((now.getTime() - checkInTime.getTime()) /
+                3600000) *
+                100
+            ) / 100;
+          setCheckedOut(true);
+          setCheckedIn(false);
+          setCheckOutTime(now);
+          setAttendanceRecords(prev => ({
+            ...prev,
+            [todayKey]: {
+              in: formatPunchTime(checkInTime),
+              out: formatPunchTime(now),
+              duration,
+              status: duration >= requiredHours ? 'Full' : 'Partial'
             }
-            // eslint-disable-next-line no-console
-            console.log('work-timer stopped');
-            const startMs = checkInRef.current ?? checkInTime.getTime();
-            setSeconds(Math.floor((now.getTime() - startMs) / 1000));
-            checkInRef.current = null;
-
-            const duration =
-              Math.round(
-                ((now.getTime() - checkInTime.getTime()) /
-                  3600000) *
-                  100
-              ) / 100;
-
-            setCheckedOut(true);
-            setCheckedIn(false);
-            setCheckOutTime(now);
-
-            setAttendanceRecords(prev => ({
-              ...prev,
-              [todayKey]: {
-                in: formatPunchTime(checkInTime),
-                out: formatPunchTime(now),
-                duration,
-                status: duration >= requiredHours ? 'Full' : 'Partial'
-              }
-            }));
-          }}
-          disabled={!checkedIn || checkedOut}
-          className="w-full bg-white border border-slate-200 text-slate-600 py-3 rounded-2xl font-bold shadow-sm hover:opacity-95 disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          <svg className="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 7l-5 5 5 5" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          <span>Check Out</span>
-        </button>
-      </div>
+          }));
+        }}
+        disabled={!checkedIn || checkedOut}
+        className="flex flex-1 items-center justify-center gap-2 rounded-[16px] border border-[#0f172a]/10 bg-[#d7d1f3] px-4 py-3 text-[14px] font-semibold text-[#25315b] transition-all duration-200 hover:bg-[#ccc4ee] disabled:cursor-not-allowed disabled:opacity-50"
+        type="button"
+      >
+        <LogOutIcon className="h-4 w-4" />
+        Check Out
+      </button>
     </div>
+  </motion.div>
 
-  </article>
-
-  </div>
-
-  {/* CALENDAR */}
-  <article
-    className="
-      hover-zoom-card
-      rounded-[2rem]
-      border
-      border-slate-200
-      bg-white
-      p-5
-      shadow-[0_12px_30px_rgba(0,0,0,0.08)]
-      h-[470px]
-      flex
-      flex-col
-    "
+  {/* Attendance Overview */}
+  <motion.div
+    variants={itemVariants}
+    className="relative overflow-hidden rounded-[30px] border border-[#0f172a]/10 bg-[#dde9f5] p-6 shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-all duration-300 hover:shadow-[0_18px_46px_rgba(15,23,42,0.14)] xl:col-span-4"
   >
+    <div className="mb-4 flex items-center justify-between">
+      <h3 className="text-[19px] font-semibold text-[#10223d]">
+        Attendance Overview
+      </h3>
+      <span className="rounded-full border border-[#0f172a]/10 bg-[#d0e4f4] px-3 py-1 text-[13px] font-medium text-[#0d6db8]">
+        Present Today
+      </span>
+    </div>
 
-    {/* HEADER */}
-    <div className="flex items-center justify-between">
-
-      <div>
-        <h2 className="text-[28px] font-black text-slate-900">
-          Attendance Calendar
-        </h2>
-
-        <p className="mt-1 text-[14px] text-slate-500">
-          Monthly overview
+    <div className="grid grid-cols-1 gap-4">
+      <div className="rounded-[20px] border border-[#0f172a]/10 bg-white/58 p-4">
+        <div className="flex items-center gap-2 text-[#475569]">
+          <Clock3 className="h-4 w-4" />
+          <span className="text-[14px]">Today Check In</span>
+        </div>
+        <p className="mt-3 text-[34px] font-bold tracking-tight text-[#0f172a]">
+          {checkInTime
+            ? checkInTime.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "--:--"}
         </p>
       </div>
 
-      {/* MONTH */}
-      <div className="flex items-center gap-2">
-
-        <button
-          onClick={() => {
-            if (viewMonth === 0) {
-              setViewMonth(11);
-              setViewYear(prev => prev - 1);
-            } else {
-              setViewMonth(prev => prev - 1);
-            }
-          }}
-          className="
-            flex
-            h-9
-            w-9
-            items-center
-            justify-center
-            rounded-xl
-            bg-slate-100
-            text-sm
-            font-black
-          "
-        >
-          ←
-        </button>
-
-        <div
-          className="
-            rounded-xl
-            border
-            border-slate-200
-            bg-[#f8fafc]
-            px-4
-            py-2
-            text-xs
-            font-bold
-            text-slate-900
-          "
-        >
-          {monthName} {viewYear}
+      <div className="rounded-[20px] border border-[#0f172a]/10 bg-white/58 p-4">
+        <div className="flex items-center gap-2 text-[#475569]">
+          <LogOutIcon className="h-4 w-4" />
+          <span className="text-[14px]">Today Check Out</span>
         </div>
-
-        <button
-          onClick={() => {
-            if (viewMonth === 11) {
-              setViewMonth(0);
-              setViewYear(prev => prev + 1);
-            } else {
-              setViewMonth(prev => prev + 1);
-            }
-          }}
-          className="
-            flex
-            h-9
-            w-9
-            items-center
-            justify-center
-            rounded-xl
-            bg-slate-100
-            text-sm
-            font-black
-          "
-        >
-          →
-        </button>
-
+        <p className="mt-3 text-[34px] font-bold tracking-tight text-[#0f172a]">
+          {checkOutTime
+            ? checkOutTime.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "--:--"}
+        </p>
       </div>
 
+      <div className="grid grid-cols-2 gap-4">
+        <div className="rounded-[20px] border border-[#0f172a]/10 bg-white/58 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/75">
+          <div className="flex items-center gap-2 text-[#475569]">
+            <CalendarDays className="h-4 w-4" />
+            <span className="text-[14px]">This Month</span>
+          </div>
+          <p className="mt-3 text-[31px] font-bold text-[#0f172a]">
+            21 / 22
+          </p>
+        </div>
+
+        <div className="rounded-[20px] border border-[#0f172a]/10 bg-white/58 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/75">
+          <div className="flex items-center gap-2 text-[#475569]">
+            <CheckCircle2 className="h-4 w-4" />
+            <span className="text-[14px]">Late Marks</span>
+          </div>
+          <p className="mt-3 text-[31px] font-bold text-[#0f172a]">
+            02
+          </p>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+
+  {/* Today's Celebrations */}
+  <SparkCard className="h-full w-full p-6 bg-[#e6fffb] border border-cyan-100 rounded-[28px] shadow-[0_16px_45px_rgba(0,0,0,0.10)] xl:col-span-4">
+    <div className="mb-5">
+      <h3 className="font-bold text-cyan-950 text-lg">
+        Today's Celebrations
+      </h3>
+      <p className="text-cyan-700 text-xs mt-1">
+        Birthdays & anniversaries
+      </p>
     </div>
 
-    {/* CALENDAR BOX */}
-    <div className="mt-5 flex-1 rounded-[1.5rem] bg-[#f8fafc] p-4 border border-slate-100">
-
-      <div className="flex gap-4 h-full">
-
-        {/* LEFT CALENDAR */}
-        <div className="flex-1">
-
-          {/* DAYS */}
-          <div className="grid grid-cols-7 gap-2">
-
-            {DAY_LABELS.map(label => (
-
+    {todayEvents.length > 0 ? (
+      <div className="space-y-3">
+        {todayEvents.slice(0, 3).map(event => (
+          <div
+            key={`${event.name}-${event.type}`}
+            className="
+              p-4
+              min-h-[95px]
+              bg-white
+              rounded-2xl
+              border
+              border-cyan-100
+            "
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-bold text-slate-900">
+                  {event.name}
+                </p>
+                <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500 mt-1">
+                  {event.type}
+                </p>
+              </div>
               <div
-                key={label}
                 className="
-                  text-center
-                  text-[8px]
-                  font-black
-                  uppercase
-                  tracking-[0.15em]
-                  text-slate-400
+                  flex
+                  h-10
+                  w-10
+                  items-center
+                  justify-center
+                  rounded-2xl
+                  bg-cyan-100
+                  text-cyan-700
                 "
               >
-                {label}
+                <Smile size={18} />
               </div>
-
-            ))}
-
-          </div>
-
-          {/* DATES */}
-          <div className="mt-3 grid grid-cols-7 gap-2">
-
-            {monthCalendarDays.map(
-              ({ date, key, status }) => (
-
-                <div
-                  key={key}
-                  className={`
-                    flex
-                    h-[44px]
-                    items-start
-                    justify-end
-                    rounded-[0.9rem]
-                    border
-                    p-2
-                    text-[11px]
-                    font-black
-                    transition-all
-
-                    ${
-                      status === 'Full'
-                        ? 'bg-emerald-100 border-emerald-200 text-emerald-700'
-                        : status === 'Partial'
-                        ? 'bg-amber-100 border-amber-200 text-amber-700'
-                        : status === 'Leave'
-                        ? 'bg-rose-100 border-rose-200 text-rose-700'
-                        : status === 'Weekend'
-                        ? 'bg-slate-200 border-slate-300 text-slate-500'
-                        : 'bg-white border-slate-200 text-slate-700'
-                    }
-
-                    ${
-                      date &&
-                      date.toISOString().split('T')[0] ===
-                        todayKey
-                        ? 'ring-2 ring-cyan-400 bg-cyan-50'
-                        : ''
-                    }
-                  `}
-                >
-
-                  {date
-                    ? date.getDate()
-                    : ''}
-
-                </div>
-
-              )
-            )}
-
-          </div>
-
-        </div>
-
-        {/* RIGHT LEGEND */}
-        <div
-          className="
-            w-[170px]
-            rounded-[1.2rem]
-            bg-white
-            border
-            border-slate-200
-            p-4
-            flex
-            flex-col
-            justify-center
-            gap-4
-          "
-        >
-
-          <h3 className="text-sm font-black text-slate-900">
-            Attendance Status
-          </h3>
-
-          {/* PRESENT */}
-          <div className="flex items-center gap-3">
-
-            <div className="h-4 w-4 rounded-full bg-emerald-400" />
-
-            <div>
-              <p className="text-sm font-bold text-slate-800">
-                Present
-              </p>
-
-              <p className="text-xs text-slate-500">
-                Full attendance
-              </p>
             </div>
-
+            {event.note ? (
+              <p className="text-xs text-slate-600 mt-3">
+                {event.note}
+              </p>
+            ) : null}
           </div>
-
-          {/* PARTIAL */}
-          <div className="flex items-center gap-3">
-
-            <div className="h-4 w-4 rounded-full bg-amber-400" />
-
-            <div>
-              <p className="text-sm font-bold text-slate-800">
-                Partial
-              </p>
-
-              <p className="text-xs text-slate-500">
-                Half / partial day
-              </p>
-            </div>
-
-          </div>
-
-          {/* LEAVE */}
-          <div className="flex items-center gap-3">
-
-            <div className="h-4 w-4 rounded-full bg-rose-400" />
-
-            <div>
-              <p className="text-sm font-bold text-slate-800">
-                Leave
-              </p>
-
-              <p className="text-xs text-slate-500">
-                Approved leave
-              </p>
-            </div>
-
-          </div>
-
-          {/* WEEKEND */}
-          <div className="flex items-center gap-3">
-
-            <div className="h-4 w-4 rounded-full bg-slate-400" />
-
-            <div>
-              <p className="text-sm font-bold text-slate-800">
-                Weekend
-              </p>
-
-              <p className="text-xs text-slate-500">
-                Holiday / weekend
-              </p>
-            </div>
-
-          </div>
-
-          {/* TODAY */}
-          <div className="flex items-center gap-3">
-
-            <div className="h-4 w-4 rounded-full border-2 border-cyan-500 bg-cyan-100" />
-
-            <div>
-              <p className="text-sm font-bold text-slate-800">
-                Today
-              </p>
-
-              <p className="text-xs text-slate-500">
-                Current date
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-
+        ))}
       </div>
-
-    </div>
-
-  </article>
-
+    ) : (
+      <div className="py-10 text-center text-slate-500">
+        <p className="text-sm font-bold text-slate-900">
+          No celebrations today
+        </p>
+      </div>
+    )}
+  </SparkCard>
 </section>
             {showProfileModal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
@@ -1163,18 +947,14 @@ useEffect(() => {
           </div>
         </div>
       </div>
-      
+    
      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-  {/* ========================= TOP ROW ========================= */}
-
-  {/* removed old Attendance & Vibe Trends and top Broadcaster - replaced by compact top row below */}
 
   {/* ========================= BOTTOM SECTION (spans all 3 cols) ========================= */}
   <div className="lg:col-span-3 w-full flex flex-col gap-6">
 
  {/* ROW: WFH + LEAVE + MVP + CELEBRATIONS */}
-<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 w-full items-stretch">
+<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 w-full items-stretch">
 
   {/* WFH REQUESTS */}
   <div
@@ -1277,16 +1057,11 @@ useEffect(() => {
               >
                 <XCircle size={16} />
               </button>
-
             </div>
-
           </div>
-
         ))
       )}
-
     </div>
-
     </SparkCard>
   </div>
 
@@ -1308,9 +1083,7 @@ useEffect(() => {
       </div>
 
       <div className="space-y-3">
-
         {pendingLeaveRequests.map(leave => (
-
         <div
           key={leave.id}
           className="
@@ -1325,23 +1098,17 @@ useEffect(() => {
             border-rose-100
           "
         >
-
           <div className="flex-1">
-
             <p className="text-sm font-bold text-slate-900 break-words">
               {leave.employee}
             </p>
-
             <p className="text-[10px] text-rose-600 uppercase font-black mt-2">
               {leave.type}
             </p>
-
             <p className="text-[10px] text-slate-500 font-bold mt-1">
               {leave.days} Days
             </p>
-
           </div>
-
           <span
             className="
               px-3
@@ -1357,9 +1124,7 @@ useEffect(() => {
           >
             {leave.status}
           </span>
-
         </div>
-
       ))}
 
       {pendingLeaveRequests.length === 0 && (
@@ -1400,7 +1165,6 @@ useEffect(() => {
               border-violet-100
             "
           >
-
             <Star
               size={18}
               className="
@@ -1419,114 +1183,16 @@ useEffect(() => {
               <p className="text-[10px] text-violet-600 font-black uppercase mt-1">
                 {emp.role}
               </p>
-
             </div>
-
           </div>
-
         ))}
-
     </div>
-
-  </SparkCard>
-
-  {/* TODAY'S CELEBRATIONS */}
-  <SparkCard className="h-full w-full p-6 bg-[#e6fffb] border border-cyan-100 rounded-[28px] shadow-[0_16px_45px_rgba(0,0,0,0.10)]">
-
-    <div className="mb-5">
-
-      <h3 className="font-bold text-cyan-950 text-lg">
-        Today's Celebrations
-      </h3>
-
-      <p className="text-cyan-700 text-xs mt-1">
-        Birthdays & anniversaries
-      </p>
-
-    </div>
-
-    {todayEvents.length > 0 ? (
-
-      <div className="space-y-3">
-
-        {todayEvents.slice(0, 3).map(event => (
-
-          <div
-            key={`${event.name}-${event.type}`}
-            className="
-              p-4
-              min-h-[95px]
-              bg-white
-              rounded-2xl
-              border
-              border-cyan-100
-            "
-          >
-
-            <div className="flex items-center justify-between">
-
-              <div>
-
-                <p className="text-sm font-bold text-slate-900">
-                  {event.name}
-                </p>
-
-                <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500 mt-1">
-                  {event.type}
-                </p>
-
-              </div>
-
-              <div
-                className="
-                  flex
-                  h-10
-                  w-10
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  bg-cyan-100
-                  text-cyan-700
-                "
-              >
-
-                <Smile size={18} />
-
-              </div>
-
-            </div>
-
-            {event.note ? (
-              <p className="text-xs text-slate-600 mt-3">
-                {event.note}
-              </p>
-            ) : null}
-
-          </div>
-
-        ))}
-
-      </div>
-
-    ) : (
-
-      <div className="py-10 text-center text-slate-500">
-
-        <p className="text-sm font-bold text-slate-900">
-          No celebrations today
-        </p>
-
-      </div>
-
-    )}
-
   </SparkCard>
 
 </div>
 
     {/* ROW 2: Daily Attendance + Department Distribution + Broadcaster (top row compact) */}
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
-
       {/* DAILY ATTENDANCE STATUS */}
       <SparkCard className="w-full p-8 bg-[#e6f6ff] border border-cyan-100 rounded-[28px] shadow-[0_16px_45px_rgba(0,0,0,0.10)]">
         <div className="flex items-center justify-between mb-6">
@@ -1701,10 +1367,7 @@ useEffect(() => {
     </div>
   </div>
 </div>
-
-
 </div>
-
   );
 };
 
