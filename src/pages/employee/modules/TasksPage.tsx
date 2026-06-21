@@ -153,7 +153,11 @@ const TasksPage: React.FC = () => {
         task.description.toLowerCase().includes(search.toLowerCase());
 
       const matchesStatus =
-        statusFilter === "All" ? true : task.status === statusFilter;
+        statusFilter === "All"
+          ? true
+          : statusFilter === "Pending"
+            ? task.status === "Pending" || task.status === "Pending HR Approval"
+            : task.status === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
@@ -161,7 +165,9 @@ const TasksPage: React.FC = () => {
 
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter((task) => task.status === "Completed").length;
-  const pendingTasks = tasks.filter((task) => task.status === "Pending").length;
+  const pendingTasks = tasks.filter(
+    (task) => task.status === "Pending" || task.status === "Pending HR Approval"
+  ).length;
   const inProgressTasks = tasks.filter((task) => task.status === "In Progress").length;
   const activeTasks = pendingTasks + inProgressTasks;
 

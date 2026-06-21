@@ -242,8 +242,7 @@ useEffect(() => {
             relative
             p-6
             md:p-8
-            h-48
-            md:h-56
+            min-h-[20rem]
             rounded-[2rem]
             bg-[#0f172a]
             border border-white/10
@@ -251,7 +250,7 @@ useEffect(() => {
           "
         >
 
-          <div className="flex h-full items-center">
+          <div className="flex min-h-full items-start">
 
             <div className="relative z-30 flex-1 space-y-4">
 
@@ -309,7 +308,7 @@ useEffect(() => {
 
               </div>
 
-              <div className="grid grid-cols-2 gap-x-10 gap-y-2 max-w-lg">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-4 max-w-full sm:max-w-lg">
 
                 <div className="flex flex-col">
 

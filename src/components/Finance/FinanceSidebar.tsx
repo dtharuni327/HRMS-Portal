@@ -82,7 +82,7 @@ export const FinanceSidebar: React.FC<FinanceSidebarProps> = ({
     <aside
       onMouseEnter={() => setSidebarOpen(true)}
       onMouseLeave={() => setSidebarOpen(false)}
-      className={`group/sidebar fixed left-4 top-4 z-40 hidden h-[calc(100vh-2rem)] overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] transition-[width] duration-300 xl:flex xl:flex-col ${expanded ? 'w-[260px]' : 'w-[88px]'}`}
+      className={`group/sidebar fixed left-4 top-4 z-40 flex flex-col h-[calc(100vh-2rem)] overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] transition-[width] duration-300 ${expanded ? 'w-[260px]' : 'w-[88px]'}`}
     >
       <div className="flex-1 overflow-y-auto px-3 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <nav className="space-y-3">

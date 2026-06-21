@@ -4,6 +4,8 @@ export const useAuth = () => {
   const user = useAuthStore((s) => s.user);
   const token = useAuthStore((s) => s.token);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const login = useAuthStore((s) => s.login);
+  const logout = useAuthStore((s) => s.logout);
 
   // Provide placeholders for fields previously expected from Redux
   const isLoading = false;
@@ -15,5 +17,7 @@ export const useAuth = () => {
     isLoading,
     error,
     isAuthenticated,
+    login,
+    logout,
   };
 };

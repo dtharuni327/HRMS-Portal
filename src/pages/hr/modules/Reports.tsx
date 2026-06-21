@@ -1,4 +1,3 @@
-
 import {
   type Dispatch,
   type SetStateAction,
@@ -11,37 +10,24 @@ import {
   X,
   FileBarChart,
   Download,
-  BarChart3,
-  Files,
-  TrendingUp
+  Files
 } from 'lucide-react';
 
 import { SparkCard } from './hrShared.tsx';
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
-} from 'recharts';
+export interface ReportItem {
+  id: number;
+  name: string;
+  url: string;
+}
 
 interface ReportsModuleProps {
-  reports: string[];
+  reports: ReportItem[];
   isAddingReport: boolean;
   setIsAddingReport: Dispatch<SetStateAction<boolean>>;
-  reportForm: { name: string };
-  setReportForm: Dispatch<
-    SetStateAction<{ name: string }>
-  >;
+  reportForm: { file: File | null };
+  setReportForm: Dispatch<SetStateAction<{ file: File | null }>>;
   handleAddReport: (e: FormEvent) => void;
-
-  performanceData: {
-    dept: string;
-    rating: number;
-  }[];
 }
 
 const ReportsModule: FC<ReportsModuleProps> = ({
@@ -51,19 +37,13 @@ const ReportsModule: FC<ReportsModuleProps> = ({
   reportForm,
   setReportForm,
   handleAddReport,
-  performanceData,
 }) => {
-
-  const averagePerformance =
-    performanceData.length > 0
-      ? Math.round(
-          performanceData.reduce(
-            (sum, item) =>
-              sum + item.rating,
-            0
-          ) / performanceData.length
-        )
-      : 0;
+  const handleDownload = (report: ReportItem) => {
+    const link = document.createElement('a');
+    link.href = report.url;
+    link.download = report.name;
+    link.click();
+  };
 
   return (
 
@@ -114,7 +94,7 @@ const ReportsModule: FC<ReportsModuleProps> = ({
       </div>
 
       {/* STATS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         {/* REPORTS */}
         <SparkCard
@@ -176,55 +156,16 @@ const ReportsModule: FC<ReportsModuleProps> = ({
               </p>
 
               <h3 className="text-3xl font-black text-violet-600 mt-2">
-                {performanceData.length}
+                5
               </h3>
 
             </div>
 
             <div className="p-3 rounded-2xl bg-violet-100">
 
-              <BarChart3
+              <FileBarChart
                 size={24}
                 className="text-violet-600"
-              />
-
-            </div>
-
-          </div>
-
-        </SparkCard>
-
-        {/* AVG PERFORMANCE */}
-        <SparkCard
-          className="
-            p-6
-            bg-[#EEFDF3]
-            border
-            border-emerald-100
-            rounded-3xl
-            shadow-sm
-          "
-        >
-
-          <div className="flex justify-between items-center">
-
-            <div>
-
-              <p className="text-sm font-semibold text-slate-600">
-                Avg Performance
-              </p>
-
-              <h3 className="text-3xl font-black text-emerald-600 mt-2">
-                {averagePerformance}%
-              </h3>
-
-            </div>
-
-            <div className="p-3 rounded-2xl bg-emerald-100">
-
-              <TrendingUp
-                size={24}
-                className="text-emerald-600"
               />
 
             </div>
@@ -259,8 +200,9 @@ const ReportsModule: FC<ReportsModuleProps> = ({
           >
 
             <input
+              type="file"
+              accept=".pdf"
               required
-              placeholder="Enter PDF filename"
               className="
                 flex-1
                 p-4
@@ -272,13 +214,16 @@ const ReportsModule: FC<ReportsModuleProps> = ({
                 focus:border-violet-300
                 text-slate-800
               "
-              value={reportForm.name}
-              onChange={e =>
+              onChange={(e) =>
                 setReportForm({
-                  name: e.target.value
+                  file: e.target.files?.[0] || null
                 })
               }
             />
+
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500 md:self-center">
+              {reportForm.file ? `Selected: ${reportForm.file.name}` : 'Select a PDF report to upload'}
+            </p>
 
             <button
               type="submit"
@@ -306,78 +251,9 @@ const ReportsModule: FC<ReportsModuleProps> = ({
 
       )}
 
-      {/* CHART + FILES */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* FILES */}
+      <div className="grid grid-cols-1 gap-8">
 
-        {/* ANALYTICS */}
-        <SparkCard
-          className="
-            p-8
-            bg-white/90
-            border
-            border-slate-200
-            rounded-3xl
-            shadow-xl
-          "
-        >
-
-          <h4 className="font-black mb-6 text-violet-700 text-sm uppercase tracking-widest">
-            Performance Analytics
-          </h4>
-
-          <div className="h-56">
-
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-            >
-
-              <BarChart
-                data={performanceData}
-                barSize={28}
-              >
-
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke="#E2E8F0"
-                />
-
-                <XAxis
-                  dataKey="dept"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{
-                    fill: '#64748B',
-                    fontSize: 12
-                  }}
-                />
-
-                <YAxis hide />
-
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #E2E8F0',
-                    borderRadius: '16px'
-                  }}
-                />
-
-                <Bar
-                  dataKey="rating"
-                  fill="#8B5CF6"
-                  radius={[8, 8, 0, 0]}
-                />
-
-              </BarChart>
-
-            </ResponsiveContainer>
-
-          </div>
-
-        </SparkCard>
-
-        {/* FILES */}
         <SparkCard
           className="
             p-8
@@ -397,7 +273,7 @@ const ReportsModule: FC<ReportsModuleProps> = ({
           {reports.map((file, index) => (
 
             <div
-              key={file}
+              key={file.id}
               className={`
                 flex
                 justify-between
@@ -427,20 +303,20 @@ const ReportsModule: FC<ReportsModuleProps> = ({
                 />
 
                 <span className="text-sm font-semibold text-slate-800">
-                  {file}
+                  {file.name}
                 </span>
 
               </div>
 
-              <Download
-                size={18}
-                className="
-                  text-slate-500
-                  cursor-pointer
-                  hover:text-violet-600
-                  transition-colors
-                "
-              />
+              <button
+                type="button"
+                onClick={() => handleDownload(file)}
+                className="text-slate-500 hover:text-violet-600 transition-colors"
+                aria-label={`Download ${file.name}`}
+                title="Download"
+              >
+                <Download size={18} />
+              </button>
 
             </div>
 

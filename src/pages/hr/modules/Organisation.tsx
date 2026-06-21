@@ -11,12 +11,6 @@ interface TeamDirectoryModuleProps {
   employees: Employee[];
 }
 
-interface EmployeeWithContact extends Employee {
-  email?: string;
-  phone?: string;
-  manager?: string;
-}
-
 const getSeniority = (years?: number) => {
   const safeYears = years ?? 0;
   if (safeYears <= 1) return 'Junior';
@@ -26,21 +20,12 @@ const getSeniority = (years?: number) => {
 
 const getDepartmentName = (emp: Employee) => emp.department ?? emp.dept ?? 'Unknown';
 
-// Helper to generate email and phone
-const enrichEmployeeData = (emp: Employee): EmployeeWithContact => ({
-  ...emp,
-  email: `${emp.name.toLowerCase().replace(/\s+/g, '.')}@company.com`,
-  phone: `+91 ${Math.floor(Math.random() * 9000000000 + 1000000000)}`,
-  manager: getDepartmentName(emp) === 'Technology' ? 'Rahul Sharma' : getDepartmentName(emp) === 'Human Resources' ? 'Priya Singh' : 'Siddharth Jain',
-});
-
 const TeamDirectoryModule: FC<
   TeamDirectoryModuleProps
 > = ({ employees }) => {
   const [viewingAttendance, setViewingAttendance] = useState<number | null>(null);
 
-  const enrichedEmployees = employees.map(enrichEmployeeData);
-  const departments = Array.from(new Set(enrichedEmployees.map(getDepartmentName))).sort();
+  const departments = Array.from(new Set(employees.map(getDepartmentName))).sort();
 
   return (
 
@@ -73,7 +58,7 @@ const TeamDirectoryModule: FC<
           ];
 
           const theme = themes[index % themes.length];
-          const deptEmployees = enrichedEmployees.filter(e => getDepartmentName(e) === dept);
+          const deptEmployees = employees.filter(e => getDepartmentName(e) === dept);
 
           return (
 
@@ -144,15 +129,23 @@ const TeamDirectoryModule: FC<
                       <div className="space-y-2 mb-4 pb-4 border-b border-slate-200">
                         <div className="flex items-center gap-2">
                           <Mail size={16} className="text-slate-500" />
-                          <a href={`mailto:${emp.email}`} className="text-sm text-blue-600 hover:underline">
-                            {emp.email}
-                          </a>
+                          {emp.email ? (
+                            <a href={`mailto:${emp.email}`} className="text-sm text-blue-600 hover:underline">
+                              {emp.email}
+                            </a>
+                          ) : (
+                            <span className="text-sm text-slate-500">—</span>
+                          )}
                         </div>
                         <div className="flex items-center gap-2">
                           <Phone size={16} className="text-slate-500" />
-                          <a href={`tel:${emp.phone}`} className="text-sm text-blue-600 hover:underline">
-                            {emp.phone}
-                          </a>
+                          {emp.phone ? (
+                            <a href={`tel:${emp.phone}`} className="text-sm text-blue-600 hover:underline">
+                              {emp.phone}
+                            </a>
+                          ) : (
+                            <span className="text-sm text-slate-500">—</span>
+                          )}
                         </div>
                       </div>
 
@@ -160,7 +153,7 @@ const TeamDirectoryModule: FC<
                       <div className="flex items-center justify-between">
                         <div className="text-sm">
                           <p className="text-slate-500">Reports to</p>
-                          <p className="font-semibold text-slate-700">{emp.manager}</p>
+                          <p className="font-semibold text-slate-700">{emp.reportingManager || '—'}</p>
                         </div>
                         <button
                           onClick={(e) => {

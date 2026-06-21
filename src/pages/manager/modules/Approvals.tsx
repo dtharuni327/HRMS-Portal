@@ -1,5 +1,4 @@
-
-import { useEffect, useMemo, useState, type FC, type Dispatch, type SetStateAction } from 'react';
+import { useMemo, useState, type FC, type Dispatch, type SetStateAction } from 'react';
 
 import {
   Check,
@@ -34,19 +33,21 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
   const [activeRejectWfhId, setActiveRejectWfhId] = useState<number | null>(null);
   const [rejectWfhReasonDrafts, setRejectWfhReasonDrafts] = useState<Record<number, string>>({});
   const [selectedLeaveIds, setSelectedLeaveIds] = useState<number[]>([]);
-  const [showBalances, setShowBalances] = useState(false);
+  const pendingLeaveIds = useMemo(
+    () => allLeaveRequests
+      .filter((leave) => leave.status === 'Pending')
+      .map((leave) => leave.id),
+    [allLeaveRequests]
+  );
 
-  const pendingLeaveIds = allLeaveRequests
-    .filter((leave) => leave.status === 'Pending')
-    .map((leave) => leave.id);
+  const selectedPendingLeaveIds = useMemo(
+    () => selectedLeaveIds.filter((id) => pendingLeaveIds.includes(id)),
+    [selectedLeaveIds, pendingLeaveIds]
+  );
 
   const allPendingSelected =
-    selectedLeaveIds.length > 0 &&
-    selectedLeaveIds.length === pendingLeaveIds.length;
-
-  useEffect(() => {
-    setSelectedLeaveIds((prev) => prev.filter((id) => pendingLeaveIds.includes(id)));
-  }, [pendingLeaveIds]);
+    selectedPendingLeaveIds.length > 0 &&
+    selectedPendingLeaveIds.length === pendingLeaveIds.length;
 
   const pendingNotifications =
     leaveData.filter(l => l.status === 'Pending').length +
@@ -98,40 +99,6 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
 
     return Object.fromEntries(Array.from(map.entries()));
   }, [leaveData]);
-
-  const leaveBalances = useMemo(() => {
-    const allowances = {
-      Casual: 12,
-      Sick: 10,
-      Annual: 18,
-    } as const;
-
-    const employeeMap = new Map<string, {
-      employee: string;
-      taken: Record<keyof typeof allowances, number>;
-    }>();
-
-    allLeaveRequests.forEach((leave) => {
-      const existing = employeeMap.get(leave.employee) ?? {
-        employee: leave.employee,
-        taken: { Casual: 0, Sick: 0, Annual: 0 },
-      };
-      if (existing.taken[leave.type as keyof typeof allowances] !== undefined) {
-        existing.taken[leave.type as keyof typeof allowances] += leave.days;
-      }
-      employeeMap.set(leave.employee, existing);
-    });
-
-    return Array.from(employeeMap.values()).map((item) => ({
-      employee: item.employee,
-      taken: item.taken,
-      remaining: {
-        Casual: Math.max(0, allowances.Casual - item.taken.Casual),
-        Sick: Math.max(0, allowances.Sick - item.taken.Sick),
-        Annual: Math.max(0, allowances.Annual - item.taken.Annual),
-      },
-    }));
-  }, [allLeaveRequests]);
 
   const startRejectLeave = (leaveId: number) => {
     setActiveRejectLeaveId(leaveId);
@@ -214,10 +181,10 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
   };
 
   const bulkApproveSelected = () => {
-    if (!selectedLeaveIds.length) return;
+    if (!selectedPendingLeaveIds.length) return;
     setLeaveData((prev) =>
       prev.map((leave) =>
-        selectedLeaveIds.includes(leave.id)
+        selectedPendingLeaveIds.includes(leave.id)
           ? { ...leave, status: 'Approved' }
           : leave
       )
@@ -227,13 +194,13 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
   };
 
   const bulkRejectSelected = () => {
-    if (!selectedLeaveIds.length) return;
+    if (!selectedPendingLeaveIds.length) return;
     const reason = window.prompt('Enter reject reason for selected leave requests:');
     if (!reason?.trim()) return;
 
     setLeaveData((prev) =>
       prev.map((leave) =>
-        selectedLeaveIds.includes(leave.id)
+        selectedPendingLeaveIds.includes(leave.id)
           ? {
               ...leave,
               status: 'Rejected',
@@ -533,7 +500,7 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
                   <td className="px-8 py-5">
                     <input
                       type="checkbox"
-                      checked={leave.status === 'Pending' && selectedLeaveIds.includes(leave.id)}
+                      checked={leave.status === 'Pending' && selectedPendingLeaveIds.includes(leave.id)}
                       disabled={leave.status !== 'Pending'}
                       onChange={() => toggleLeaveSelection(leave.id)}
                       className="h-4 w-4 rounded border-slate-300 text-violet-600"

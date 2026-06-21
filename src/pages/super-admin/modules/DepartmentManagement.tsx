@@ -261,11 +261,15 @@ const emptyForm: Omit<Department, "id" | "employeeCount" | "status"> = {
 };
 
 export default function Department() {
-  const [departments, setDepartments] =
-    useState<Department[]>(initialDepartments);
-
   const [departmentUsers, setDepartmentUsers] = useState<DepartmentUsers>(
     initialDepartmentUsers
+  );
+
+  const [departments, setDepartments] = useState<Department[]>(
+    initialDepartments.map((dept) => ({
+      ...dept,
+      employeeCount: initialDepartmentUsers[dept.id]?.length ?? 0,
+    }))
   );
 
   const [search, setSearch] = useState("");
@@ -304,8 +308,8 @@ export default function Department() {
     (dept) => dept.status === "Archived"
   ).length;
 
-  const totalEmployees = departments.reduce(
-    (total, dept) => total + dept.employeeCount,
+  const totalEmployees = Object.values(departmentUsers).reduce(
+    (total, users) => total + users.length,
     0
   );
 
@@ -409,6 +413,45 @@ export default function Department() {
     setFormData(emptyForm);
     setEditingDepartmentId(null);
     setIsFormOpen(false);
+  };
+
+  const updateDepartmentUsers = (
+    departmentId: number,
+    updater: (current: DepartmentEmployee[]) => DepartmentEmployee[]
+  ) => {
+    setDepartmentUsers((prev) => {
+      const currentEmployees = prev[departmentId] || [];
+      const updated = updater(currentEmployees);
+
+      setDepartments((departmentsPrev) =>
+        departmentsPrev.map((dept) =>
+          dept.id === departmentId
+            ? { ...dept, employeeCount: updated.length }
+            : dept
+        )
+      );
+
+      return {
+        ...prev,
+        [departmentId]: updated,
+      };
+    });
+  };
+
+  const handleAddEmployeeToDepartment = (
+    departmentId: number,
+    employee: DepartmentEmployee
+  ) => {
+    updateDepartmentUsers(departmentId, (current) => [...current, employee]);
+  };
+
+  const handleRemoveEmployeeFromDepartment = (
+    departmentId: number,
+    userId: string
+  ) => {
+    updateDepartmentUsers(departmentId, (current) =>
+      current.filter((emp) => emp.userId !== userId)
+    );
   };
 
   return (
@@ -740,23 +783,12 @@ export default function Department() {
           department={selectedDepartment}
           employees={departmentUsers[selectedDepartment.id] || []}
           onClose={() => setSelectedDepartmentId(null)}
-          onAddEmployee={(employee) => {
-            setDepartmentUsers((prev) => ({
-              ...prev,
-              [selectedDepartment.id]: [
-                ...(prev[selectedDepartment.id] || []),
-                employee,
-              ],
-            }));
-          }}
-          onRemoveEmployee={(userId) => {
-            setDepartmentUsers((prev) => ({
-              ...prev,
-              [selectedDepartment.id]: (prev[selectedDepartment.id] || []).filter(
-                (emp) => emp.userId !== userId
-              ),
-            }));
-          }}
+          onAddEmployee={(employee) =>
+            handleAddEmployeeToDepartment(selectedDepartment.id, employee)
+          }
+          onRemoveEmployee={(userId) =>
+            handleRemoveEmployeeFromDepartment(selectedDepartment.id, userId)
+          }
         />
       )}
     </div>

@@ -86,7 +86,7 @@ const ReimbursementRequests: FC = () => {
   return (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard value="₹1.2L" label="Open Claims" color="from-emerald-100 to-emerald-50 text-black" />
+        <StatCard value={`₹${summary.totalClaimValue.toLocaleString('en-IN')}`} label="Open Claims" color="from-emerald-100 to-emerald-50 text-black" />
         <StatCard value={`${summary.openClaims}`} label="Pending Approvals" color="from-amber-100 to-amber-50 text-black" />
         <StatCard value={`${summary.approved}`} label="Approved This Month" color="from-sky-100 to-sky-50 text-black" />
         <StatCard value={`${summary.paid}`} label="Paid Claims" color="from-violet-100 to-violet-50 text-black" />

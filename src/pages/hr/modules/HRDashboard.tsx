@@ -17,6 +17,7 @@ import ReportsModule from './Reports';
 import ProjectEffortReportModule from '../../manager/modules/ProjectEffortReport';
 import OrganisationModule from './Organisation';
 import PoliciesModule from './Policies';
+import type { ReportItem } from './Reports';
 
 import { type Announcement, type Employee, type HRDetails, type Job, type LeaveData, type Policy, type RequestItem, type Training, type OnboardingEntry, type HRDocument, type AttendanceStatus, type Payslip, type WorkMode } from './hrShared.tsx';
 
@@ -125,7 +126,7 @@ const DarkHRDashboard: React.FC = () => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
   const [announcementForm, setAnnouncementForm] = useState({ title: '', tag: '' });
-  const [reportForm, setReportForm] = useState({ name: '' });
+  const [reportForm, setReportForm] = useState({ file: null as File | null });
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [policyForm, setPolicyForm] = useState({ title: '', content: '', file: null as File | null, type: 'text' as 'text' | 'pdf' });
   const [formData, setFormData] = useState<EmployeeFormState>({
@@ -790,8 +791,22 @@ const DarkHRDashboard: React.FC = () => {
     { id: 2, title: 'UI/UX Intern', dept: 'Design', applicants: 45, status: 'Urgent' }
   ]);
 
-  const [reports, setReports] = useState<string[]>([
-    'Payroll_April_26.pdf', 'Performance_Review_Q1.pdf', 'Audit_Log_Security.csv'
+  const [reports, setReports] = useState<ReportItem[]>([
+    {
+      id: 1,
+      name: 'Payroll_April_26.pdf',
+      url: URL.createObjectURL(new File([''], 'Payroll_April_26.pdf', { type: 'application/pdf' }))
+    },
+    {
+      id: 2,
+      name: 'Performance_Review_Q1.pdf',
+      url: URL.createObjectURL(new File([''], 'Performance_Review_Q1.pdf', { type: 'application/pdf' }))
+    },
+    {
+      id: 3,
+      name: 'Audit_Log_Security.pdf',
+      url: URL.createObjectURL(new File([''], 'Audit_Log_Security.pdf', { type: 'application/pdf' }))
+    }
   ]);
 
   const [policies, setPolicies] = useState<Policy[]>([
@@ -1007,20 +1022,53 @@ const DarkHRDashboard: React.FC = () => {
 
   const handleAddReport = (e: FormEvent) => {
     e.preventDefault();
-    if (reportForm.name.trim()) {
-      setReports(prev => [`${reportForm.name}.pdf`, ...prev]);
-      setReportForm({ name: '' });
-      setIsAddingReport(false);
+    const reportFile = reportForm.file;
+
+    if (!reportFile) {
+      window.alert('Please select a PDF report before uploading.');
+      return;
     }
+
+    const uploadedReport = {
+      id: Math.max(...reports.map((report) => report.id), 0) + 1,
+      name: reportFile.name,
+      url: URL.createObjectURL(reportFile),
+    };
+
+    setReports((prev) => [uploadedReport, ...prev]);
+    setReportForm({ file: null });
+    setIsAddingReport(false);
+
+    const link = document.createElement('a');
+    link.href = uploadedReport.url;
+    link.download = uploadedReport.name;
+    link.click();
   };
 
   const handleAddPolicy = (e: FormEvent) => {
     e.preventDefault();
-    if (!policyForm.title || !policyForm.content) return;
+    const isPdfPolicy = policyForm.type === 'pdf';
+    const hasPolicyContent = isPdfPolicy
+      ? Boolean(policyForm.file)
+      : Boolean(policyForm.content.trim());
+
+    if (!policyForm.title.trim() || !hasPolicyContent) {
+      window.alert(
+        isPdfPolicy
+          ? 'Please add a policy title and select a PDF file before saving.'
+          : 'Please add a policy title and content before saving.'
+      );
+      return;
+    }
+
+    const policyContent = isPdfPolicy && policyForm.file
+      ? URL.createObjectURL(policyForm.file)
+      : policyForm.content.trim();
+
     setPolicies(prev => [{
       id: Math.max(...prev.map(p => p.id), 0) + 1,
-      title: policyForm.title,
-      content: policyForm.content,
+      title: policyForm.title.trim(),
+      content: policyContent,
       type: policyForm.type,
       lastUpdated: new Date().toISOString().split('T')[0]
     }, ...prev]);
@@ -1123,10 +1171,6 @@ const DarkHRDashboard: React.FC = () => {
       // ignore
     }
   }, [activeTab, activePage]);
-
-  const performanceData = [
-    { dept: 'Tech', rating: 4.5 }, { dept: 'Design', rating: 4.2 }, { dept: 'HR', rating: 4.8 }, { dept: 'Admin', rating: 4.0 }
-  ];
 
   return (
     <div
@@ -1263,7 +1307,6 @@ const DarkHRDashboard: React.FC = () => {
                 reportForm={reportForm}
                 setReportForm={setReportForm}
                 handleAddReport={handleAddReport}
-                performanceData={performanceData}
               />
               <PoliciesModule
                 policies={policies}
@@ -1280,7 +1323,20 @@ const DarkHRDashboard: React.FC = () => {
               />
             </div>
           )}
-          {activeTab === 'Organization' && <OrganisationModule employees={employees} />}
+          {activeTab === 'Organization' && (
+            <OrganisationModule
+              employees={employees}
+              setEmployees={setEmployees}
+              staffSearch={staffSearch}
+              setStaffSearch={setStaffSearch}
+              isAdding={isAdding}
+              setIsAdding={setIsAdding}
+              formData={formData}
+              setFormData={setFormData}
+              handleSaveEmployee={handleSaveEmployee}
+              startEditEmployee={startEditEmployee}
+            />
+          )}
         </div>
       </main>
     </div>

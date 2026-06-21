@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Users,
@@ -166,6 +166,34 @@ export default function UserRoleManagement() {
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    try {
+      const created = JSON.parse(localStorage.getItem("createdUsers") ?? "[]");
+
+      if (Array.isArray(created) && created.length > 0) {
+        const mapped = created.map((u: any, idx: number) => ({
+          id: `CMP_NEW_${Date.now()}_${idx}`,
+          name: u.name ?? "",
+          email: u.email ?? "",
+          role: u.role ?? "Employee",
+          status: (u.status as UserStatus) ?? "Active",
+          salaryPackage: u.salaryPackage ?? "",
+          department: u.department ?? "",
+          joiningDate: u.joiningDate ?? "",
+          contactNumber: u.contactNumber ?? "",
+          office: u.office ?? "",
+          location: u.location ?? "",
+        }));
+
+        setUsers((prev) => [...prev, ...mapped]);
+        localStorage.removeItem("createdUsers");
+      }
+    } catch (e) {
+      // ignore malformed storage
+      console.error("Failed to load createdUsers from localStorage", e);
+    }
+  }, []);
 
   const filteredUsers = users.filter((user) => {
     const keyword = search.trim().toLowerCase();

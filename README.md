@@ -75,7 +75,7 @@ Before starting the frontend application, ensure that the mock API server is run
 
 ### Start Mock Server
 
-Run the following command to start the mock backend server on port 5000:
+Run the following command to start the mock backend server on port 3001:
 
 ```bash
-npx json-server mock/users.json --port 5000
+npx json-server mock/users.json --port 3001

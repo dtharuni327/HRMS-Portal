@@ -74,7 +74,7 @@ const ProjectReport: React.FC = () => {
   }, [period, search]);
 
   return (
-    <section className="bg-[#0F172A] min-h-screen px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
+    <section className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1200px] space-y-6">
         <div className="rounded-[30px] border border-slate-200 bg-white p-6 lg:p-8 shadow-sm">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">

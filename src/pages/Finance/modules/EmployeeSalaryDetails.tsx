@@ -3,13 +3,31 @@ import { Briefcase, Landmark, ShieldCheck, Users, Eye, PencilLine, X } from 'luc
 import { SparkCard, StatCard } from '../FinanceShared';
 import { financeEmployees } from './Payroll';
 
-const buildEmployeeRecord = (employee: { id: number; name: string; dept: string; salary: number }) => {
-  const basic = Math.round(employee.salary * 0.72);
-  const hra = Math.round(employee.salary * 0.12);
-  const allowance = Math.round(employee.salary * 0.08);
-  const pf = Math.round(employee.salary * 0.08);
-  const tax = Math.round(employee.salary * 0.05);
+const salaryBreakdownTotal = 1.05;
+
+const calculateBreakdown = (salary: number) => {
+  const basic = Math.round(salary * 0.72);
+  const hra = Math.round(salary * 0.12);
+  const allowance = Math.round(salary * 0.08);
+  const pf = Math.round(salary * 0.08);
+  const tax = Math.round(salary * 0.05);
   const net = basic + hra + allowance - pf - tax;
+
+  return { basic, hra, allowance, pf, tax, net };
+};
+
+const calculateSalaryFromBreakdown = (basic: number, hra: number, allowance: number, pf: number, tax: number) => {
+  const total = basic + hra + allowance + pf + tax;
+  return Math.round(total / salaryBreakdownTotal);
+};
+
+const calculateNetSalary = (basic: number, hra: number, allowance: number, pf: number, tax: number) =>
+  basic + hra + allowance - pf - tax;
+
+const formatSalaryLabel = (salary: number) => `₹${salary.toLocaleString('en-IN')}`;
+
+const buildEmployeeRecord = (employee: { id: number; name: string; dept: string; salary: number }) => {
+  const breakdown = calculateBreakdown(employee.salary);
   const bankName = employee.dept === 'Human Resources' ? 'SBI' : 'HDFC';
   const accountNumber = `${String(employee.id).padStart(4, '0')}${String(employee.id * 13).slice(-4)}`;
   const ifsc = employee.dept === 'Human Resources' ? 'SBIN0003456' : 'HDFC0008123';
@@ -28,12 +46,7 @@ const buildEmployeeRecord = (employee: { id: number; name: string; dept: string;
     bank: `${bankName} • A/c ${accountNumber}`,
     bankSummary: `${bankName} • A/c ${accountNumber} • IFSC ${ifsc} • ${branch}`,
     history: employee.id % 2 === 0 ? 'Updated this week' : 'Updated recently',
-    basic,
-    hra,
-    allowance,
-    pf,
-    tax,
-    net,
+    ...breakdown,
   };
 };
 
@@ -49,17 +62,33 @@ const EmployeeSalaryDetails: FC = () => {
 
       const next = { ...prev, [field]: value } as typeof prev;
 
-      if (['basic', 'hra', 'allowance', 'pf', 'tax'].includes(field)) {
-        next.net =
-          Number(next.basic || 0) +
-          Number(next.hra || 0) +
-          Number(next.allowance || 0) -
-          Number(next.pf || 0) -
-          Number(next.tax || 0);
+      if (field === 'salary') {
+        const salary = Number(value) || 0;
+        const breakdown = calculateBreakdown(salary);
+
+        return {
+          ...next,
+          salary,
+          salaryLabel: formatSalaryLabel(salary),
+          ...breakdown,
+          net: calculateNetSalary(breakdown.basic, breakdown.hra, breakdown.allowance, breakdown.pf, breakdown.tax),
+        };
       }
 
-      if (field === 'salary') {
-        next.salaryLabel = `₹${Number(value || 0).toLocaleString('en-IN')}`;
+      if (['basic', 'hra', 'allowance', 'pf', 'tax'].includes(field)) {
+        const basic = Number(next.basic) || 0;
+        const hra = Number(next.hra) || 0;
+        const allowance = Number(next.allowance) || 0;
+        const pf = Number(next.pf) || 0;
+        const tax = Number(next.tax) || 0;
+        const salary = calculateSalaryFromBreakdown(basic, hra, allowance, pf, tax);
+
+        return {
+          ...next,
+          salary,
+          salaryLabel: formatSalaryLabel(salary),
+          net: calculateNetSalary(basic, hra, allowance, pf, tax),
+        };
       }
 
       return next;
@@ -79,14 +108,12 @@ const EmployeeSalaryDetails: FC = () => {
 
   const handleSaveChanges = () => {
     if (!editingEmployee) return;
-
     const updatedSalary = Number(editingEmployee.salary) || 0;
     const updatedBasic = Number(editingEmployee.basic) || 0;
     const updatedHra = Number(editingEmployee.hra) || 0;
     const updatedAllowance = Number(editingEmployee.allowance) || 0;
     const updatedPf = Number(editingEmployee.pf) || 0;
     const updatedTax = Number(editingEmployee.tax) || 0;
-    const updatedNet = updatedBasic + updatedHra + updatedAllowance - updatedPf - updatedTax;
 
     setEmployees((prev) =>
       prev.map((employee) =>
@@ -95,19 +122,19 @@ const EmployeeSalaryDetails: FC = () => {
               ...employee,
               ...editingEmployee,
               salary: updatedSalary || employee.salary,
-              salaryLabel: editingEmployee.salaryLabel || `₹${(updatedSalary || employee.salary).toLocaleString('en-IN')}`,
+              salaryLabel: editingEmployee.salaryLabel || formatSalaryLabel(updatedSalary || employee.salary),
+              basic: updatedBasic,
+              hra: updatedHra,
+              allowance: updatedAllowance,
+              pf: updatedPf,
+              tax: updatedTax,
               bankName: editingEmployee.bankName,
               accountNumber: editingEmployee.accountNumber,
               ifsc: editingEmployee.ifsc,
               branch: editingEmployee.branch,
               bank: `${editingEmployee.bankName} • A/c ${editingEmployee.accountNumber}`,
               bankSummary: `${editingEmployee.bankName} • A/c ${editingEmployee.accountNumber} • IFSC ${editingEmployee.ifsc} • ${editingEmployee.branch}`,
-              basic: updatedBasic,
-              hra: updatedHra,
-              allowance: updatedAllowance,
-              pf: updatedPf,
-              tax: updatedTax,
-              net: updatedNet,
+              net: Number(editingEmployee.net) || calculateNetSalary(updatedBasic, updatedHra, updatedAllowance, updatedPf, updatedTax),
             }
           : employee
       )

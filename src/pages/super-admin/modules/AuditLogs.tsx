@@ -27,6 +27,27 @@ interface AuditLog {
   ipAddress: string;
 }
 
+interface StatCardProps {
+  icon: React.ElementType;
+  label: string;
+  value: number;
+  bgColor: string;
+}
+
+const cardText = "#071827";
+
+const StatCard: React.FC<StatCardProps> = ({ icon: Icon, label, value, bgColor }) => (
+  <div className="rounded-[20px] p-6" style={{ backgroundColor: bgColor, color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}>
+    <div className="mb-4 flex items-center justify-between">
+      <h3 className="text-sm font-semibold" style={{ color: "rgba(7,24,39,0.6)" }}>{label}</h3>
+      <div className="rounded-lg p-2.5" style={{ backgroundColor: "#071827" }}>
+        <Icon className="h-5 w-5 text-white" />
+      </div>
+    </div>
+    <p className="text-3xl font-bold" style={{ color: cardText }}>{value}</p>
+  </div>
+);
+
 const AuditLogs: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activityFilter, setActivityFilter] = useState<ActivityType>("all");
@@ -343,28 +364,6 @@ const AuditLogs: React.FC = () => {
     a.click();
     window.URL.revokeObjectURL(url);
   };
-
-  const StatCard = ({
-    icon: Icon,
-    label,
-    value,
-    bgColor,
-  }: {
-    icon: React.ElementType;
-    label: string;
-    value: number;
-    bgColor: string;
-  }) => (
-    <div className="rounded-[20px] p-6" style={{ backgroundColor: bgColor, color: cardText, border: "1px solid rgba(7,24,39,0.06)" }}>
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold" style={{ color: "rgba(7,24,39,0.6)" }}>{label}</h3>
-        <div className={`rounded-lg p-2.5`} style={{ backgroundColor: "#071827" }}>
-          <Icon className="h-5 w-5 text-white" />
-        </div>
-      </div>
-      <p className="text-3xl font-bold" style={{ color: cardText }}>{value}</p>
-    </div>
-  );
 
   const getActivityAccentColor = (type: string) => {
     switch (type) {

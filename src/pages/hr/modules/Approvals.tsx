@@ -1,5 +1,4 @@
-
-import { useEffect, useMemo, useState, type FC, type Dispatch, type SetStateAction } from 'react';
+import { useMemo, useState, type FC, type Dispatch, type SetStateAction } from 'react';
 
 import {
   Check,
@@ -35,17 +34,21 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
   const [rejectWfhReasonDrafts, setRejectWfhReasonDrafts] = useState<Record<number, string>>({});
   const [selectedLeaveIds, setSelectedLeaveIds] = useState<number[]>([]);
 
-  const pendingLeaveIds = allLeaveRequests
-    .filter((leave) => leave.status === 'Pending')
-    .map((leave) => leave.id);
+  const pendingLeaveIds = useMemo(
+    () => allLeaveRequests
+      .filter((leave) => leave.status === 'Pending')
+      .map((leave) => leave.id),
+    [allLeaveRequests]
+  );
+
+  const selectedPendingLeaveIds = useMemo(
+    () => selectedLeaveIds.filter((id) => pendingLeaveIds.includes(id)),
+    [selectedLeaveIds, pendingLeaveIds]
+  );
 
   const allPendingSelected =
-    selectedLeaveIds.length > 0 &&
-    selectedLeaveIds.length === pendingLeaveIds.length;
-
-  useEffect(() => {
-    setSelectedLeaveIds((prev) => prev.filter((id) => pendingLeaveIds.includes(id)));
-  }, [pendingLeaveIds]);
+    selectedPendingLeaveIds.length > 0 &&
+    selectedPendingLeaveIds.length === pendingLeaveIds.length;
 
   const pendingNotifications =
     leaveData.filter(l => l.status === 'Pending').length +
@@ -181,10 +184,10 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
   };
 
   const bulkApproveSelected = () => {
-    if (!selectedLeaveIds.length) return;
+    if (!selectedPendingLeaveIds.length) return;
     setLeaveData((prev) =>
       prev.map((leave) =>
-        selectedLeaveIds.includes(leave.id)
+        selectedPendingLeaveIds.includes(leave.id)
           ? { ...leave, status: 'Approved' }
           : leave
       )
@@ -194,13 +197,13 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
   };
 
   const bulkRejectSelected = () => {
-    if (!selectedLeaveIds.length) return;
+    if (!selectedPendingLeaveIds.length) return;
     const reason = window.prompt('Enter reject reason for selected leave requests:');
     if (!reason?.trim()) return;
 
     setLeaveData((prev) =>
       prev.map((leave) =>
-        selectedLeaveIds.includes(leave.id)
+        selectedPendingLeaveIds.includes(leave.id)
           ? {
               ...leave,
               status: 'Rejected',
@@ -502,7 +505,7 @@ const ApprovalsModule: FC<ApprovalsModuleProps> = ({
                   <td className="px-8 py-5">
                     <input
                       type="checkbox"
-                      checked={leave.status === 'Pending' && selectedLeaveIds.includes(leave.id)}
+                      checked={leave.status === 'Pending' && selectedPendingLeaveIds.includes(leave.id)}
                       disabled={leave.status !== 'Pending'}
                       onChange={() => toggleLeaveSelection(leave.id)}
                       className="h-4 w-4 rounded border-slate-300 text-violet-600"

@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Code2, Eye, EyeOff, Lock, User } from "lucide-react";
 
 import { useAuthContext } from "../../context/AuthContext";
+import { config } from "../../config/env";
 
 export default function DeveloperHubLogin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -54,7 +55,7 @@ const handleSubmit = async (
     setLoading(true);
 
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/users`
+      `${config.API_BASE_URL}/users`
     );
 
     if (!response.ok) {
@@ -247,7 +248,7 @@ const handleSubmit = async (
                 disabled={loading}
                 className="w-full rounded-lg bg-sky-500 py-2.5 text-sm font-semibold text-black transition hover:bg-sky-400 disabled:opacity-70"
               >
-                {loading ? "Authenticating..." : "Sign in"}
+                {loading ? "Authenticating..." : "Sign In"}
               </button>
 
             </form>
@@ -257,4 +258,6 @@ const handleSubmit = async (
     </main>
   );
 }
+
+
 

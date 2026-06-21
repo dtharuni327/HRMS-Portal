@@ -4,18 +4,6 @@ import { SparkCard, StatCard } from '../FinanceShared';
 import { financeEmployees } from './Payroll';
 
 const totalGrossSalary = financeEmployees.reduce((sum, emp) => sum + emp.salary, 0);
-const totalAllowances = Math.round(totalGrossSalary * 0.12);
-const totalDeductions = Math.round(totalGrossSalary * 0.08);
-const totalNetSalary = totalGrossSalary + totalAllowances - totalDeductions;
-
-const salaryCycle = {
-  grossSalary: totalGrossSalary,
-  allowances: totalAllowances,
-  deductions: totalDeductions,
-  netSalary: totalNetSalary,
-  payDate: '12 Jun 2026',
-};
-
 const salaryPreview = financeEmployees.map((emp) => {
   const basic = Math.round(emp.salary * 0.72);
   const allowance = Math.round(emp.salary * 0.12);
@@ -30,6 +18,18 @@ const salaryPreview = financeEmployees.map((emp) => {
     net: basic + allowance - deduction,
   };
 });
+
+const totalAllowances = salaryPreview.reduce((sum, entry) => sum + entry.allowance, 0);
+const totalDeductions = salaryPreview.reduce((sum, entry) => sum + entry.deduction, 0);
+const totalNetSalary = salaryPreview.reduce((sum, entry) => sum + entry.net, 0);
+
+const salaryCycle = {
+  grossSalary: totalGrossSalary,
+  allowances: totalAllowances,
+  deductions: totalDeductions,
+  netSalary: totalNetSalary,
+  payDate: '12 Jun 2026',
+};
 
 const SalaryDisbursementModule: FC = () => (
   <div className="space-y-6">

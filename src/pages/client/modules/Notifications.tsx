@@ -1,12 +1,8 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
-  AlertTriangle,
   BellRing,
-  CalendarRange,
   Clock3,
-  FileText,
   ReceiptText,
-  
 } from 'lucide-react';
 
 type Notification = {
@@ -15,24 +11,16 @@ type Notification = {
   title: string;
   detail?: string;
   time: string;
-  priority: 'critical'|'important'|'info'|string;
+  priority: 'critical' | 'important' | 'info' | string;
   unread?: boolean;
   amount?: string;
   outstanding?: string;
+  severity?: number;
 };
 
-type Card = {
-  label: string;
-  count?: number;
-  tone?: string;
-  callToAction: { label: string };
+type Props = {
+  notifications?: Notification[];
 };
-
-const defaultCards: Card[] = [
-  { label: 'Project updates', count: 3, tone: 'bg-slate-100 border-slate-200', callToAction: { label: 'View updates' } },
-  { label: 'Invoice reminders', count: 2, tone: 'bg-slate-100 border-slate-200', callToAction: { label: 'Review invoices' } },
-  { label: 'Meeting alerts', count: 1, tone: 'bg-slate-100 border-slate-200', callToAction: { label: 'Open calendar' } },
-];
 
 const initialNotifications: Notification[] = [
   { id: 'n1', category: 'Project', title: 'UI review feedback posted for sprint', detail: 'Design team uploaded review notes.', time: '2026-06-16T09:30:00', priority: 'info', unread: true },
@@ -42,254 +30,346 @@ const initialNotifications: Notification[] = [
   { id: 'n5', category: 'Document', title: 'New contract files available', detail: 'Contract and requirements uploaded.', time: '2026-06-13T09:00:00', priority: 'info', unread: false },
 ];
 
-function priorityRank(p: string) {
-  if (p === 'critical') return 0;
-  if (p === 'important') return 1;
-  return 2; // info and others
+function computeSeverity(notification: Notification) {
+  const base = notification.priority === 'critical' ? 100 : notification.priority === 'important' ? 80 : 50;
+  const categoryBoost = notification.category === 'Invoice' ? 15 : notification.category === 'Meeting' ? 12 : notification.category === 'Project' ? 10 : notification.category === 'Document' ? 8 : notification.category === 'Ticket' ? 5 : 0;
+  return base + categoryBoost;
 }
 
 function groupByDay(items: Notification[]) {
-  const today = new Date();
-  const groups: Record<string, Notification[]> = { 'Today': [], 'Yesterday': [], 'Earlier': [] };
-  items.forEach((n) => {
-    const d = new Date(n.time);
-    const diffDays = Math.floor((today.setHours(0,0,0,0) - new Date(d).setHours(0,0,0,0)) / (1000*60*60*24));
-    if (diffDays === 0) groups.Today.push(n);
-    else if (diffDays === 1) groups.Yesterday.push(n);
-    else groups.Earlier.push(n);
+  const now = new Date();
+  const startOfToday = new Date(now);
+  startOfToday.setHours(0, 0, 0, 0);
+  const groups: Record<string, Notification[]> = { Today: [], Yesterday: [], Earlier: [] };
+
+  items.forEach((item) => {
+    const itemDate = new Date(item.time);
+    const startOfItem = new Date(itemDate);
+    startOfItem.setHours(0, 0, 0, 0);
+    const diffDays = Math.round((startOfToday.getTime() - startOfItem.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) groups.Today.push(item);
+    else if (diffDays === 1) groups.Yesterday.push(item);
+    else groups.Earlier.push(item);
   });
+
   return groups;
+}
+
+function formatTime(dateStr: string) {
+  return new Date(dateStr).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 function timeAgo(dateStr: string) {
   const d = new Date(dateStr);
-  const now = new Date();
-  const diff = Math.floor((now.getTime() - d.getTime()) / 1000);
+  const diff = Math.floor((Date.now() - d.getTime()) / 1000);
   if (diff < 60) return `${diff}s ago`;
-  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
   if (diff < 172800) return 'Yesterday';
   return d.toLocaleDateString();
 }
 
-type Props = {
-  notifications?: Notification[];
-  cards?: Card[];
-};
-
-const Notifications: React.FC<Props> = ({ notifications: propNotifications, cards: propCards }) => {
-  const [filter, setFilter] = useState<'All'|'Unread'|'Project'|'Invoice'|'Meeting'|'Ticket'|'Document'>('All');
+const Notifications: React.FC<Props> = ({ notifications: propNotifications }) => {
   const [notifications, setNotifications] = useState<Notification[]>(propNotifications ?? initialNotifications);
-  const [cards, setCards] = useState<Card[]>(propCards ?? defaultCards);
+  const [selectedCategory, setSelectedCategory] = useState<'All' | 'Action' | 'Billing' | 'Documents' | 'Meetings' | 'Project'>('Action');
 
   React.useEffect(() => {
     if (propNotifications) setNotifications(propNotifications);
   }, [propNotifications]);
 
-  React.useEffect(() => {
-    if (propCards) setCards(propCards);
-  }, [propCards]);
+  const enrichedNotifications = useMemo(
+    () =>
+      notifications
+        .map((notification) => ({
+          ...notification,
+          severity: notification.severity ?? computeSeverity(notification),
+        }))
+        .sort((a, b) => {
+          if ((b.severity ?? 0) !== (a.severity ?? 0)) return (b.severity ?? 0) - (a.severity ?? 0);
+          return new Date(b.time).getTime() - new Date(a.time).getTime();
+        }),
+    [notifications]
+  );
 
-  const handleMarkAllRead = () => {
-    setNotifications((s) => s.map(n => ({ ...n, unread: false })));
+  const quickCounts = useMemo(() => {
+    const now = new Date();
+    const topInvoice = enrichedNotifications.find((n) => n.category === 'Invoice' && n.outstanding);
+    return {
+      actionsRequired: enrichedNotifications.filter(
+        (n) =>
+          n.unread &&
+          ['Ticket', 'Document', 'Meeting', 'Invoice', 'Project'].includes(n.category)
+      ).length,
+      pendingInvoice: enrichedNotifications.filter((n) => n.category === 'Invoice' && n.outstanding).length,
+      documentsWaiting: enrichedNotifications.filter((n) => n.category === 'Document' && n.unread).length,
+      upcomingMeetings: enrichedNotifications.filter((n) => {
+        if (n.category !== 'Meeting') return false;
+        const meetingTime = new Date(n.time);
+        const daysAhead = (meetingTime.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+        return daysAhead >= 0 && daysAhead <= 7;
+      }).length,
+      unread: enrichedNotifications.filter((n) => n.unread).length,
+      total: enrichedNotifications.length,
+      topInvoice,
+      topProjectUpdate: enrichedNotifications.find((n) => n.category === 'Project'),
+      invoiceStatus: topInvoice ? (topInvoice.outstanding ? 'Awaiting payment' : 'Paid') : 'No pending invoice',
+    };
+  }, [enrichedNotifications]);
+
+  const categoryLists = useMemo(
+    () => ({
+      Action: enrichedNotifications.filter(
+        (n) =>
+          n.unread &&
+          ['Ticket', 'Document', 'Meeting', 'Invoice', 'Project'].includes(n.category)
+      ),
+      Billing: enrichedNotifications.filter((n) => n.category === 'Invoice'),
+      Documents: enrichedNotifications.filter((n) => n.category === 'Document'),
+      Meetings: enrichedNotifications.filter((n) => n.category === 'Meeting'),
+      Project: enrichedNotifications.filter((n) => n.category === 'Project'),
+    }),
+    [enrichedNotifications]
+  );
+
+  const visibleNotifications = selectedCategory === 'All' ? enrichedNotifications : categoryLists[selectedCategory] ?? [];
+  const groupedTimeline = useMemo(() => groupByDay(visibleNotifications), [visibleNotifications]);
+
+  const markAllRead = () => {
+    setNotifications((current) => current.map((notification) => ({ ...notification, unread: false })));
   };
-
-  const handleExportAlerts = () => {
-    alert('Alerts exported for review.');
-  };
-
-  const handleViewAll = () => {
-    alert('Full notification feed opened.');
-  };
-
-  const counts = notifications.reduce((acc, n) => {
-    acc.total++;
-    if (n.unread) acc.unread++;
-    acc.byCategory[n.category] = (acc.byCategory[n.category] || 0) + (n.unread ? 1 : 0);
-    return acc;
-  }, { total: 0, unread: 0, byCategory: {} as Record<string, number> });
-
-  const sorted = [...notifications].sort((a,b) => {
-    const p = priorityRank(a.priority) - priorityRank(b.priority);
-    if (p !== 0) return p;
-    return new Date(b.time).getTime() - new Date(a.time).getTime();
-  });
-
-  const visibleAlerts = sorted.filter((n) => {
-    if (filter === 'All') return true;
-    if (filter === 'Unread') return n.unread;
-    return n.category === filter;
-  });
-
-  const grouped = groupByDay(visibleAlerts);
 
   const openNotification = (id: string) => {
-    // mark read and simulate open
-    setNotifications(s => s.map(x => x.id === id ? { ...x, unread: false } : x));
+    setNotifications((current) => current.map((notification) => (notification.id === id ? { ...notification, unread: false } : notification)));
     alert(`Open notification ${id}`);
+  };
+
+  const toggleRead = (id: string) => {
+    setNotifications((current) => current.map((notification) => (notification.id === id ? { ...notification, unread: !notification.unread } : notification)));
   };
 
   return (
     <section className="space-y-6">
-      <div className="rounded-[30px] border p-6 lg:p-8" style={{ borderColor: '#d1d5db', backgroundColor: '#f8fafc', boxShadow: '0 14px 30px rgba(15,23,42,0.08)'}}>
+      <div className="rounded-[30px] border border-slate-200 bg-slate-50 p-6 lg:p-8 shadow-sm">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl space-y-4">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-slate-500">Notifications</p>
-            <h3 className="text-[28px] font-black tracking-tight text-slate-800 lg:text-[32px]">Keep up with project updates, invoice reminders, meeting alerts, ticket updates, and document alerts.</h3>
-            <p className="max-w-xl text-[15px] leading-6 text-slate-600">This panel gives the client a quick, organized summary of the latest actions and important follow-ups from the project team.</p>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-slate-500">Client Communication Center</p>
+            <h3 className="text-[28px] font-black tracking-tight text-slate-800 lg:text-[32px]">A priority-based hub for what matters most.</h3>
+            <p className="max-w-xl text-[15px] leading-6 text-slate-600">Clients see actions, money, project delivery, and urgent updates first—rather than a generic notification list.</p>
           </div>
 
-            <div className="rounded-[24px] border border-slate-200 bg-slate-100/90 px-4 py-3 text-sm text-slate-700 shadow-inner shadow-slate-100">
-            <div className="flex items-center gap-2 font-semibold"><BellRing className="h-4 w-4 text-slate-500" /> Live alerts</div>
-            <div className="text-xs mt-1"><span className="font-semibold text-slate-900">{counts.unread}</span> unread • <span className="font-semibold text-slate-900">{counts.total}</span> total</div>
+          <div className="rounded-[24px] border border-slate-200 bg-white px-5 py-4 shadow-sm">
+            <div className="flex items-center gap-2 text-slate-700">
+              <BellRing className="h-4 w-4 text-slate-500" />
+              <span className="text-sm font-semibold">Priority Summary</span>
+            </div>
+            <div className="mt-3 text-xs text-slate-500">
+              <div className="flex items-center justify-between gap-4">
+                <span>Actions</span>
+                <span className="font-semibold text-slate-900">{quickCounts.actionsRequired}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4 mt-2">
+                <span>Invoices</span>
+                <span className="font-semibold text-slate-900">{quickCounts.pendingInvoice}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4 mt-2">
+                <span>Documents</span>
+                <span className="font-semibold text-slate-900">{quickCounts.documentsWaiting}</span>
+              </div>
+              <div className="flex items-center justify-between gap-4 mt-2">
+                <span>Meetings</span>
+                <span className="font-semibold text-slate-900">{quickCounts.upcomingMeetings}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-        <article className="rounded-[30px] border p-6" style={{ borderColor: '#d1d5db', backgroundColor: '#f1f5f9', boxShadow: '0 14px 30px rgba(15,23,42,0.08)'}}>
-          <div className="mb-5 flex items-center justify-between gap-3">
+      <div className="grid gap-6 xl:grid-cols-[1.35fr_0.85fr]">
+        <article className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-[12px] uppercase tracking-[0.26em] text-slate-500">Alert overview</p>
-              <h4 className="text-[22px] font-bold text-slate-800">What needs attention</h4>
+              <p className="text-[12px] uppercase tracking-[0.26em] text-slate-500">Action Center</p>
+              <h4 className="text-[22px] font-bold text-slate-800">Top items by importance</h4>
             </div>
-            <AlertTriangle className="h-5 w-5 text-slate-400" />
-          </div>
-
-          <div className="grid gap-4">
-            {cards.map((item) => (
-              <article key={item.label} className={`rounded-[24px] border p-4 shadow-sm ${item.tone}`}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[12px] uppercase tracking-[0.22em] text-slate-700/90">{item.label}</p>
-                    <p className="mt-2 text-[22px] font-extrabold text-slate-900">{item.count}</p>
-                    <p className="mt-2 text-[13px] leading-6 text-slate-700">{item.callToAction.label} →</p>
-                  </div>
-                  <div>
-                    <button onClick={() => alert(item.callToAction.label)} className="rounded-md bg-white/90 px-3 py-2 text-sm font-semibold text-slate-800">{item.callToAction.label}</button>
-                  </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {[
+                { label: 'Actions Required', value: quickCounts.actionsRequired },
+                { label: 'Pending Invoices', value: quickCounts.pendingInvoice },
+                { label: 'Documents Waiting', value: quickCounts.documentsWaiting },
+                { label: 'Meetings Ahead', value: quickCounts.upcomingMeetings },
+              ].map((card) => (
+                <div key={card.label} className="rounded-[24px] border border-slate-200 bg-slate-50 p-4 text-center">
+                  <p className="text-xs uppercase tracking-[0.22em] text-slate-500">{card.label}</p>
+                  <p className="mt-3 text-[28px] font-extrabold text-slate-900">{card.value}</p>
                 </div>
-              </article>
-            ))}
-          </div>
-        </article>
-
-        <article className="rounded-[30px] border p-6" style={{ borderColor: '#d1d5db', backgroundColor: '#f7f7f9', boxShadow: '0 14px 30px rgba(15,23,42,0.08)'}}>
-          <div className="mb-5 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[12px] uppercase tracking-[0.26em] text-slate-500">Recent alerts</p>
-              <h4 className="text-[22px] font-bold text-slate-800">Latest notifications</h4>
-            </div>
-            <BellRing className="h-5 w-5 text-slate-400" />
-          </div>
-
-          <div className="mb-5 rounded-[24px] border border-slate-200 bg-white/90 p-4 shadow-sm">
-            <div className="mb-3 flex items-center gap-3">
-              <div className="flex gap-2 flex-wrap">
-                {['All','Unread','Invoice','Meeting','Project','Ticket','Document'].map((k) => (
-                  <button key={k} onClick={() => setFilter(k as any)} className={`rounded-2xl px-3 py-1 text-sm ${filter===k?'bg-slate-900 text-white':'bg-white text-slate-700 border border-slate-200'}`}>
-                    <span className={filter===k? 'text-white' : 'text-slate-700'}>{k}</span>
-                    {k !== 'All' && (counts.byCategory[k] || 0) ? (
-                      <span className={`ml-2 inline-block rounded-full px-2 py-0.5 text-xs font-semibold ${filter===k? 'bg-white text-slate-900' : 'bg-slate-100 text-slate-800'}`}>{counts.byCategory[k]}</span>
-                    ) : null}
-                  </button>
-                ))}
-              </div>
-              <div className="ml-auto">
-                <button type="button" onClick={handleMarkAllRead} className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Mark all as read</button>
-              </div>
-            </div>
-            <div className="mt-3 flex flex-wrap gap-3">
-              <button type="button" onClick={handleExportAlerts} className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Export alerts</button>
-              <button type="button" onClick={handleViewAll} className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">View all</button>
+              ))}
             </div>
           </div>
 
-          <div className="space-y-6">
-            {['Today','Yesterday','Earlier'].map((section) => (
-              grouped[section] && grouped[section].length > 0 ? (
-                <div key={section}>
-                  <h5 className="text-sm font-semibold text-slate-700 mb-2">{section}</h5>
-                  <div className="space-y-3">
-                    {grouped[section].map((n) => (
-                      <article key={n.id} onClick={() => openNotification(n.id)} className={`rounded-[12px] border p-3 shadow-sm cursor-pointer ${n.unread ? 'bg-slate-50' : 'bg-slate-50/90'} ${n.unread ? (n.priority === 'critical' ? 'border-l-4 border-rose-200' : (n.priority === 'important' ? 'border-l-4 border-amber-200' : 'border-l-4 border-slate-300')) : ''}`}>
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5 rounded-full p-2 shadow-sm" style={{background: n.priority === 'critical' ? '#f8eef2' : (n.priority === 'important' ? '#f9f5eb' : '#eef2f7')}}>
-                            {n.category === 'Meeting' ? <CalendarRange className="h-4 w-4 text-slate-700" /> : (n.category === 'Invoice' ? <ReceiptText className="h-4 w-4 text-slate-700" /> : (n.category === 'Document' ? <FileText className="h-4 w-4 text-slate-700" /> : <Clock3 className="h-4 w-4 text-slate-700" />))}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-start gap-3">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2">
-                                  <p className={`text-sm font-semibold ${n.unread? 'text-slate-900':'text-slate-700'}`}>{n.title}</p>
-                                  {n.unread && <span className="h-2 w-2 rounded-full bg-slate-900" />}
-                                  <span className="ml-2 text-xs text-slate-500">{timeAgo(n.time)}</span>
-                                </div>
-                                <p className="mt-1 text-xs text-slate-600">{n.detail}</p>
-                              </div>
-                              <div className="flex flex-col items-end gap-2">
-                                <div className={`text-xs px-2 py-1 rounded-full ${n.priority === 'critical' ? 'bg-rose-100 text-rose-700' : (n.priority === 'important' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-800')}`}>{n.priority}</div>
-                                <div className="flex gap-2">
-                                  <button onClick={(e) => { e.stopPropagation(); alert(`View ${n.id}`); }} className="rounded-2xl border border-slate-200 bg-white px-3 py-1 text-xs text-slate-800">View</button>
-                                  <button onClick={(e) => { e.stopPropagation(); setNotifications(s => s.map(x => x.id === n.id ? { ...x, unread: !x.unread } : x)); }} className="rounded-2xl border border-slate-200 bg-white px-3 py-1 text-xs text-slate-800">{n.unread? 'Mark read' : 'Mark unread'}</button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              ) : null
+          <div className="flex flex-wrap gap-2">
+            {['Action', 'Billing', 'Documents', 'Meetings', 'Project', 'All'].map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category as any)}
+                className={`rounded-2xl px-4 py-2 text-sm font-semibold ${selectedCategory === category ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700'}`}
+              >
+                {category}
+              </button>
             ))}
           </div>
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-            <article className="rounded-[24px] border p-4 shadow-sm bg-slate-50">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-slate-500">Alerts summary</p>
-                  <p className="mt-1 text-[14px] leading-6 text-slate-600">Quick stats to help prioritize follow-ups.</p>
-                </div>
-
-                <div className="flex gap-4 items-center">
-                  <div className="text-center">
-                    <p className="text-xs uppercase text-slate-500 tracking-wide">Unread</p>
-                    <p className="text-xl font-extrabold text-slate-900">{counts.unread}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs uppercase text-slate-500 tracking-wide">Critical</p>
-                    <p className="text-xl font-extrabold text-slate-900">{notifications.filter(n => n.priority === 'critical').length}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs uppercase text-slate-500 tracking-wide">Important</p>
-                    <p className="text-xl font-extrabold text-slate-900">{notifications.filter(n => n.priority === 'important').length}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs uppercase text-slate-500 tracking-wide">Info</p>
-                    <p className="text-xl font-extrabold text-slate-900">{notifications.filter(n => n.priority === 'info').length}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <p className="text-sm font-semibold text-slate-700">Upcoming actions</p>
-                <ul className="mt-2 list-disc list-inside text-sm text-slate-700">
-                  {sorted.slice(0,3).map(n => (
-                    <li key={n.id} className="py-1">
-                      <div className="flex items-center justify-between gap-3">
-                        <span>{n.title}</span>
-                        <span className="text-xs text-slate-500">{timeAgo(n.time)}</span>
+          <div className="mt-6 space-y-4">
+            {visibleNotifications.length === 0 ? (
+              <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-slate-600">No notifications in this section yet.</div>
+            ) : (
+              visibleNotifications.slice(0, 5).map((notification) => (
+                <article
+                  key={notification.id}
+                  onClick={() => openNotification(notification.id)}
+                  className={`rounded-[20px] border p-4 shadow-sm cursor-pointer ${notification.unread ? 'bg-slate-50 border-slate-200' : 'bg-white border-slate-200'}`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-sm font-semibold text-slate-900">{notification.title}</p>
+                        {notification.unread && <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />}
                       </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </article>
+                      <p className="mt-2 text-sm text-slate-600">{notification.detail}</p>
+                      <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500">
+                        <span>{notification.category}</span>
+                        <span>•</span>
+                        <span>{timeAgo(notification.time)}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <div className={`rounded-full px-3 py-1 text-xs font-semibold ${notification.priority === 'critical' ? 'bg-rose-100 text-rose-700' : notification.priority === 'important' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-800'}`}>
+                        {notification.priority}
+                      </div>
+                      <button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          toggleRead(notification.id);
+                        }}
+                        className="rounded-2xl border border-slate-200 bg-white px-3 py-1 text-xs text-slate-800"
+                      >
+                        {notification.unread ? 'Mark read' : 'Mark unread'}
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))
+            )}
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button type="button" onClick={markAllRead} className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Mark all as read</button>
+            <button type="button" onClick={() => alert('Export alerts')} className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Export alerts</button>
+            <button type="button" onClick={() => alert('View full feed')} className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">View full feed</button>
           </div>
         </article>
+
+        <div className="space-y-6">
+          <article className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[12px] uppercase tracking-[0.26em] text-slate-500">Financial Alerts</p>
+                <h4 className="text-[22px] font-bold text-slate-800">Money Section</h4>
+              </div>
+              <ReceiptText className="h-5 w-5 text-slate-400" />
+            </div>
+
+            <div className="mt-6 rounded-[24px] border border-slate-200 bg-slate-50 p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.22em] text-slate-500">Pending invoice</p>
+                  <p className="mt-3 text-[22px] font-extrabold text-slate-900">{quickCounts.topInvoice?.title ?? 'No pending invoice'}</p>
+                  <p className="mt-2 text-sm text-slate-600">{quickCounts.topInvoice ? `${quickCounts.topInvoice.amount ?? quickCounts.topInvoice.outstanding ?? ''} • Due ${formatDate(quickCounts.topInvoice.time)}` : 'No invoice pending review'}</p>
+                </div>
+                <div className="rounded-full bg-rose-100 px-3 py-2 text-xs font-semibold text-rose-700">{quickCounts.topInvoice ? quickCounts.invoiceStatus : 'No pending invoice'}</div>
+              </div>
+
+              <div className="mt-5 grid gap-3 text-sm text-slate-700">
+                <div className="rounded-[18px] bg-white p-4 shadow-sm">
+                  <p className="font-semibold text-slate-900">Amount</p>
+                  <p className="mt-1">{quickCounts.topInvoice?.amount ?? quickCounts.topInvoice?.outstanding ?? '—'}</p>
+                </div>
+                <div className="rounded-[18px] bg-white p-4 shadow-sm">
+                  <p className="font-semibold text-slate-900">Due date</p>
+                  <p className="mt-1">{quickCounts.topInvoice ? formatDate(quickCounts.topInvoice.time) : '—'}</p>
+                </div>
+                <div className="rounded-[18px] bg-white p-4 shadow-sm">
+                  <p className="font-semibold text-slate-900">Status</p>
+                  <p className="mt-1">{quickCounts.topInvoice ? quickCounts.invoiceStatus : 'No invoice'}</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[12px] uppercase tracking-[0.26em] text-slate-500">AI Summary</p>
+                <h4 className="text-[22px] font-bold text-slate-800">Client Snapshot</h4>
+              </div>
+              <BellRing className="h-5 w-5 text-slate-400" />
+            </div>
+
+            <div className="mt-6 space-y-4 rounded-[24px] border border-slate-200 bg-slate-50 p-5 text-sm text-slate-700">
+              <p>• {quickCounts.pendingInvoice} invoices pending review or payment.</p>
+              <p>• {quickCounts.upcomingMeetings} meetings scheduled within the next week.</p>
+              <p>• {categoryLists.Project.length} project updates waiting for review.</p>
+              <p>• {quickCounts.documentsWaiting} documents uploaded that need attention.</p>
+              <div className="rounded-[20px] bg-slate-900 px-4 py-3 text-sm text-white">
+                Recommended Action: {quickCounts.topInvoice ? `Review ${quickCounts.topInvoice.title}${quickCounts.topProjectUpdate ? ` and approve ${quickCounts.topProjectUpdate.title}.` : '.'}` : 'No invoice pending action.'}
+              </div>
+            </div>
+          </article>
+        </div>
       </div>
+
+      <article className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-[12px] uppercase tracking-[0.26em] text-slate-500">Timeline View</p>
+            <h4 className="text-[22px] font-bold text-slate-800">Today • Yesterday • Earlier</h4>
+          </div>
+          <Clock3 className="h-5 w-5 text-slate-400" />
+        </div>
+
+        <div className="mt-6 space-y-6">
+          {['Today', 'Yesterday', 'Earlier'].map((section) => (
+            groupedTimeline[section] && groupedTimeline[section].length > 0 ? (
+              <div key={section}>
+                <div className="mb-4 flex items-center justify-between border-b border-slate-200 pb-3">
+                  <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">{section}</p>
+                  <p className="text-sm text-slate-500">{groupedTimeline[section].length} items</p>
+                </div>
+                <div className="space-y-3">
+                  {groupedTimeline[section].map((notification) => (
+                    <div key={notification.id} className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-slate-900">{notification.title}</p>
+                          <p className="mt-1 text-xs text-slate-500">{formatTime(notification.time)} • {notification.category}</p>
+                        </div>
+                        <div className={`rounded-full px-2 py-1 text-[11px] font-semibold ${notification.priority === 'critical' ? 'bg-rose-100 text-rose-700' : notification.priority === 'important' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-800'}`}>
+                          {notification.priority}
+                        </div>
+                      </div>
+                      <p className="mt-3 text-sm text-slate-600">{notification.detail}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null
+          ))}
+        </div>
+      </article>
     </section>
   );
 };

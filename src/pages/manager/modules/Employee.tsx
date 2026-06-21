@@ -275,6 +275,59 @@ const EmployeesModule: FC<
   // track deactivated employees locally (IDs)
   const [deactivatedIds, setDeactivatedIds] = useState<number[]>([]);
 
+  const isEmployeeInactive = (employee: Employee) =>
+    deactivatedIds.includes(employee.id) || employee.status?.toLowerCase() === 'inactive';
+
+  const syncEmployeeStatus = (employee: Employee, inactive: boolean) => {
+    const status = inactive ? 'Inactive' : 'Active';
+
+    setDeactivatedIds((prev) => {
+      if (inactive) {
+        return prev.includes(employee.id) ? prev : [...prev, employee.id];
+      }
+
+      return prev.filter((id) => id !== employee.id);
+    });
+
+    return {
+      ...employee,
+      status,
+    };
+  };
+
+  const updateEmployeeStatus = (employee: Employee, inactive: boolean) => {
+    const syncedEmployee = syncEmployeeStatus(employee, inactive);
+
+    setEmployees((prev) =>
+      prev.map((item) =>
+        item.id === employee.id
+          ? {
+              ...item,
+              status: syncedEmployee.status,
+            }
+          : item
+      )
+    );
+
+    setSelectedEmployee((prev) =>
+      prev && prev.id === employee.id
+        ? {
+            ...prev,
+            status: syncedEmployee.status,
+          }
+        : prev
+    );
+
+    setEditingData((prev) =>
+      prev && prev.id === employee.id
+        ? {
+            ...prev,
+            status: syncedEmployee.status,
+          }
+        : prev
+    );
+  };
+
   const departments = useMemo(
     () => Object.keys(departmentRoles),
     []
@@ -1219,6 +1272,7 @@ const EmployeesModule: FC<
                   ...emp,
                   dept: emp.department ?? emp.dept ?? '',
                   department: emp.department ?? emp.dept ?? '',
+                  status: isEmployeeInactive(emp) ? 'Inactive' : 'Active',
                 };
 
                 setSelectedEmployee(employeeForEdit);
@@ -1249,7 +1303,7 @@ const EmployeesModule: FC<
                 type="button"
                 onClick={() => {
                   if (!confirm(`Activate ${emp.name}?`)) return;
-                  setDeactivatedIds((prev) => prev.filter((id) => id !== emp.id));
+                  updateEmployeeStatus(emp, false);
                 }}
                 aria-label={`Activate ${emp.name}`}
                 title="Activate"
@@ -1262,7 +1316,7 @@ const EmployeesModule: FC<
                 type="button"
                 onClick={() => {
                   if (!confirm(`Deactivate ${emp.name}?`)) return;
-                  setDeactivatedIds((prev) => [...prev, emp.id]);
+                  updateEmployeeStatus(emp, true);
                 }}
                 aria-label={`Deactivate ${emp.name}`}
                 title="Deactivate"
@@ -1495,14 +1549,16 @@ const EmployeesModule: FC<
                     <button
                       onClick={() => {
                         if (editingData) {
+                          const syncedEmployee = syncEmployeeStatus(editingData);
+
                           setEmployees((prev) =>
                             prev.map((emp) =>
-                              emp.id === editingData.id
-                                ? editingData
+                                emp.id === syncedEmployee.id
+                                  ? syncedEmployee
                                 : emp
                             )
                           );
-                          setSelectedEmployee(editingData);
+                          setSelectedEmployee(syncedEmployee);
                           setIsEditingProfile(false);
                           setEditingData(null);
                           alert('Employee details updated successfully!');
@@ -1529,6 +1585,7 @@ const EmployeesModule: FC<
                         ...displayEmployee,
                         dept: displayEmployee.department ?? displayEmployee.dept ?? '',
                         department: displayEmployee.department ?? displayEmployee.dept ?? '',
+                        status: isEmployeeInactive(displayEmployee) ? 'Inactive' : 'Active',
                       };
 
                       setIsEditingProfile(true);

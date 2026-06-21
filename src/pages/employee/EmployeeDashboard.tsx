@@ -279,11 +279,11 @@ const EmployeeDashboard: React.FC = () => {
         <aside
           onMouseEnter={() => setIsSidebarExpanded(true)}
           onMouseLeave={() => setIsSidebarExpanded(false)}
-          className={`group/sidebar fixed inset-y-6 left-6 z-50 overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] transition-[width] duration-300 ease-in-out xl:flex xl:flex-col ${
+          className={`group/sidebar fixed inset-y-6 left-6 z-50 flex flex-col overflow-hidden rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] transition-[width] duration-300 ease-in-out ${
             isSidebarExpanded ? 'w-[260px]' : 'w-[88px]'
           }`}
         >
-          <div className="flex-1 overflow-y-auto px-3 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex-1 min-h-0 overflow-y-auto px-3 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <nav className="space-y-3">
               {sidebarItems.map((item, index) => {
                 const Icon = item.icon;
@@ -329,7 +329,7 @@ const EmployeeDashboard: React.FC = () => {
         <main
           ref={mainRef}
           className={`flex min-w-0 flex-1 flex-col bg-transparent transition-all duration-300 ${
-            isSidebarExpanded ? "xl:ml-[292px]" : "xl:ml-[102px]"
+            isSidebarExpanded ? "ml-[292px]" : "ml-[140px]"
           }`}
         >
           <header className="sticky top-3 z-30 mx-5 w-auto rounded-[24px] border border-white/10 bg-[#172554]/95 text-white shadow-[inset_3px_0_0_rgba(34,211,238,0.75),0_16px_45px_rgba(2,8,23,0.28)] backdrop-blur-2xl sm:mx-6">
@@ -338,6 +338,7 @@ const EmployeeDashboard: React.FC = () => {
                 <button
                   className="rounded-xl border border-white/15 bg-white/5 p-2 transition hover:bg-white/10 xl:hidden"
                   type="button"
+                  onClick={() => setIsSidebarExpanded((prev) => !prev)}
                 >
                   <Menu className="h-4 w-4" />
                 </button>

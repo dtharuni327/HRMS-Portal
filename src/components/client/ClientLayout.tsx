@@ -7,10 +7,10 @@ const ClientLayout: React.FC = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#081629]">
+    <div className="min-h-screen bg-[#081629] xl:flex xl:min-h-screen xl:items-stretch">
       <ClientSidebar isExpanded={isSidebarExpanded} setIsExpanded={setIsSidebarExpanded} />
 
-      <main className={`min-h-screen transition-all duration-300 ${isSidebarExpanded ? 'ml-[292px]' : 'ml-[102px]'}`}>
+      <main className={`min-h-screen flex-1 min-w-0 transition-all duration-300 ${isSidebarExpanded ? 'ml-[292px]' : 'ml-[140px]'}`}>
         <section className="p-8">
           <DashboardNavbar
             title="Client Dashboard"

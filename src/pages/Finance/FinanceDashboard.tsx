@@ -62,7 +62,7 @@ const FinanceDashboard: React.FC = () => {
         setSidebarOpen={setSidebarOpen}
       />
 
-      <main className={`relative z-10 flex min-h-0 flex-1 flex-col overflow-visible bg-[#0f1d36] transition-all duration-300 ${sidebarOpen ? 'ml-[280px]' : 'ml-[132px]'}`}>
+      <main className={`relative z-10 flex min-h-0 flex-1 flex-col overflow-visible bg-[#0f1d36] transition-all duration-300 ${sidebarOpen ? 'ml-[292px]' : 'ml-[140px]'}`}>
         <DashboardNavbar
           title="Finance Dashboard"
           subtitle="Finance • Role-based Access"

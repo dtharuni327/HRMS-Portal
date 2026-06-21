@@ -43,7 +43,7 @@ const SuperAdminSidebar = ({ isExpanded, setIsExpanded }: SuperAdminSidebarProps
     <aside
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
-      className={`group/sidebar fixed left-4 top-4 z-40 hidden h-[calc(100vh-2rem)] overflow-hidden whitespace-nowrap rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] text-white/80 shadow-[0_24px_70px_rgba(2,8,23,0.32)] transition-[width] duration-300 ease-in-out xl:flex xl:flex-col ${
+      className={`group/sidebar fixed left-4 top-4 z-40 flex flex-col h-[calc(100vh-2rem)] overflow-hidden whitespace-nowrap rounded-[2.2rem] border border-[#203a72] bg-[#081a4a] text-white/80 shadow-[0_24px_70px_rgba(2,8,23,0.32)] transition-[width] duration-300 ease-in-out ${
         isExpanded ? "w-[260px]" : "w-[88px]"
       }`}
     >

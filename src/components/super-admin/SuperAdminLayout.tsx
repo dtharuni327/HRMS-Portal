@@ -20,15 +20,15 @@ const SuperAdminLayout = () => {
     (currentUser.name || "").split(" ").map((n: string) => n[0] || "").slice(0, 2).join("").toUpperCase();
 
   return (
-    <div className="min-h-screen bg-[#081629]">
+    <div className="min-h-screen bg-[#081629] xl:flex xl:min-h-screen xl:items-stretch">
       <SuperAdminSidebar
         isExpanded={isSidebarExpanded}
         setIsExpanded={setIsSidebarExpanded}
       />
 
       <main
-        className={`min-h-screen transition-all duration-300 ${
-          isSidebarExpanded ? "ml-[292px]" : "ml-[102px]"
+        className={`min-h-screen flex-1 min-w-0 transition-all duration-300 ${
+          isSidebarExpanded ? "ml-[292px]" : "ml-[140px]"
         }`}
       >
         <header className="mx-6 mt-4 w-auto rounded-[24px] border border-white/10 bg-[#172554]/95 text-white shadow-[inset_3px_0_0_rgba(34,211,238,0.75),0_16px_45px_rgba(2,8,23,0.28)] backdrop-blur-2xl sm:mx-8">

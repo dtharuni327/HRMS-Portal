@@ -359,7 +359,7 @@ const ProfilePage: React.FC = () => {
             <div className="rounded-2xl border border-black/5 bg-white/48 px-4 py-3">
               <p className="text-[12px] text-[#64748b]">Total Documents</p>
 
-              <p className="mt-1 text-[22px] font-bold text-[#10223d]">06</p>
+              <p className="mt-1 text-[22px] font-bold text-[#10223d]">{documents.length.toString().padStart(2, '0')}</p>
             </div>
           </div>
 
